@@ -1,0 +1,119 @@
+---Module 
+1.Account (Done)
+	-Đăng nhập 
+		---SDT/Email
+		---API(GOOGLE,FB)
+	-Đăng ký 
+	
+	-Forget Password
+		--API email google send Code (OPTIONAL)
+		--API SMS send code (OPTIONAL)
+		
+2.Product (Computer)
+	--Combo (Optional) 
+	--Latop
+	--PC
+	--Compare Product (OPTIONAL API AI)
+	--PC builder(OPTIONAL)
+	--Phiếu bảo hành
+
+3.Ship (OPTIONAL API)
+	(OPTIONAL) --GHTK API
+	--Tự chế (Thông tin đăng nhập của Khách hàng địa chỉ...)
+
+4.Payment (Required) (Done)
+	--COD 
+	--API NGÂN HÀNG
+
+
+6.Accesories (Done) 
+	--Danh mục sản phẩm
+	--Linh kiện PC
+
+
+7.News (Done)
+	--Event 
+
+
+8.Reviews (Optional)
+	--FeedBack
+	--Report
+
+
+9.Promotion (Done)
+	--Promotion Apply To product (OPTIONAL)
+
+
+10.Order(Done)
+	--Order History
+
+11.SeedPoint (Optional)
+
+ 
+12.Analysis(Thống kê)
+   	--Thống kê Doanh thu ...	
+
+
+
+--Bussiness Rule
+
+	--Chính sách bảo hành tùy vào accesories ( 1-2 năm) và không bảo hành sau 15 ngày kể từ khi date end
+
+---Database
+1.1).Account (Done)
+	1.Account(IDRole,EMAIL,Pass,IDROLE)
+	
+	2.Role(IDRole,TenRole)
+
+	3.Customer(IDCustomer,IMG,Name,Description,Date)
+	
+	4.AccountGoogle(...)
+
+
+1.2).Product
+
+	5.Product(ProductID,ShortDescription,ProviderID,AccessoriesID,Status) (Status (Active , Unactive ( tùy vào tồn kho) )
+	
+	6.Provider(ProviderID,ProviderName)
+
+	7.ProductProtection(Protection_ProductID,DateBuy,DateEnd,ProductID,status) 	(Status ( Bảo hành,Không bảo hành,Ngưng bảo hành(Sau 15 ngày kể từ khi end date) )
+	
+	8.ProductOverview(ProductOverViewID,ProductID,BlockType,TextContent,imgageUrl,caption,displayOrder,CreateDate) (Block Type: ENUM('text','list','image','logo','table')
+
+	9.OptionType(ID,CODE,Name) --Kiểu tuỳ chọn (Option Type): Model, Edition, Memory, Color...
+
+	10.OptionalValue(ID,OptionalTypeID,Value,SortOrder) --Giá trị tuỳ chọn (Option Value)
+
+	11.ProductOptionType(ProductID(FK)_OptionTypeID(FK) (PK)) --Khai báo option nào áp dụng cho product này
+	
+	12.ProductVariant(ID,ProductID,SKU,Status,Quantity) --Biến thể (Variant / SKU) = 1 tổ hợp OptionValue
+	
+	13.VariantOptionValue( (ID,OptionalValueID) (PK)) --Mapping biến thể ↔ các giá trị option
+
+	14.VariantPrice(ID,VariantID,Currency,Price,DiscountPrice,Status,EffectionFrom,EffectionTo)
+
+	15.VariantImage(ID,VariantID,Url,SortOrder,DescriptionImg)
+	
+
+1.3).Ship (API GHTK || Tự chế)
+
+
+
+1.4).Accesories
+ 	16.Accessories(AccesoriesID,AccessoriesName,Status)
+
+
+1.5).Order
+	17.Order(OrderID,CustomerID,PaymentID,OrderTime,OrderStatus,Subtotal,DiscountTotal,Status,ShippingFee,GrandTotal) (GrandTotal = Subtotal - DiscountTotal + ShippingFee)       
+	18.OrderDetails(OrderID,ProductID (Null) ,ProductVariantID,Quantity,TotalPrice,UnitPrice,Discount,SKU,Name,OptionSummary,ImageUrl)   (TotalPrice AS (UnitPrice * Quantity - Discount))
+	19.Cart(ID,USERID,Status,Subtotal,DiscountTotal,ShippingFee,GrandTotal,ExpiresAT,CreatedAt,UpdateAt)
+	20.CartItem(ID,CartID,ProductID,ProductVariantID,ParentItemID,ItemType,SKU,Name,OptionSummary,ImageUrl,UnitPrice,Quantity,PerItemLimit,CreatedAt,IsSelected)	
+
+
+1.6).News
+	21.ProductNews(ProductNewsID,BlockType,TextContent,imgageUrl,caption,displayOrder,CreateDate)
+
+
+1.7).Payment 
+	22.Payment(PaymentID,MethodPayment)
+	
