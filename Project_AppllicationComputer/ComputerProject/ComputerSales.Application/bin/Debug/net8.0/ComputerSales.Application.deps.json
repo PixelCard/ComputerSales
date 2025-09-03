@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "ComputerSales.Application/1.0.0": {
+        "dependencies": {
+          "ComputerSales.Domain": "1.0.0"
+        },
+        "runtime": {
+          "ComputerSales.Application.dll": {}
+        }
+      },
+      "ComputerSales.Domain/1.0.0": {
+        "runtime": {
+          "ComputerSales.Domain.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ComputerSales.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ComputerSales.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
