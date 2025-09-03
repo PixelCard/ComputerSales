@@ -10,5 +10,7 @@ namespace ComputerSales.Application.Interface.ProductInterFace
     public interface IProductRespository
     {
         Task<Product?> GetByIdAsync(Guid id, CancellationToken ct);
+
+        Task CreateProduct(Product product,CancellationToken ct);
     }
 }

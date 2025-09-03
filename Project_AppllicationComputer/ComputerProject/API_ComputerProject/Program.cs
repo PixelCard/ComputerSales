@@ -1,9 +1,11 @@
-using ComputerSales.Application.UseCase.Product.GetByID;
-using ComputerSales.Application.UseCaseDTO.Product.GetByID;
+﻿using ComputerSales.Application.UseCase.ProductUC.CreateProduct;
+using ComputerSales.Application.UseCase.ProductUC.GetByID;
+using ComputerSales.Application.UseCaseDTO.ProductDTO.GetByID;
 using ComputerSales.Domain.Entity;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<GetProductByIdUseCase>();
+builder.Services.AddScoped<CreateProduct_UC>();
 
 var app = builder.Build();
 
@@ -27,19 +30,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (!db.Products.Any())
-    {
-        var p1 = Product.Create("Laptop A", "14\" i5, 16GB, 512GB");
-        var p2 = Product.Create("Mouse X", "Wireless 2.4G");
-        db.Products.AddRange(p1, p2);
-        await db.SaveChangesAsync();
+}
 
-        app.Logger.LogInformation("Seeded products:");
-        app.Logger.LogInformation(" - {Name} | Id = {Id}", p1.Name, p1.Id);
-        app.Logger.LogInformation(" - {Name} | Id = {Id}", p2.Name, p2.Id);
-    }
+// Tự apply migration khi khởi động (tiện dev)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
 }
 
 app.UseAuthorization();

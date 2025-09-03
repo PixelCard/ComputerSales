@@ -16,14 +16,8 @@ namespace ComputerSales.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder b)
         {
-            b.Entity<Product>(e =>
-            {
-                e.ToTable("Products");
-                e.HasKey(x => x.Id);
-                e.Property(x => x.Name).IsRequired().HasMaxLength(200);
-                e.Property(x => x.Description).IsRequired().HasMaxLength(1000);
-                e.HasIndex(x => x.Name);
-            });
+            // Tự áp dụng tất cả Fluent API trong thư mục Persistence/Configuration
+            b.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }
 }

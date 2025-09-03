@@ -1,12 +1,12 @@
 ﻿using ComputerSales.Application.Interface.ProductInterFace;
-using ComputerSales.Application.UseCaseDTO.Product.GetByID;
+using ComputerSales.Application.UseCaseDTO.ProductDTO.GetByID;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ComputerSales.Application.UseCase.Product.GetByID
+namespace ComputerSales.Application.UseCase.ProductUC.GetByID
 {
     public class GetProductByIdUseCase
     {

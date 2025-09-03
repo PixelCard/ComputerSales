@@ -16,6 +16,10 @@ namespace ComputerSales.Infrastructure.Repositories.Product_Respo
         private readonly AppDbContext appDbContext;
 
         public ProductRespository(AppDbContext appDbContext) => this.appDbContext = appDbContext;
+
+        public async Task CreateProduct(Product product,CancellationToken ct) => 
+            await appDbContext.Products.AddAsync(product, ct);
+
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct) 
             => await appDbContext.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id,ct);
     }
