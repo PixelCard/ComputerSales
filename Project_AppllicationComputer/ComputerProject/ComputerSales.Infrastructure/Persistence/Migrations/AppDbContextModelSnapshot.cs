@@ -39,7 +39,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.ToTable("Accessories", (string)null);
                 });
-
             modelBuilder.Entity("ComputerSales.Domain.Entity.EOptional.OptionType", b =>
                 {
                     b.Property<int>("Id")
@@ -96,6 +95,84 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.Product", b =>
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Account", b =>
+                {
+                    b.Property<int>("IDAccount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDAccount"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("IDRole")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Pass")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IDAccount");
+
+                    b.HasIndex("IDRole");
+
+                    b.ToTable("Account", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Role", b =>
+                {
+                    b.Property<int>("IDRole")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDRole"));
+
+                    b.Property<string>("TenRole")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IDRole");
+
+                    b.ToTable("Role", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECustomer.Customer", b =>
+                {
+                    b.Property<int>("IDCustomer")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDCustomer"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("IMG")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IDCustomer");
+
+                    b.ToTable("Customer", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.Product", b =>
                 {
                     b.Property<long>("ProductID")
                         .ValueGeneratedOnAdd()
@@ -309,6 +386,18 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EVariant.VariantPrice", b =>
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Account", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.EAccount.Role", "Role")
+                        .WithMany("Accounts")
+                        .HasForeignKey("IDRole")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -518,6 +607,12 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProvider.Provider", b =>
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Role", b =>
+                {
+                    b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.Provider", b =>
                 {
                     b.Navigation("Products");
                 });

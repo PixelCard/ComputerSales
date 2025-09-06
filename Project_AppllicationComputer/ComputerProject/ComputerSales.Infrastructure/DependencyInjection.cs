@@ -16,10 +16,37 @@ namespace ComputerSales.Infrastructure
         {
             services.AddDbContext<AppDbContext>(opt =>
             opt.UseSqlServer(
-               config.GetConnectionString("Friend"),
+               config.GetConnectionString("Quy"),
                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
-           ));
+            ));
             return services;
         }
     }
 }
+
+
+//Rồi mới tới lệnh này
+
+//Mỗi lần muốn chạy migration vào CMD chạy cậu lệnh này:
+
+//dotnet ef database update -p ComputerSales.Infrastructure -s API_ComputerProject
+
+
+//Không overwrite. Hãy tạo migration mới mô tả thay đổi tiếp theo (thêm bảng/đổi cột…):
+/*
+ * 
+ * (1)  dùng để migragtion qua sql thành 1 table nhưng không cần xóa đến các migration trước 
+ * 
+dotnet ef migrations add TenMigrationMoiUpdateVedieuGiDo -p ComputerSales.Infrastructure -s API_ComputerProject
+
+// (2) sau khi thực hiện (1) ta thực hiện lại cập nhật lại migration bằng cầu lệnh 
+
+dotnet ef database update -p ComputerSales.Infrastructure -s API_ComputerProject
+
+
+// luôn luôn phải fetch và pull trước khi run dự án git clone về
+-> git changes -> view all commmits -> incomming -> fetch -> full
+
+ */
+
+

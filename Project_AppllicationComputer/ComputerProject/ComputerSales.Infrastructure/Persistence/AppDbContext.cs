@@ -3,6 +3,11 @@ using ComputerSales.Domain.Entity.EOptional;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EProvider;
 using ComputerSales.Domain.Entity.EVariant;
+﻿using ComputerSales.Domain.Entity;
+using ComputerSales.Domain.Entity.E_Order;
+using ComputerSales.Domain.Entity.EAccount;
+using ComputerSales.Domain.Entity.ECart;
+using ComputerSales.Domain.Entity.ECustomer;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -25,7 +30,6 @@ namespace ComputerSales.Infrastructure.Persistence
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-
         public DbSet<ProductVariant> productVariants => Set<ProductVariant>();
         public DbSet<ProductProtection> productProtections => Set<ProductProtection>();
         public DbSet<ProductOverview> productOverviews => Set<ProductOverview>();
@@ -35,7 +39,6 @@ namespace ComputerSales.Infrastructure.Persistence
         public DbSet<VariantImage> variantImages => Set<VariantImage>();
         public DbSet<VariantOptionValue> variantOptionValues => Set<VariantOptionValue>();
         public DbSet<VariantPrice> variantPrices => Set<VariantPrice>();
-
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder b)
