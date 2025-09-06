@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ComputerSales.Domain.Entity.EProduct;
 
-namespace ComputerSales.Domain.Entity
+namespace ComputerSales.Domain.Entity.EOptional
 {
     //Các các loại option cho các Optional Value cần thiết (-- 'model', 'edition')
     public class OptionType

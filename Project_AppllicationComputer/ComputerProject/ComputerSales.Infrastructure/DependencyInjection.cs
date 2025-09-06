@@ -16,7 +16,7 @@ namespace ComputerSales.Infrastructure
         {
             services.AddDbContext<AppDbContext>(opt =>
             opt.UseSqlServer(
-               config.GetConnectionString("Default"),
+               config.GetConnectionString("Friend"),
                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
            ));
             return services;

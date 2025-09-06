@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ComputerSales.Domain.Entity.EVariant;
 
-namespace ComputerSales.Domain.Entity
+namespace ComputerSales.Domain.Entity.EOptional
 {
     //Các Optional Value bất kỳ ví dụ - 'RTX 5070', 'RTX 5070 Ti', 'SOLID', 'SOLID OC', ...
     //sẽ nào trong mục Optional Type nào đó
