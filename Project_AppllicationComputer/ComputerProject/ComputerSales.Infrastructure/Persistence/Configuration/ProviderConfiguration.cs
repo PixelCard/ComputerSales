@@ -1,4 +1,4 @@
-﻿using ComputerSales.Domain.Entity;
+﻿using ComputerSales.Domain.Entity.EProvider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;

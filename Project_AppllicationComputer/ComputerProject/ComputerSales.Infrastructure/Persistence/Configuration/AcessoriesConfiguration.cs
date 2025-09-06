@@ -1,4 +1,4 @@
-﻿using ComputerSales.Domain.Entity;
+﻿using ComputerSales.Domain.Entity.ECategory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
