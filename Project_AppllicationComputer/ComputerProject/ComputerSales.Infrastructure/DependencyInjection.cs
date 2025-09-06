@@ -18,7 +18,7 @@ namespace ComputerSales.Infrastructure
             opt.UseSqlServer(
                config.GetConnectionString("Quy"),
                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
-           ));
+            ));
             return services;
         }
     }
