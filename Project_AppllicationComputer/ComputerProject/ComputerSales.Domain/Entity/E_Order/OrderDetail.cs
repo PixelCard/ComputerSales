@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComputerSales.Domain.Entity.EProduct;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,6 @@ namespace ComputerSales.Domain.Entity.E_Order
         // Navigation
         public Order Order { get; set; }
         public Product Product { get; set; }
-       public ProductVariant ProductVariant { get; set; }
+        public ProductVariant ProductVariant { get; set; }
     }
 }
