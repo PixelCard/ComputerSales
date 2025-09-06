@@ -6,6 +6,7 @@ using ComputerSales.Domain.Entity.EVariant;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,9 +16,16 @@ namespace ComputerSales.Infrastructure.Persistence
     public class AppDbContext : DbContext
     {
 
-        public DbSet<Product> Products => Set<Product>();
-        public DbSet<Accessories> Accessories => Set<Accessories>();
-        public DbSet<Provider> Providers => Set<Provider>();
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Provider> Providers { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+
         public DbSet<ProductVariant> productVariants => Set<ProductVariant>();
         public DbSet<ProductProtection> productProtections => Set<ProductProtection>();
         public DbSet<ProductOverview> productOverviews => Set<ProductOverview>();
