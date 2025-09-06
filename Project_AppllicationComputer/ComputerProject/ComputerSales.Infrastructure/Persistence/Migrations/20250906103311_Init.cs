@@ -37,6 +37,19 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Role",
+                columns: table => new
+                {
+                    IDRole = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TenRole = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Role", x => x.IDRole);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Product",
                 columns: table => new
                 {
@@ -64,6 +77,32 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Account",
+                columns: table => new
+                {
+                    IDAccount = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Email = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Pass = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IDRole = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Account", x => x.IDAccount);
+                    table.ForeignKey(
+                        name: "FK_Account_Role_IDRole",
+                        column: x => x.IDRole,
+                        principalTable: "Role",
+                        principalColumn: "IDRole",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Account_IDRole",
+                table: "Account",
+                column: "IDRole");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Product_AccessoriesID",
                 table: "Product",
@@ -80,7 +119,13 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Account");
+
+            migrationBuilder.DropTable(
                 name: "Product");
+
+            migrationBuilder.DropTable(
+                name: "Role");
 
             migrationBuilder.DropTable(
                 name: "Accessories");
