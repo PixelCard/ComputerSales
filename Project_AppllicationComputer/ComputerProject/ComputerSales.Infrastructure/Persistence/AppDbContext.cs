@@ -10,7 +10,10 @@ namespace ComputerSales.Infrastructure.Persistence
 {
     public class AppDbContext : DbContext
     {
+
         public DbSet<Product> Products => Set<Product>();
+        public DbSet<Accessories> Accessories => Set<Accessories>();
+        public DbSet<Provider> Providers => Set<Provider>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

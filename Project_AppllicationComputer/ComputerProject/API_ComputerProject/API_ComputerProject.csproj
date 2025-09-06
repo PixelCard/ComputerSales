@@ -21,4 +21,9 @@
     <ProjectReference Include="..\ComputerSales.Infrastructure\ComputerSales.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="DTO\ProductAPI_DTO\" />
+  </ItemGroup>
+
 </Project>

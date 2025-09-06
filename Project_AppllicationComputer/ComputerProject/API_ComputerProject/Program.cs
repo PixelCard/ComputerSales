@@ -1,7 +1,4 @@
-﻿using ComputerSales.Application.UseCase.ProductUC.CreateProduct;
-using ComputerSales.Application.UseCase.ProductUC.GetByID;
-using ComputerSales.Application.UseCaseDTO.ProductDTO.GetByID;
-using ComputerSales.Domain.Entity;
+﻿using ComputerSales.Domain.Entity;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
@@ -18,8 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddScoped<GetProductByIdUseCase>();
-builder.Services.AddScoped<CreateProduct_UC>();
+
 
 var app = builder.Build();
 

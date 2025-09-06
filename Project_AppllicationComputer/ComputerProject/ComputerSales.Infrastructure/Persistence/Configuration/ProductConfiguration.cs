@@ -11,24 +11,38 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
 {
     public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
-        public void Configure(EntityTypeBuilder<Product> e)
+        public void Configure(EntityTypeBuilder<Product> b)
         {
-            //Create Table Product
-            e.ToTable(nameof(Product));
+            b.ToTable("Product");
 
-            //PK
-            e.HasKey(e => e.Id);
+            b.HasKey(x => x.ProductID);
 
-            //Indentity
-            e.Property(x => x.Id).ValueGeneratedNever();   // quan trọng: KHÔNG dùng UseIdentityColumn
+            b.Property(x => x.ProductID)
+             .ValueGeneratedOnAdd();
 
-            e.Property(e => e.Name)
-            .HasColumnName("user_name")   
-            .HasDefaultValue("Không tên") 
-            .HasMaxLength(20).HasColumnType("nvarchar");
+            b.Property(x => x.ShortDescription)
+             .IsRequired()
+             .HasMaxLength(500);
 
-            e.Property(e => e.Description)
-            .HasColumnType("nvarchar(max)");
+            b.Property(x => x.Status)
+             .HasConversion<int>()  // lưu enum thành int
+             .IsRequired();
+
+            // 1-N: Accessories — Products 
+            b.HasOne(x => x.Accessories)
+             .WithMany(a => a.Products)
+             .HasForeignKey(x => x.AccessoriesID)
+             .OnDelete(DeleteBehavior.Restrict); // tránh xóa dây chuyền nếu không muốn
+
+            // 1-N: Provider — Product 
+            b.HasOne(x => x.Provider)
+             .WithMany(p => p.Products)
+             .HasForeignKey(x => x.ProviderID)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            // unique index để đảm bảo 1-1
+            b.HasIndex(x => x.ProviderID)
+             .IsUnique();
         }
     }
 }

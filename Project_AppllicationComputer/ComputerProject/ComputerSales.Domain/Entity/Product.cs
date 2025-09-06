@@ -6,18 +6,24 @@ using System.Threading.Tasks;
 
 namespace ComputerSales.Domain.Entity
 {
+    public enum ProductStatus
+    {
+        Inactive = 0,
+        Active = 1
+    }
     public class Product
     {
         private Product() { } // EF cần
+        public long ProductID { get; set; }
+        public string ShortDescription { get; set; } = null!;
+        public ProductStatus Status { get; set; } = ProductStatus.Active;
 
-        public Guid Id { get; private set; } = Guid.NewGuid();
-        public string Name { get; private set; } = default!;
-        public string Description { get; private set; } = default!;
+        // FKs
+        public long AccessoriesID { get; set; }
+         public long ProviderID { get; set; }
 
-        public static Product Create(string name, string description)
-        {
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name is required");
-            return new Product { Name = name.Trim(), Description = (description ?? "").Trim() };
-        }
+         // Navigations
+         public Accessories Accessories { get; set; } = null!;
+         public Provider Provider { get; set; } = null!;
     }
 }

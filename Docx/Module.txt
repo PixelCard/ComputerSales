@@ -60,7 +60,7 @@
 	--Chính sách bảo hành tùy vào accesories ( 1-2 năm) và không bảo hành sau 15 ngày kể từ khi date end
 
 ---Database
-1.1).Account (Done)
+1.1).Account (Done) (Qúy)
 	1.Account(IDRole,EMAIL,Pass,IDROLE)
 	
 	2.Role(IDRole,TenRole)
@@ -70,7 +70,7 @@
 	4.AccountGoogle(...)
 
 
-1.2).Product
+1.2).Product (Toàn)
 
 	5.Product(ProductID,ShortDescription,ProviderID,AccessoriesID,Status) (Status (Active , Unactive ( tùy vào tồn kho) )
 	
@@ -99,21 +99,21 @@
 
 
 
-1.4).Accesories
+1.4).Accesories (Toàn)
  	16.Accessories(AccesoriesID,AccessoriesName,Status)
 
 
-1.5).Order
+1.5).Order (Qúy)
 	17.Order(OrderID,CustomerID,PaymentID,OrderTime,OrderStatus,Subtotal,DiscountTotal,Status,ShippingFee,GrandTotal) (GrandTotal = Subtotal - DiscountTotal + ShippingFee)       
 	18.OrderDetails(OrderID,ProductID (Null) ,ProductVariantID,Quantity,TotalPrice,UnitPrice,Discount,SKU,Name,OptionSummary,ImageUrl)   (TotalPrice AS (UnitPrice * Quantity - Discount))
 	19.Cart(ID,USERID,Status,Subtotal,DiscountTotal,ShippingFee,GrandTotal,ExpiresAT,CreatedAt,UpdateAt)
 	20.CartItem(ID,CartID,ProductID,ProductVariantID,ParentItemID,ItemType,SKU,Name,OptionSummary,ImageUrl,UnitPrice,Quantity,PerItemLimit,CreatedAt,IsSelected)	
 
 
-1.6).News
+1.6).News (Qúy)
 	21.ProductNews(ProductNewsID,BlockType,TextContent,imgageUrl,caption,displayOrder,CreateDate)
 
 
-1.7).Payment 
+1.7).Payment (Qúy)
 	22.Payment(PaymentID,MethodPayment)
 	
