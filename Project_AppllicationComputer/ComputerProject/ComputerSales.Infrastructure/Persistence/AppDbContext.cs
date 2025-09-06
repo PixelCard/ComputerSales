@@ -17,13 +17,23 @@ namespace ComputerSales.Infrastructure.Persistence
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Customer> Customers { get; set; }   
+        public DbSet<Customer> Customers { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Provider> Providers { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
-        public DbSet<Order> Orders{ get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+
+        public DbSet<ProductVariant> productVariants => Set<ProductVariant>();
+        public DbSet<ProductProtection> productProtections => Set<ProductProtection>();
+        public DbSet<ProductOverview> productOverviews => Set<ProductOverview>();
+        public DbSet<ProductOptionType> productOptionTypes => Set<ProductOptionType>();
+        public DbSet<OptionType> optionTypes => Set<OptionType>();
+        public DbSet<OptionalValue> optionalValues => Set<OptionalValue>();
+        public DbSet<VariantImage> variantImages => Set<VariantImage>();
+        public DbSet<VariantOptionValue> variantOptionValues => Set<VariantOptionValue>();
+        public DbSet<VariantPrice> variantPrices => Set<VariantPrice>();
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder b)
