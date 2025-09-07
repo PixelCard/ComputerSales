@@ -7,6 +7,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using ComputerSales.Application.Interface.UnitOfWork;
+using ComputerSales.Infrastructure.Repositories.UnitOfWork;
+using ComputerSales.Application.Interface.Product_Interface;
+using ComputerSales.Infrastructure.Repositories.Product_Respo;
 
 namespace ComputerSales.Infrastructure
 {
@@ -16,9 +20,11 @@ namespace ComputerSales.Infrastructure
         {
             services.AddDbContext<AppDbContext>(opt =>
             opt.UseSqlServer(
-               config.GetConnectionString("Quy"),
+               config.GetConnectionString("Toan"),
                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
             ));
+            services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
+            services.AddScoped<IProductRespository, ProductRespository>();
             return services;
         }
     }

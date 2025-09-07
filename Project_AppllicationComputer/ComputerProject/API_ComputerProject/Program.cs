@@ -1,4 +1,5 @@
-﻿using ComputerSales.Domain.Entity;
+﻿using ComputerSales.Application.UseCase.Product_UC;
+using ComputerSales.Domain.Entity;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +17,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddScoped<CreateProduct_UC>();
 
 var app = builder.Build();
 

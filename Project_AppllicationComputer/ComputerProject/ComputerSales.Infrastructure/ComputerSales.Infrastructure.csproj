@@ -20,9 +20,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.19" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\Product_Respo\" />
-    <Folder Include="Repositories\UnitOfWork\" />
-  </ItemGroup>
-
 </Project>

@@ -17,32 +17,57 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
 
             b.HasKey(x => x.ProductID);
 
-            b.Property(x => x.ProductID)
-             .ValueGeneratedOnAdd();
-
             b.Property(x => x.ShortDescription)
-             .IsRequired()
-             .HasMaxLength(500);
+             .HasMaxLength(500).IsRequired();
+
+            b.Property(x => x.SKU)
+             .HasMaxLength(64).IsRequired();
+
+            b.Property(x => x.Slug)
+             .HasMaxLength(180).IsRequired();
 
             b.Property(x => x.Status)
-             .HasConversion<int>()  // lưu enum thành int
-             .IsRequired();
+             .HasConversion<string>()               // lưu “Active/Inactive” cho dễ đọc (hoặc int nếu bạn thích)
+             .HasMaxLength(16).IsRequired();
 
-            // 1-N: Accessories — Products 
+            b.Property(x => x.RowVersion)
+             .IsRowVersion();
+
+            b.HasIndex(x => x.SKU).IsUnique();
+            b.HasIndex(x => x.Slug).IsUnique();
+            b.HasIndex(x => new { x.ProviderID, x.AccessoriesID, x.Status });
+
+            // 1–n
+            b.HasMany(x => x.ProductVariants)
+             .WithOne(v => v.Product)
+             .HasForeignKey(v => v.ProductId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+           //1-n
+            b.HasMany(p => p.ProductOptionTypes)
+             .WithOne(pot => pot.Product)
+             .HasForeignKey(pot => pot.ProductId);
+
+            // 1–1 Overview
+            b.HasOne(x => x.ProductOverview)
+             .WithOne(o => o.Product)
+             .HasForeignKey<ProductOverview>(o => o.ProductId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            // 1–1 Protection
+            b.HasOne(x => x.ProductProtection)
+             .WithOne(p => p.Product)
+             .HasForeignKey<ProductProtection>(p => p.ProductId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            // FK cơ bản
             b.HasOne(x => x.Accessories)
-             .WithMany(a => a.Products)
-             .HasForeignKey(x => x.AccessoriesID)
-             .OnDelete(DeleteBehavior.Restrict); // tránh xóa dây chuyền nếu không muốn
+             .WithMany(c => c.Products)
+             .HasForeignKey(x => x.AccessoriesID);
 
-            // 1-N: Provider — Product 
             b.HasOne(x => x.Provider)
-             .WithMany(p => p.Products)
-             .HasForeignKey(x => x.ProviderID)
-             .OnDelete(DeleteBehavior.Restrict);
-
-            // unique index để đảm bảo 1-1
-            b.HasIndex(x => x.ProviderID)
-             .IsUnique();
+             .WithMany(br => br.Products)
+             .HasForeignKey(x => x.ProviderID);
         }
     }
 }

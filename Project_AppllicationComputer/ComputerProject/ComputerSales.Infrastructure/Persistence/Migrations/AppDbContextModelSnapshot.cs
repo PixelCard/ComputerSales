@@ -4,7 +4,6 @@ using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,11 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComputerSales.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250906143136_MigrationAllConfigDataBaseProduct_OptionalProduct")]
-    partial class MigrationAllConfigDataBaseProduct_OptionalProduct
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,6 +21,204 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.Account", b =>
+                {
+                    b.Property<int>("IDAccount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDAccount"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("IDRole")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Pass")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IDAccount");
+
+                    b.HasIndex("IDRole");
+
+                    b.ToTable("Account", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Role", b =>
+                {
+                    b.Property<int>("IDRole")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDRole"));
+
+                    b.Property<string>("TenRole")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IDRole");
+
+                    b.ToTable("Role", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Cart", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<decimal>("DiscountTotal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<DateTime?>("ExpiresAT")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("GrandTotal")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("decimal(18,2)")
+                        .HasComputedColumnSql("[Subtotal]-[DiscountTotal]+[ShippingFee]", true);
+
+                    b.Property<decimal>("ShippingFee")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<decimal>("Subtotal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<DateTime>("UpdateAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserID", "Status")
+                        .HasDatabaseName("IX_Cart_User_Status");
+
+                    b.ToTable("Cart", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Cart_Discount_NonNegative", "[DiscountTotal] >= 0");
+
+                            t.HasCheckConstraint("CK_Cart_Shipping_NonNegative", "[ShippingFee] >= 0");
+
+                            t.HasCheckConstraint("CK_Cart_Subtotal_NonNegative", "[Subtotal] >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartItem", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("CartID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsSelected")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("OptionSummary")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("ParentItemID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PerItemLimit")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductVariantID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CartID")
+                        .HasDatabaseName("IX_CartItem_CartID");
+
+                    b.HasIndex("ParentItemID")
+                        .HasDatabaseName("IX_CartItem_ParentItemID");
+
+                    b.HasIndex("ProductVariantID")
+                        .HasDatabaseName("IX_CartItem_ProductVariantID");
+
+                    b.HasIndex("SKU")
+                        .HasDatabaseName("IX_CartItem_SKU");
+
+                    b.ToTable("CartItem", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CartItem_Quantity_Positive", "[Quantity] > 0");
+
+                            t.HasCheckConstraint("CK_CartItem_UnitPrice_NonNegative", "[UnitPrice] >= 0");
+                        });
+                });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECategory.Accessories", b =>
                 {
@@ -41,6 +236,35 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.HasKey("AccessoriesID");
 
                     b.ToTable("Accessories", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECustomer.Customer", b =>
+                {
+                    b.Property<int>("IDCustomer")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IDCustomer"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("IMG")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IDCustomer");
+
+                    b.ToTable("Customer", (string)null);
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EOptional.OptionType", b =>
@@ -109,23 +333,49 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Property<long>("AccessoriesID")
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<long>("ProviderID")
                         .HasColumnType("bigint");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
 
                     b.HasKey("ProductID");
 
                     b.HasIndex("AccessoriesID");
 
-                    b.HasIndex("ProviderID")
+                    b.HasIndex("SKU")
                         .IsUnique();
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.HasIndex("ProviderID", "AccessoriesID", "Status");
 
                     b.ToTable("Product", (string)null);
                 });
@@ -360,6 +610,138 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.Order", b =>
+                {
+                    b.Property<int>("OrderID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
+
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DiscountTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("GrandTotal")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("decimal(18,2)")
+                        .HasComputedColumnSql("[Subtotal] - [DiscountTotal] + [ShippingFee]", true);
+
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OrderTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<int?>("PaymentID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ShippingFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("OrderID");
+
+                    b.HasIndex("CustomerID");
+
+                    b.ToTable("Order", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.OrderDetail", b =>
+                {
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductVariantID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Discount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("OptionSummary")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long?>("ProductID")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("decimal(18,2)")
+                        .HasComputedColumnSql("[UnitPrice] * [Quantity] - [Discount]", true);
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("OrderID", "ProductVariantID");
+
+                    b.HasIndex("ProductID");
+
+                    b.HasIndex("ProductVariantID");
+
+                    b.HasIndex("SKU");
+
+                    b.ToTable("OrderDetails", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.Account", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.EAccount.Role", "Role")
+                        .WithMany("Accounts")
+                        .HasForeignKey("IDRole")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartItem", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.ECart.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ComputerSales.Domain.Entity.ECart.CartItem", "ParentItem")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentItemID");
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("ParentItem");
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.EOptional.OptionalValue", b =>
                 {
                     b.HasOne("ComputerSales.Domain.Entity.EOptional.OptionType", "OptionType")
@@ -376,13 +758,13 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.HasOne("ComputerSales.Domain.Entity.ECategory.Accessories", "Accessories")
                         .WithMany("Products")
                         .HasForeignKey("AccessoriesID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ComputerSales.Domain.Entity.EProvider.Provider", "Provider")
                         .WithMany("Products")
                         .HasForeignKey("ProviderID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Accessories");
@@ -483,9 +865,66 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Navigation("Variant");
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.Order", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", "Customer")
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.OrderDetail", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.E_Order.Order", "Order")
+                        .WithMany("Details")
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ComputerSales.Domain.Entity.EProduct.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ComputerSales.Domain.Entity.EProduct.ProductVariant", "ProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductVariant");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Role", b =>
+                {
+                    b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartItem", b =>
+                {
+                    b.Navigation("Children");
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECategory.Accessories", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECustomer.Customer", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EOptional.OptionType", b =>
@@ -523,6 +962,11 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProvider.Provider", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.Order", b =>
+                {
+                    b.Navigation("Details");
                 });
 #pragma warning restore 612, 618
         }
