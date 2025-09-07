@@ -12,7 +12,7 @@ namespace ComputerSales.Domain.Entity.E_Order
 
         //Primary key 
         public int OrderID { get; set; }               
-        public int? ProductID { get; set; }            
+        public long? ProductID { get; set; }            
         public int ProductVariantID { get; set; } // biến thể ( có thể xem là thể loại ) 
         public int Quantity { get; set; }               
 
