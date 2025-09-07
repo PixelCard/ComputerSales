@@ -19,6 +19,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<CreateProduct_UC>();
 
+builder.Services.AddScoped<GetProduct_UC>();
+builder.Services.AddScoped<UpdateProduct_UC>();
+builder.Services.AddScoped<DeleteProduct_UC>();
+
 var app = builder.Build();
 
 

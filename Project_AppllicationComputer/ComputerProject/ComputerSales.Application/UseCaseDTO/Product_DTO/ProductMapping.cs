@@ -1,4 +1,5 @@
-﻿using ComputerSales.Domain.Entity.EProduct;
+﻿using ComputerSales.Application.UseCaseDTO.Product_DTO.UpdateProduct;
+using ComputerSales.Domain.Entity.EProduct;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,28 @@ namespace ComputerSales.Application.UseCaseDTO.Product_DTO
         }
 
 
-        public static ProductOutputDTOcs ToResult(this Product output)
+
+        public static ProductOutputDTOcs ToResult(this Product e)
         {
-            return new ProductOutputDTOcs(output.ProductID,output.Slug,output.AccessoriesID,output.ProviderID);
+            return new ProductOutputDTOcs(e.ProductID,
+            e.ShortDescription,
+            (int)e.Status,
+            e.AccessoriesID,
+            e.ProviderID,
+            e.Slug,
+            e.SKU,
+            Convert.ToBase64String(e.RowVersion ?? Array.Empty<byte>())
+            );
+        }
+
+        public static void ApplyUpdate(this Product e, UpdateProductInput dto)
+        {
+            e.ShortDescription = dto.ShortDescription;
+            e.Status = (ProductStatus)dto.Status;
+            e.AccessoriesID = dto.AccessoriesID;
+            e.ProviderID = dto.ProviderID;
+            e.Slug = dto.Slug;
+            e.SKU = dto.SKU;
         }
     }
 }
