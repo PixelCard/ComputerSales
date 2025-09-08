@@ -15,13 +15,16 @@ namespace ComputerSales.Infrastructure.Repositories.Respository_ImplementationIn
     {
         private readonly AppDbContext _db;
         private readonly DbSet<TEntity> _set;
-        private readonly PropertyInfo? _keyProp;
+        private readonly PropertyInfo? _keyProp; //property khóa chính (primary key) của entity TEntity
 
         public EfRepository(AppDbContext db)
         {
             _db = db;
             _set = _db.Set<TEntity>();
-            _keyProp = FindKeyProperty(); // "Id" hoặc "{TypeName}Id"
+            _keyProp = FindKeyPropertyFromEfModel(db)  // lấy từ EF metadata
+            ?? throw new InvalidOperationException(
+                $"Primary key for entity {typeof(TEntity).Name} not found. " +
+                $"Ensure it has a key (HasKey or [Key])."); 
         }
 
         public async Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default)
@@ -35,20 +38,41 @@ namespace ComputerSales.Infrastructure.Repositories.Respository_ImplementationIn
 
         public async Task<TEntity?> GetByIdAsync(object id, CancellationToken ct = default)
         {
-            if (_keyProp is null) return null;
-            // _set.FindAsync chỉ chạy tốt khi biết key; nhưng vì không chỉ định key qua model builder ở đây,
-            // ta fallback về FirstOrDefault với Expression theo keyProp
+            if (_keyProp is null) return null; 
+
+            //Đoạn code tạo Lambda Expresion dựa trên _keyProp (ID)
             var param = Expression.Parameter(typeof(TEntity), "e");
+            // e => ...
+
             var left = Expression.Property(param, _keyProp);
+            //  e.KeyProperty 
+
             var right = Expression.Constant(Convert.ChangeType(id, _keyProp.PropertyType));
+            // hằng số id được convert sang đúng kiểu của key property
+
             var body = Expression.Equal(left, right);
+            // e.KeyProperty == id
+
             var lambda = Expression.Lambda<Func<TEntity, bool>>(body, param);
+            // e => e.KeyProperty == id
+
+            /*
+              Ví dụ:
+
+                TEntity = Product
+
+                _keyProp = Product.ProductId
+
+                id = 5
+
+                => Lambda se la : e => e.ProductID == 5
+            */
 
             return await _set.FirstOrDefaultAsync(lambda, ct);
         }
 
         public Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
-            => _set.FirstOrDefaultAsync(predicate, ct);
+            => _set.FirstOrDefaultAsync(predicate, ct); 
 
         public async Task<List<TEntity>> ListAsync(
             Expression<Func<TEntity, bool>>? predicate = null,
@@ -93,6 +117,27 @@ namespace ComputerSales.Infrastructure.Repositories.Respository_ImplementationIn
             var entity = await GetByIdAsync(id, ct);
             if (entity == null) return;   // hoặc throw tuỳ bạn
             _set.Remove(entity);
+        }
+
+
+
+        private static PropertyInfo? FindKeyPropertyFromEfModel(DbContext db)
+        {
+            var entityType = db.Model.FindEntityType(typeof(TEntity));
+
+            var pk = entityType?.FindPrimaryKey();
+
+            if (pk == null) return null;
+
+            if (pk.Properties.Count != 1)
+                throw new NotSupportedException(
+                    $"Entity {typeof(TEntity).Name} has composite key; this repository supports single key only.");
+
+            var keyName = pk.Properties[0].Name;           // ví dụ: "ProtectionProductId"
+
+            return typeof(TEntity).GetProperty(keyName)
+                   ?? throw new InvalidOperationException(
+                       $"Key property '{keyName}' not found on {typeof(TEntity).Name}.");
         }
     }
 }

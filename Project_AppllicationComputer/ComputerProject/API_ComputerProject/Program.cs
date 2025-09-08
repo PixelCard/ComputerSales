@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCase.ProductOvetView_UC;
+using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Domain.Entity;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
@@ -33,6 +34,12 @@ builder.Services.AddScoped<GetByIdProductOverView_UC>();
 builder.Services.AddScoped<UpdateProductOverView_UC>();
 /*****************************************************/
 
+/********************Product Protection**************************/
+builder.Services.AddScoped<CreateProductProtection_UC>();
+builder.Services.AddScoped<DeleteProductProtection_UC>();
+builder.Services.AddScoped<GetByIdProductProtection_UC>();
+builder.Services.AddScoped<UpdateProductProtection_UC>();
+/*****************************************************/
 
 
 var app = builder.Build();
