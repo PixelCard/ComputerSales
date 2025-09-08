@@ -15,6 +15,7 @@ using ComputerSales.Infrastructure.Repositories.Role_Respo;
 using Microsoft.Identity.Client;
 using ComputerSales.Infrastructure.Repositories.Account_Respo;
 using ComputerSales.Application.Interface.Account_Interface;
+using ComputerSales.Infrastructure.Repositories.Product_Respo;
 
 namespace ComputerSales.Infrastructure
 {
@@ -28,7 +29,7 @@ namespace ComputerSales.Infrastructure
                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
             ));
             services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
-            services.AddScoped<IProductRespository, IProductRespository>();
+            services.AddScoped<IProductRespository, ProductRespository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IAccountRepository, AccountRespository>();
             return services;
