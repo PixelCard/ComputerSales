@@ -11,6 +11,8 @@ using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Application.Interface.Product_Interface;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
+using ComputerSales.Infrastructure.Repositories.Respository_ImplementationInterface;
+using ComputerSales.Application.Interface.InterfaceRespository;
 
 namespace ComputerSales.Infrastructure
 {
@@ -25,6 +27,7 @@ namespace ComputerSales.Infrastructure
             ));
             services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
             services.AddScoped<IProductRespository, ProductRespository>();
+            services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
             return services;
         }
     }
