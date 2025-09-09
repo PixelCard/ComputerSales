@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,5 +24,14 @@ namespace ComputerSales.Domain.Entity.EProduct
         //FK:1-1 to product
         public long ProductId { get; set; }
         public Product? Product { get; set; }
+
+        public static ProductProtection create(long ProductId, DateTime DateBuy, DateTime DateEnd, WarrantyStatus Status)
+            => new ProductProtection
+            {
+                ProductId = ProductId,
+                DateBuy=DateBuy,
+                DateEnd=DateEnd,
+                Status=Status
+            };
     }
 }

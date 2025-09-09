@@ -1,5 +1,7 @@
 ﻿using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCase.Role_UC;
+using ComputerSales.Application.UseCase.ProductOvetView_UC;
+using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Domain.Entity;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
@@ -21,11 +23,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<CreateProduct_UC>();
 
+/********************Product**************************/
+builder.Services.AddScoped<CreateProduct_UC>();
 builder.Services.AddScoped<GetProduct_UC>();
 builder.Services.AddScoped<UpdateProduct_UC>();
 builder.Services.AddScoped<DeleteProduct_UC>();
+/*****************************************************/
 
 //==============    Role    ================//
 builder.Services.AddScoped<CreateRole_UC>();
@@ -41,7 +45,22 @@ builder.Services.AddScoped<DeleteAccount_UC>();
 
 var app = builder.Build();
 
+/********************Product Over View**************************/
+builder.Services.AddScoped<CreateProductOverView_UC>();
+builder.Services.AddScoped<DeleteProductOverView_UC>();
+builder.Services.AddScoped<GetByIdProductOverView_UC>();
+builder.Services.AddScoped<UpdateProductOverView_UC>();
+/*****************************************************/
 
+/********************Product Protection**************************/
+builder.Services.AddScoped<CreateProductProtection_UC>();
+builder.Services.AddScoped<DeleteProductProtection_UC>();
+builder.Services.AddScoped<GetByIdProductProtection_UC>();
+builder.Services.AddScoped<UpdateProductProtection_UC>();
+/*****************************************************/
+
+
+var app = builder.Build();
 // MiddleWare
 if (app.Environment.IsDevelopment())
 {
