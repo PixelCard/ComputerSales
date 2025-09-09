@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Application.Interface.Product_Interface;
+using ComputerSales.Application.Interface.Role_Interface;
+using ComputerSales.Infrastructure.Repositories.Role_Respo;
+using Microsoft.Identity.Client;
+using ComputerSales.Infrastructure.Repositories.Account_Respo;
+using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using ComputerSales.Infrastructure.Repositories.Respository_ImplementationInterface;
 using ComputerSales.Application.Interface.InterfaceRespository;
@@ -27,6 +32,8 @@ namespace ComputerSales.Infrastructure
             ));
             services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
             services.AddScoped<IProductRespository, ProductRespository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IAccountRepository, AccountRespository>();
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
             return services;
         }

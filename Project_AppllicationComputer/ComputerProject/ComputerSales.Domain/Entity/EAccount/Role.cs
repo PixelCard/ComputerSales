@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComputerSales.Domain.Entity.EProduct;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -15,5 +16,11 @@ namespace ComputerSales.Domain.Entity.EAccount
         // Quan hệ 1 Role có nhiều Account (1-N)
         // Một Role (Admin/User/Staff) sẽ được gán cho nhiều Account
         public ICollection<Account> Accounts { get; set; } = new List<Account>();
+
+        public static Role Create(string tenRole) => new Role
+        {
+            TenRole = tenRole
+        };
+
     }
 }
