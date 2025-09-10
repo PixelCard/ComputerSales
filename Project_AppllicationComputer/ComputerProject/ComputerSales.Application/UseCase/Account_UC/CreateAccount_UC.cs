@@ -2,6 +2,7 @@
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Domain.Entity;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,45 +13,41 @@ namespace ComputerSales.Application.UseCase.Account_UC
 {
     public class CreateAccount_UC
     {
-     
-            private readonly IAccountRepository _accountRepo;
-            private readonly IUnitOfWorkApplication _uow;
 
-            public CreateAccount_UC(IAccountRepository accountRepo, IUnitOfWorkApplication uow)
-            {
-                _accountRepo = accountRepo;
-                _uow = uow;
-            }
+        private readonly IAccountRepository _accountRepo;
+        private readonly IUnitOfWorkApplication _uow;
+        private readonly IValidator<AccountDTOInput> _validator;
 
-            public async Task<AccountOutputDTO> HandleAsync(AccountDTOInput input, CancellationToken ct = default)
-            {
-                // Validate cơ bản
-                if (string.IsNullOrWhiteSpace(input.Email))
-                    throw new ArgumentException("Email không được để trống.");
-                if (string.IsNullOrWhiteSpace(input.Pass))
-                    throw new ArgumentException("Mật khẩu không được để trống.");
 
-                //  kiểm tra trùng email
-                var existed = await _accountRepo.GetAccountByEmail(input.Email, ct);
-                if (existed is not null)
-                    throw new InvalidOperationException("Email đã được sử dụng, vui lòng chọn email khác.");
+        public CreateAccount_UC(IAccountRepository accountRepo, 
+            IUnitOfWorkApplication uow, 
+            IValidator<AccountDTOInput> validator)
+        {
+            _accountRepo = accountRepo;
+            _uow = uow;
+            _validator = validator;
+        }
 
-                // Map sang entity
-                Account entity = input.ToEntity();
+        public async Task<AccountOutputDTO> HandleAsync(AccountDTOInput input, CancellationToken ct = default)
+        {
+            //Validate 
+            await _validator.ValidateAndThrowAsync(input, ct);
 
-                // Tạo
-                await _accountRepo.AddAccount(entity, ct);
+            // Map sang entity
+            Account entity = input.ToEntity();
 
-                // Lưu
-                await _uow.SaveChangesAsync(ct);
+            // Tạo
+            await _accountRepo.AddAccount(entity, ct);
 
-                // (tuỳ bạn) nếu muốn có TenRole trong output, cần Include Role khi lấy lại,
-                // hoặc đơn giản trả luôn mà chấp nhận TenRole trống lần đầu.
-                // Ở đây lấy lại để có Role:
-                var created = await _accountRepo.GetAccount(entity.IDAccount, ct);
+            // Lưu
+            await _uow.SaveChangesAsync(ct);
 
-                return (created ?? entity).ToResult();
-            }
+            // (tuỳ bạn) nếu muốn có TenRole trong output, cần Include Role khi lấy lại,
+            // hoặc đơn giản trả luôn mà chấp nhận TenRole trống lần đầu.
+            // Ở đây lấy lại để có Role:
+            var created = await _accountRepo.GetAccount(entity.IDAccount, ct);
+
+            return (created ?? entity).ToResult();
+        }
     }
-    
 }

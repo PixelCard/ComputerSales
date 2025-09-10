@@ -20,7 +20,6 @@ namespace ComputerSales.Infrastructure.Persistence
 {
     public class AppDbContext : DbContext
     {
-
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Customer> Customers { get; set; }

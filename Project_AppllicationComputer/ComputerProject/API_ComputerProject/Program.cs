@@ -43,8 +43,6 @@ builder.Services.AddScoped<UpdateAccount_UC>();
 builder.Services.AddScoped<GetAccount_UC>();
 builder.Services.AddScoped<DeleteAccount_UC>();
 
-var app = builder.Build();
-
 /********************Product Over View**************************/
 builder.Services.AddScoped<CreateProductOverView_UC>();
 builder.Services.AddScoped<DeleteProductOverView_UC>();
