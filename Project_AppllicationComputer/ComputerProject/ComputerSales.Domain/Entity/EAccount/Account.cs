@@ -20,5 +20,15 @@ namespace ComputerSales.Domain.Entity
 
         //mỗi account chỉ có 1 role
         public Role Role { get; set; }   // hoặc virtual Role Role { get; set; }
+        // Factory method (nếu bạn muốn áp dụng pattern như Product.Create)
+        public static Account Create(string email, string pass, int idRole)
+        {
+            return new Account
+            {
+                Email = email,
+                Pass = pass,
+                IDRole = idRole
+            };
+        }
     }
 }
