@@ -26,5 +26,14 @@ namespace ComputerSales.Domain.Entity.EProduct
         public ICollection<VariantOptionValue> VariantOptionValues { get; set; }
         public ICollection<VariantPrice> VariantPrices { get; set; }
         public ICollection<VariantImage> VariantImages { get; set; }
+
+        public static ProductVariant create(long ProductId, string SKU, VariantStatus Status, int Quantity)
+            => new ProductVariant
+            {
+                ProductId = ProductId,
+                SKU = SKU,
+                Status = Status,
+                Quantity = Quantity
+            };
     }
 }
