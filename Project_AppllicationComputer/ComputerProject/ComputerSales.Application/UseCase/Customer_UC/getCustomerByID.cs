@@ -8,27 +8,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO;
-using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO.GetByIdDTO;
-using ComputerSales.Domain.Entity.E_Order;
+using ComputerSales.Domain.Entity.ECustomer;
+using ComputerSales.Application.UseCaseDTO.Customer_DTO;
+using ComputerSales.Application.UseCaseDTO.Customer_DTO.getCustomerByID;
 
-namespace ComputerSales.Application.UseCase.ProductProtection_UC
+namespace ComputerSales.Application.UseCase.Customer_UC
 {
-    public class GetByIdProductProtection_UC
+    public class getCustomerByID
     {
-        private IRespository<Order> _repo;
+        private IRespository<Customer> _repoCustomerGetID; //tạo biến repo bằng cách kế thừa phương thức IRespository
         private IUnitOfWorkApplication _unitOfWorkApplication;
 
-        public GetByIdProductProtection_UC(IRespository<Order> order,
+        public getCustomerByID(IRespository<Customer> productOverView,
             IUnitOfWorkApplication unitOfWorkApplication)
         {
-            _repo   = order;
+            _repoCustomerGetID = productOverView;
             _unitOfWorkApplication = unitOfWorkApplication;
         }
 
-        public async Task<ProductProtectionOutput?> HandleAsync(ProductProtectionGetByIDInput input, CancellationToken ct)
+        public async Task<CustomerOutputDTO?> HandleAsync(InputGetCustomerByID input, CancellationToken ct)
         {
-            var entity = await .GetByIdAsync(input.ProtectionProductId, ct);
+            var entity = await _repoCustomerGetID.GetByIdAsync(input.IDCustomer, ct);
 
             if (entity == null) return null;
 
