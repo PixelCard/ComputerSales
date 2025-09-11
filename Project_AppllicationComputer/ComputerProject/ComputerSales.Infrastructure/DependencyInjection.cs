@@ -22,6 +22,8 @@ using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.Validator.AccountValidator;
 using FluentValidation;
+using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
+using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
 
 namespace ComputerSales.Infrastructure
 {
@@ -39,6 +41,7 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IAccountRepository, AccountRespository>();
             services.AddScoped<IValidator<AccountDTOInput>, CreateAccountValidator>();
+            services.AddScoped<IProductOptionalTypeRespositorycs, ProdcutOptionalType_Respository>();
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
             return services;
         }
