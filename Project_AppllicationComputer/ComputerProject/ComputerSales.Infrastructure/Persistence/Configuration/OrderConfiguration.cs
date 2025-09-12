@@ -19,7 +19,7 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
             // Quan hệ với Customer (1-N)
             e.HasOne(o => o.Customer)
                 .WithMany(c => c.Orders)   // giả sử Customer có ICollection<Order> Orders
-                .HasForeignKey(o => o.CustomerID)
+                .HasForeignKey(o => o.IDCustomer)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
