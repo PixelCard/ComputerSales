@@ -2,9 +2,11 @@
 {
     public class RegisterViewModel
     {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string ConfirmPassword { get; set; } = string.Empty;
+        public string UserName { get; set; } = default!;
+        public string Email { get; set; } = default!;
+        public string PasswordHash { get; set; } = default!;
+        public string? Description_User { get; set; }
+        public DateTime? Date { get; set; }
         public int RoleId { get; set; } = 1;
     }
 }

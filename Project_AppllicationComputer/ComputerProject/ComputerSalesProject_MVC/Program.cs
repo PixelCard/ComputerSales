@@ -1,6 +1,9 @@
 using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCase.Account_UC;
+using ComputerSales.Application.UseCase.Customer_UC;
+using ComputerSales.Application.Validator.AccountValidator;
+using ComputerSales.Application.Validator.CustomerValidator;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSales.Infrastructure.Repositories.Account_Respo;
@@ -15,9 +18,16 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
+
+
 
 //------------------------Account-------------------------------
 builder.Services.AddScoped<CreateAccount_UC>();
+
+
+//------------------------Customer-------------------------------
+builder.Services.AddScoped<CreateCustomer_UC>();
 
 
 

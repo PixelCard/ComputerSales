@@ -18,7 +18,8 @@ namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
                 input.IMG,
                 input.Name,
                 input.Description,
-                input.Date
+                input.Date,
+                input.IDAccount
             );
         }
 
@@ -29,7 +30,8 @@ namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
                 e.IMG,
                 e.Name,
                 e.Description,
-                e.Date
+                e.Date,
+                e.IDAccount 
             );
         }
     }

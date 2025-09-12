@@ -1,14 +1,16 @@
 ﻿using ComputerSales.Domain.Entity.E_Order;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ComputerSales.Domain.Entity.ECustomer
 {
-    public class   Customer
+    public class Customer
     {
+        [Column("IDCustomer")]
         public int CustomerID { get; set; }
         public string? IMG { get; set; }
         public string Name { get; set; }
@@ -22,12 +24,12 @@ namespace ComputerSales.Domain.Entity.ECustomer
 
         //1 customer có N order : 1-N
         public ICollection<Order> Orders { get; set; } = new List<Order>();
-        public static Customer create(string? iMG, string name, string? description, DateTime date) => new Customer
-        { 
-            IMG = iMG,
-            Name = name,
-            Description = description,
-            Date = date
-        };
+        public static Customer create(string? img, string name, string? description, DateTime date, int idAccount)
+            => new Customer { 
+                IMG = img, 
+                Name = name, 
+                Description = description, 
+                Date = date, 
+                IDAccount = idAccount };
     }
 }

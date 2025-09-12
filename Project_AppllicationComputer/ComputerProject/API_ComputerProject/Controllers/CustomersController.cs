@@ -43,14 +43,5 @@ namespace API_ComputerProject.Controllers
             var result = await _getById.HandleAsync(new InputGetCustomerByID(id), ct);
             return result is null ? NotFound() : Ok(result);
         }
-
-        // DELETE: api/customers/5
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id, CancellationToken ct)
-        {
-            var dto = new CustomerOutputDTO(id, null, null, null, DateTime.MinValue);
-            var result = await _delete.HandleAsync(dto, ct);
-            return result is null ? NotFound() : NoContent();
-        }
     }
 }
