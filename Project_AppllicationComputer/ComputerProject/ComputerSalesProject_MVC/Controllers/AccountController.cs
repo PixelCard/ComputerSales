@@ -15,6 +15,12 @@ namespace ComputerSalesProject_MVC.Controllers
         }
 
         [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult Register()
         {
             return View(new RegisterViewModel());

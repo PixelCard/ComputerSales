@@ -15,6 +15,11 @@ namespace ComputerSales.Domain.Entity.ECustomer
         public string? Description { get; set; }
         public DateTime Date { get; set; } //ngày sinh
 
+
+        // FK duy nhất trỏ sang Account (ràng buộc 1-1)
+        public int IDAccount { get; set; }
+        public Account Account { get; set; } = default!;
+
         //1 customer có N order : 1-N
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public static Customer create(string? iMG, string name, string? description, DateTime date) => new Customer
