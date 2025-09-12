@@ -20,5 +20,10 @@ namespace ComputerSales.Domain.Entity.ECategory
 
         // 1 - N Products
         public ICollection<Product> Products { get; set; } = new List<Product>();
+
+        public static Accessories create(string Name) => new Accessories
+        {
+            Name = Name,
+        };
     }
 }

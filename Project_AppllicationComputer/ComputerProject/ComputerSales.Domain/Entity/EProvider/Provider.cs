@@ -14,5 +14,10 @@ namespace ComputerSales.Domain.Entity.EProvider
 
         // 1 - N Product
         public ICollection<Product> Products { get; set; } = new List<Product>();
+
+        public static Provider create(string ProviderName) => new Provider
+        {
+            ProviderName= ProviderName,
+        };       
     }
 }
