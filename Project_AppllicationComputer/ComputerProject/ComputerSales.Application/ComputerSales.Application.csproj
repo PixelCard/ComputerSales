@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Folder Include="UseCaseDTO\Product_DTO\" />
+    <Folder Include="UseCase\OrderDetails_UC\" />
     <Folder Include="UseCase\Product_UC\" />
   </ItemGroup>
 

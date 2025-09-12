@@ -9,10 +9,10 @@ namespace ComputerSales.Application.UseCaseDTO.OptionalType_DTO
 {
     public static class OptionalTypeMapping
     {
-        public static OptionalType ToEnity(this OptionalTypeInput input)
-            => OptionalType.create(input.Code, input.Name);   
+        public static OptionType ToEnity(this OptionalTypeInput input)
+            => OptionType.create(input.Code, input.Name);   
 
-        public static OptionalTypeOutput ToResult(this OptionalType input)
+        public static OptionalTypeOutput ToResult(this OptionType input)
             => new OptionalTypeOutput(input.Id,input.Code, input.Name);
     }
 }

@@ -12,11 +12,11 @@ namespace ComputerSales.Application.UseCase.OptionalType_UC
 {
     public class CreateOptionalType_UC
     {
-        private IRespository<OptionalType> respository;
+        private IRespository<OptionType> respository;
 
         private IUnitOfWorkApplication unitOfWorkApplication;
 
-        public CreateOptionalType_UC(IRespository<OptionalType> respository, 
+        public CreateOptionalType_UC(IRespository<OptionType> respository, 
             IUnitOfWorkApplication unitOfWorkApplication)
         {
             this.respository = respository;
@@ -25,7 +25,7 @@ namespace ComputerSales.Application.UseCase.OptionalType_UC
 
         public async Task<OptionalTypeOutput?> HandleAsync(OptionalTypeInput input,CancellationToken ct)
         {
-            OptionalType entity = input.ToEnity();
+            OptionType entity = input.ToEnity();
 
             await respository.AddAsync(entity,ct);
 

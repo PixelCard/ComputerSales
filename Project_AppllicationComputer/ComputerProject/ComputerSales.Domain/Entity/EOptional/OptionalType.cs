@@ -8,7 +8,7 @@ using ComputerSales.Domain.Entity.EProduct;
 namespace ComputerSales.Domain.Entity.EOptional
 {
     //Các các loại option cho các Optional Value cần thiết (-- 'model', 'edition')
-    public class OptionalType
+    public class OptionType
     {
         public int Id { get; set; }
         public string Code { get; set; }
@@ -22,7 +22,7 @@ namespace ComputerSales.Domain.Entity.EOptional
         public ICollection<OptionalValue>? OptionalValues { get; set; }
         public ICollection<ProductOptionType> ProductOptionTypes { get; set; }
 
-        public static OptionalType create(string code,string name) =>
-            new OptionalType { Code = code, Name = name };
+        public static OptionType create(string code,string name) =>
+            new OptionType { Code = code, Name = name };
     }
 }

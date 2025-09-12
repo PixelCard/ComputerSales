@@ -16,19 +16,19 @@ namespace ComputerSales.Application.UseCase.ProductProtection_UC
 {
     public class GetByIdProductProtection_UC
     {
-        private IRespository<Order> _repo;
+        private IRespository<ProductProtection> _repo;
         private IUnitOfWorkApplication _unitOfWorkApplication;
 
-        public GetByIdProductProtection_UC(IRespository<Order> order,
+        public GetByIdProductProtection_UC(IRespository<ProductProtection> productProtectionOverView,
             IUnitOfWorkApplication unitOfWorkApplication)
         {
-            _repo   = order;
+            _repo   = productProtectionOverView;
             _unitOfWorkApplication = unitOfWorkApplication;
         }
 
         public async Task<ProductProtectionOutput?> HandleAsync(ProductProtectionGetByIDInput input, CancellationToken ct)
         {
-            var entity = await .GetByIdAsync(input.ProtectionProductId, ct);
+            var entity = await _repo.GetByIdAsync(input.ProtectionProductId, ct);
 
             if (entity == null) return null;
 

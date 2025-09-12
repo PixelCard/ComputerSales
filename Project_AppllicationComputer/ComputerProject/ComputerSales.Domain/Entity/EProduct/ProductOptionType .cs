@@ -14,7 +14,7 @@ namespace ComputerSales.Domain.Entity.EProduct
         public int OptionTypeId { get; set; }
 
         public Product Product { get; set; } = null!;
-        public OptionalType OptionType { get; set; } = null!;
+        public OptionType OptionType { get; set; } = null!;
 
         public static ProductOptionType create(long ProductId, int OptionTypeId)
         {
