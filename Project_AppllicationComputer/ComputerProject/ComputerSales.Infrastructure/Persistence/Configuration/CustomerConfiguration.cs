@@ -15,7 +15,7 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
         public void Configure(EntityTypeBuilder<Customer> e)
         {
             e.ToTable("Customer");
-            e.HasKey(x => x.IDCustomer);
+            e.HasKey(x => x.CustomerID);
             e.Property(x => x.IMG).HasMaxLength(255);
             e.Property(x => x.Name).IsRequired().HasMaxLength(100);
             e.Property(x => x.Description).HasMaxLength(500);

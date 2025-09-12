@@ -10,8 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using ComputerSales.Infrastructure.Repositories.Role_Respo;
 using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.UseCase.Account_UC;
+using ComputerSales.Application.UseCase.Order_UC;
+using ComputerSales.Application.UseCase.Customer_UC;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 //DependencyInjection
 
@@ -57,6 +60,15 @@ builder.Services.AddScoped<GetByIdProductProtection_UC>();
 builder.Services.AddScoped<UpdateProductProtection_UC>();
 /*****************************************************/
 
+//============  Order   ================//
+builder.Services.AddScoped<CreateOrder_UC>();
+//==========================================
+
+//================= Account ==============//
+
+builder.Services.AddScoped<CreateCustomer_UC>();
+builder.Services.AddScoped<DeleteCustomer_UC>();
+builder.Services.AddScoped<getCustomerByID>(); // nếu có
 
 
 var app = builder.Build();

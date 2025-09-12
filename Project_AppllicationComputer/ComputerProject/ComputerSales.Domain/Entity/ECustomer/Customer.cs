@@ -9,7 +9,7 @@ namespace ComputerSales.Domain.Entity.ECustomer
 {
     public class   Customer
     {
-        public int IDCustomer { get; set; }
+        public int CustomerID { get; set; }
         public string? IMG { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }

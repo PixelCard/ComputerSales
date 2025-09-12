@@ -33,7 +33,7 @@ namespace ComputerSales.Infrastructure
         {
             services.AddDbContext<AppDbContext>(opt =>
             opt.UseSqlServer(
-               config.GetConnectionString("Toan"),
+               config.GetConnectionString("Quy"),
                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
             ));
             services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
@@ -42,6 +42,7 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IAccountRepository, AccountRespository>();
             services.AddScoped<IValidator<AccountDTOInput>, CreateAccountValidator>();
             services.AddScoped<IProductOptionalTypeRespositorycs, ProdcutOptionalType_Respository>();
+          
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
             return services;
         }

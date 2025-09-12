@@ -25,7 +25,7 @@ namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
         public static CustomerOutputDTO ToResult(this Customer e)
         {
             return new CustomerOutputDTO(
-                e.IDCustomer,
+                e.CustomerID,
                 e.IMG,
                 e.Name,
                 e.Description,
