@@ -1,11 +1,4 @@
 ﻿using API_ComputerProject.Extensions;
-using ComputerSales.Application.UseCase.Account_UC;
-using ComputerSales.Application.UseCase.Customer_UC;
-using ComputerSales.Application.UseCase.Order_UC;
-using ComputerSales.Application.UseCase.Product_UC;
-using ComputerSales.Application.UseCase.ProductOvetView_UC;
-using ComputerSales.Application.UseCase.ProductProtection_UC;
-using ComputerSales.Application.UseCase.Role_UC;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +19,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.ConfigureAutoMapper();
 
 builder.Services.AddApplicationUseCase();
+
 
 var app = builder.Build();
 // MiddleWare

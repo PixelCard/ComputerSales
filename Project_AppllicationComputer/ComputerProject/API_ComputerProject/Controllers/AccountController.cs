@@ -3,7 +3,9 @@ using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.DeleteAccount;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.GetAccountByID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.UpdateAccount;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API_ComputerProject.Controllers
 {
@@ -43,15 +45,16 @@ namespace API_ComputerProject.Controllers
 
         // GET: api/accounts/5
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int IDAccount, CancellationToken ct)
+        [ProducesResponseType(typeof(AccountOutputDTO),(int)HttpStatusCode.OK)]
+        public async Task<ActionResult<AccountOutputDTO>> GetById(int id, CancellationToken ct)
         {
-            var rs = await _get.HandleAsync(new getAccountByID(IDAccount), ct);
+            var rs = await _get.HandleAsync(new getAccountByID(id), ct);
             return rs is null ? NotFound() : Ok(rs);
         }
 
         // PUT: api/accounts/5
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int IDAccount, [FromBody] UpdateAccountDTO body, CancellationToken ct)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateAccountDTO body, CancellationToken ct)
         {
             if (body is null) return BadRequest();
             //if (IDAccount != body) return BadRequest("Mismatched id.");
@@ -62,6 +65,7 @@ namespace API_ComputerProject.Controllers
             var rs = await _update.HandleAsync(body, ct);
             return rs is null ? NotFound() : Ok(rs);
         }
+
 
         // DELETE: api/accounts/5?rowVersionBase64=xxxx
         [HttpDelete("{id:int}")]
