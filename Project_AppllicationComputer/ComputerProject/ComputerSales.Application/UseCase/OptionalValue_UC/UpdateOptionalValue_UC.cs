@@ -1,14 +1,8 @@
 ﻿using ComputerSales.Application.Interface.InterfaceRespository;
 using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Application.UseCaseDTO.OptionalValue_DTO.DeleteOptionalValue_DTO;
 using ComputerSales.Application.UseCaseDTO.OptionalValue_DTO;
-using ComputerSales.Domain.Entity.EOptional;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ComputerSales.Application.UseCaseDTO.OptionalValue_DTO.UpdateOptionalValue_DTO;
+using ComputerSales.Domain.Entity.EOptional;
 
 namespace ComputerSales.Application.UseCase.OptionalValue_UC
 {

@@ -1,10 +1,4 @@
 ﻿using ComputerSales.Domain.Entity;
-using ComputerSales.Domain.Entity.EAccount;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.Interface.Account_Interface
 {

@@ -1,13 +1,7 @@
 ﻿using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
 using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.GetByIdDTO;
-using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ComputerSales.Application.UseCaseDTO.ProductOptionalType_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
 
 namespace ComputerSales.Application.UseCase.ProductOptionalType_UC
 {

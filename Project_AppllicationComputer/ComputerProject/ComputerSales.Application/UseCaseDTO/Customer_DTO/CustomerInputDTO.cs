@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
+﻿namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
 {
-     public sealed record CustomerInputDTO(string? IMG,string Name, string? Description,DateTime Date, int IDAccount);
+    public sealed record CustomerInputDTO(string? IMG,string Name, string? Description,DateTime Date, int IDAccount);
 }

@@ -2,11 +2,6 @@
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
 using ComputerSales.Domain.Entity.EProduct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCase.ProductOvetView_UC
 {

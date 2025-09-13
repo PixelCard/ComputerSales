@@ -1,12 +1,4 @@
-﻿using ComputerSales.Domain.Entity.EProduct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ComputerSales.Domain.Entity.EAccount
+﻿namespace ComputerSales.Domain.Entity.EAccount
 {
     public class Role
     {

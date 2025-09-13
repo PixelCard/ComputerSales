@@ -1,15 +1,8 @@
 ﻿using ComputerSales.Application.Interface.InterfaceRespository;
 using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.DeleteDTO;
-using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
-using ComputerSales.Domain.Entity.EProduct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ComputerSales.Domain.Entity.ECustomer;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
+using ComputerSales.Domain.Entity.ECustomer;
 
 namespace ComputerSales.Application.UseCase.Customer_UC
 {

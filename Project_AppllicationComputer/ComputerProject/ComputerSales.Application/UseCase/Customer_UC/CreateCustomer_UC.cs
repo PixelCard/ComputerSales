@@ -4,13 +4,7 @@ using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using ComputerSales.Application.UseCaseDTO.OptionalType_DTO;
 using ComputerSales.Domain.Entity.ECustomer;
-using ComputerSales.Domain.Entity.EOptional;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCase.Customer_UC
 {

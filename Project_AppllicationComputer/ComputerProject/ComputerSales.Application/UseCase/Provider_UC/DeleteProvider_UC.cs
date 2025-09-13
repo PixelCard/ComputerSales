@@ -2,11 +2,6 @@
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.Provider_DTO;
 using ComputerSales.Domain.Entity.EProvider;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCase.Provider_UC
 {

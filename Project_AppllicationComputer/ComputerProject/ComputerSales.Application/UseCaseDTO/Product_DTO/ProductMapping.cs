@@ -1,11 +1,5 @@
 ﻿using ComputerSales.Application.UseCaseDTO.Product_DTO.UpdateProduct;
 using ComputerSales.Domain.Entity.EProduct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCaseDTO.Product_DTO
 {

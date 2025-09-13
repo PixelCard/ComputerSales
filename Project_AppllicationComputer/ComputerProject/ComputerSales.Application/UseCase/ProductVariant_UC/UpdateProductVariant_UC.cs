@@ -1,15 +1,9 @@
 ﻿using ComputerSales.Application.Interface.InterfaceRespository;
 using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO.UpdateDTO;
 using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO;
-using ComputerSales.Domain.Entity.EProduct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO.UpdateDTO;
 using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO.UpdateDTO;
+using ComputerSales.Domain.Entity.EProduct;
 
 namespace ComputerSales.Application.UseCase.ProductVariant_UC
 {

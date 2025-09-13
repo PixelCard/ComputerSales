@@ -1,11 +1,5 @@
 ﻿using ComputerSales.Application.UseCaseDTO.Customer_DTO;
-using ComputerSales.Domain.Entity.ECustomer;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.Validator.CustomerValidator
 {

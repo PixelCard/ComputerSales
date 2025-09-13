@@ -1,15 +1,9 @@
-﻿using ComputerSales.Application.UseCase.ProductOvetView_UC;
-using ComputerSales.Application.UseCase.ProductProtection_UC;
-using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.DeleteDTO;
-using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.GetByIdDTO;
-using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.UpdateDTO;
-using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO.DeleteDTO;
 using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO.GetByIdDTO;
 using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO.UpdateDTO;
-using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO.DeleteDTO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API_ComputerProject.Controllers
 {

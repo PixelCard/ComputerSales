@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ComputerSales.Domain.Entity.EProduct;
+﻿using ComputerSales.Domain.Entity.EProduct;
 
 namespace ComputerSales.Domain.Entity.EOptional
 {

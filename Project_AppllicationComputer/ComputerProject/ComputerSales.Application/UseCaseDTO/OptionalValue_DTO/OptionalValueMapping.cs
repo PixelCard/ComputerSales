@@ -1,10 +1,4 @@
-﻿using ComputerSales.Application.UseCaseDTO.OptionalType_DTO;
-using ComputerSales.Domain.Entity.EOptional;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ComputerSales.Domain.Entity.EOptional;
 
 namespace ComputerSales.Application.UseCaseDTO.OptionalValue_DTO
 {

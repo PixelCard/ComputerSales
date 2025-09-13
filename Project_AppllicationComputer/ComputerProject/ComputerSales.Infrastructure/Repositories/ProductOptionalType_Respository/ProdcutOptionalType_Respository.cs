@@ -2,11 +2,6 @@
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository
 {

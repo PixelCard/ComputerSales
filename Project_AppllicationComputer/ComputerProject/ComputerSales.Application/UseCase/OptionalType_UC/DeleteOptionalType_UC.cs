@@ -3,12 +3,6 @@ using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.OptionalType_DTO;
 using ComputerSales.Application.UseCaseDTO.OptionalType_DTO.DeleteOptionalType_DTO;
 using ComputerSales.Domain.Entity.EOptional;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCase.OptionalType_UC
 {
