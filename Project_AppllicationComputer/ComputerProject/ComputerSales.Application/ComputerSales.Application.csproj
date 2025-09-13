@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="UseCaseDTO\ProductNews_DTO\DeleteProductNews\" />
+    <Folder Include="UseCaseDTO\ProductNews_DTO\getProductNewByID\" />
+    <Folder Include="UseCaseDTO\ProductNews_DTO\UpdateProductNews\" />
     <Folder Include="UseCaseDTO\Product_DTO\" />
     <Folder Include="UseCase\OrderDetails_UC\" />
     <Folder Include="UseCase\Product_UC\" />
