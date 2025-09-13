@@ -36,7 +36,6 @@ namespace ComputerSales.Application.UseCase.Account_UC
             // Map sang entity
             Account entity = _mapper.Map<Account>(input);
                 
-                //input.ToEntity();
 
             // Tạo
             await _accountRepo.AddAccount(entity, ct);

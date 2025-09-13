@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using FluentValidation;
+using System;
 
 namespace ComputerSales.Application.Validator.CustomerValidator
 {

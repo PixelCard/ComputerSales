@@ -1,4 +1,6 @@
-﻿namespace ComputerSales.Application.UseCaseDTO.Account_DTO
+﻿using System.Runtime.CompilerServices;
+
+namespace ComputerSales.Application.UseCaseDTO.Account_DTO
 {
     public sealed record AccountOutputDTO(int IDAccount, string Email, int IDRole, string TenRole);
 
