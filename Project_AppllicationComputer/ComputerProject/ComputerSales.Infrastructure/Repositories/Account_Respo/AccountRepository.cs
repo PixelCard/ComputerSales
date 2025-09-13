@@ -1,7 +1,6 @@
 ﻿// ComputerSales.Infrastructure/Repositories/Account_Respo/AccountRepository.cs
 using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Domain.Entity;
-using ComputerSales.Domain.Entity.EAccount;           // <-- đúng namespace
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 namespace ComputerSales.Infrastructure.Repositories.Account_Respo

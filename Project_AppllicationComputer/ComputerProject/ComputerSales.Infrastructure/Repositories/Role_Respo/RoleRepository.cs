@@ -2,9 +2,6 @@
 using ComputerSales.Domain.Entity.EAccount;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 
 namespace ComputerSales.Infrastructure.Repositories.Role_Respo

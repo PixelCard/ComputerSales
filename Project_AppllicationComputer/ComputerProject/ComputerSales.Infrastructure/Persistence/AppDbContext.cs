@@ -1,20 +1,13 @@
-﻿using ComputerSales.Domain.Entity.ECategory;
-using ComputerSales.Domain.Entity.EOptional;
-using ComputerSales.Domain.Entity.EProduct;
-using ComputerSales.Domain.Entity.EProvider;
-using ComputerSales.Domain.Entity.EVariant;
 ﻿using ComputerSales.Domain.Entity;
 using ComputerSales.Domain.Entity.E_Order;
 using ComputerSales.Domain.Entity.EAccount;
 using ComputerSales.Domain.Entity.ECart;
 using ComputerSales.Domain.Entity.ECustomer;
+using ComputerSales.Domain.Entity.EOptional;
+using ComputerSales.Domain.Entity.EProduct;
+using ComputerSales.Domain.Entity.EProvider;
+using ComputerSales.Domain.Entity.EVariant;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Infrastructure.Persistence
 {

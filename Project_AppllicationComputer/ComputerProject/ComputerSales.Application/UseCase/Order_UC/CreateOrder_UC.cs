@@ -2,8 +2,6 @@
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.Order_DTO;
 using ComputerSales.Domain.Entity.E_Order;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCase.Order_UC
 {

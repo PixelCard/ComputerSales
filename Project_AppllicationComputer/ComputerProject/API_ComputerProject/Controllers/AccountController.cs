@@ -1,11 +1,9 @@
 ﻿using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.DeleteAccount;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading;
-using System.Threading.Tasks;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.GetAccountByID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.UpdateAccount;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API_ComputerProject.Controllers
 {

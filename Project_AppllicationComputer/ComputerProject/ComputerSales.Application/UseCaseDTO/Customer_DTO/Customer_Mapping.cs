@@ -1,12 +1,4 @@
-﻿using ComputerSales.Application.UseCaseDTO.Account_DTO.UpdateAccount;
-using ComputerSales.Application.UseCaseDTO.Account_DTO;
-using ComputerSales.Domain.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ComputerSales.Domain.Entity.ECustomer;
+﻿using ComputerSales.Domain.Entity.ECustomer;
 
 namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
 {

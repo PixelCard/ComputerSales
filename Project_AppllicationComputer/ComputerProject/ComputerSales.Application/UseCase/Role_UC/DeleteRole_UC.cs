@@ -1,9 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.Role_DTO.DeleteRole;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCase.Role_UC
 {

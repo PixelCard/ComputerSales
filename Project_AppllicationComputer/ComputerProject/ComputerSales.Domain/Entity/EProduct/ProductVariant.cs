@@ -1,10 +1,4 @@
-﻿using ComputerSales.Domain.Entity.EOptional;
-using ComputerSales.Domain.Entity.EVariant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ComputerSales.Domain.Entity.EVariant;
 
 namespace ComputerSales.Domain.Entity.EProduct
 {

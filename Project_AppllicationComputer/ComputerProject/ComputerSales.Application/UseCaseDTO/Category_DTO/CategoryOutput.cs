@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ComputerSales.Application.UseCaseDTO.Category_DTO
+﻿namespace ComputerSales.Application.UseCaseDTO.Category_DTO
 {
     public sealed record CategoryOutput(long id,string name);
 }

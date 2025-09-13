@@ -1,13 +1,5 @@
-﻿using ComputerSales.Application.UseCaseDTO.Product_DTO;
-using ComputerSales.Application.UseCaseDTO.Product_DTO.UpdateProduct;
-using ComputerSales.Application.UseCaseDTO.Role_DTO.UpdateRole;
+﻿using ComputerSales.Application.UseCaseDTO.Role_DTO.UpdateRole;
 using ComputerSales.Domain.Entity.EAccount;
-using ComputerSales.Domain.Entity.EProduct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace ComputerSales.Application.UseCaseDTO.Role_DTO

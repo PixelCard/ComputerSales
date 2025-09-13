@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ComputerSales.Application.UseCaseDTO.OptionalType_DTO
+﻿namespace ComputerSales.Application.UseCaseDTO.OptionalType_DTO
 {
     public sealed record OptionalTypeOutput(         
         int Id, 

@@ -1,10 +1,8 @@
-﻿using ComputerSales.Application.UseCase.Product_UC;
-using ComputerSales.Application.UseCase.Role_UC;
+﻿using ComputerSales.Application.UseCase.Role_UC;
 using ComputerSales.Application.UseCaseDTO.Role_DTO;
 using ComputerSales.Application.UseCaseDTO.Role_DTO.DeleteRole;
 using ComputerSales.Application.UseCaseDTO.Role_DTO.GetRoleByID;
 using ComputerSales.Application.UseCaseDTO.Role_DTO.UpdateRole;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_ComputerProject.Controllers

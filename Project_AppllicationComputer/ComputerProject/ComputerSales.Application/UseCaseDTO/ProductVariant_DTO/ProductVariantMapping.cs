@@ -1,10 +1,4 @@
-﻿using ComputerSales.Application.UseCaseDTO.ProductProtection_DTO;
-using ComputerSales.Domain.Entity.EProduct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ComputerSales.Domain.Entity.EProduct;
 
 namespace ComputerSales.Application.UseCaseDTO.ProductVariant_DTO
 {

@@ -1,11 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Product_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.Product_DTO.DeleteProduct;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCase.Product_UC
 {

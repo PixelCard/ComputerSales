@@ -2,7 +2,6 @@
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.Role_DTO;
 using ComputerSales.Domain.Entity.EAccount; // Role entity
-using System.Threading;
 
 namespace ComputerSales.Application.UseCase.Role_UC
 {

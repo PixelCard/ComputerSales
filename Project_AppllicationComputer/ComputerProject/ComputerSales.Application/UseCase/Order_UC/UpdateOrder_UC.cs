@@ -1,10 +1,8 @@
-﻿using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using ComputerSales.Application.Interface.InterfaceRespository;
+﻿using ComputerSales.Application.Interface.InterfaceRespository;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.Order_DTO;          // OrderInputDTO, OrderOutputDTO, ToResult()
 using ComputerSales.Domain.Entity.E_Order;
+using System.Reflection;
 
 namespace ComputerSales.Application.UseCase.Order_UC
 {

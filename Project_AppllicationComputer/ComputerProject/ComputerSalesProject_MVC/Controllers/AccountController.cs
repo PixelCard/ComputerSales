@@ -1,12 +1,10 @@
-﻿using ComputerSales.Application.UseCase.Account_UC;
+﻿using ComputerSales.Application.Interface.UnitOfWork;
+using ComputerSales.Application.UseCase.Account_UC;
+using ComputerSales.Application.UseCase.Customer_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
-using ComputerSales.Domain.Entity.ECustomer;
-using ComputerSales.Domain.Entity;
+using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
-using ComputerSales.Application.UseCase.Customer_UC;
-using ComputerSales.Application.UseCaseDTO.Customer_DTO;
-using ComputerSales.Application.Interface.UnitOfWork;
 namespace ComputerSalesProject_MVC.Controllers
 {
     public class AccountController : Controller
@@ -17,7 +15,8 @@ namespace ComputerSalesProject_MVC.Controllers
 
         private readonly IUnitOfWorkApplication _uow;
 
-        public AccountController(CreateAccount_UC createAccount, 
+        public AccountController(
+            CreateAccount_UC createAccount, 
             CreateCustomer_UC _createCustomer_UC,
             IUnitOfWorkApplication unitOfWorkApplication)
         {
@@ -56,8 +55,6 @@ namespace ComputerSalesProject_MVC.Controllers
                 // 1) Tạo ACCOUNT -> lấy IDAccount
                 var accountOut = await _createAccount.HandleAsync(accountInput, ct);
 
-                // accountOut.IDAccount là identity mới sinh
-
                 // 2) Tạo CUSTOMER gắn với IDAccount vừa có
                 var customerInput = new CustomerInputDTO(
                     IMG: null,                                  
@@ -71,7 +68,7 @@ namespace ComputerSalesProject_MVC.Controllers
 
                 await _uow.CommitAsync(ct);
 
-                return RedirectToAction("LoginPage", "Account");
+                return RedirectToAction("Login", "Account");
             }
             catch (Exception ex)
             {

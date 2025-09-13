@@ -3,7 +3,6 @@ using ComputerSales.Application.UseCaseDTO.Product_DTO;
 using ComputerSales.Application.UseCaseDTO.Product_DTO.DeleteProduct;
 using ComputerSales.Application.UseCaseDTO.Product_DTO.GetByID;
 using ComputerSales.Application.UseCaseDTO.Product_DTO.UpdateProduct;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_ComputerProject.Controllers

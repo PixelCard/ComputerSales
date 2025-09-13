@@ -1,15 +1,8 @@
-﻿using ComputerSales.Application.Interface.Role_Interface;
+﻿using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Application.UseCaseDTO.Role_DTO.UpdateRole;
-using ComputerSales.Application.UseCaseDTO.Role_DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.UpdateAccount;
+using ComputerSales.Application.UseCaseDTO.Role_DTO;
 
 namespace ComputerSales.Application.UseCase.Account_UC
 {
