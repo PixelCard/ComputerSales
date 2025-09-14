@@ -1,0 +1,12 @@
+Toàn:
+
+Account,
+Order,
+Cart,
+Checkout + Payment
+
+Qúy:
+
+Product Details
+Home (Tìm kiếm...)
+Category + Provider (Filter)
