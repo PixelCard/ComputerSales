@@ -16,8 +16,8 @@ namespace ComputerSales.Application.UseCase.Account_UC
         private readonly IMapper _mapper;
 
 
-        public CreateAccount_UC(IAccountRepository accountRepo, 
-            IUnitOfWorkApplication uow, 
+        public CreateAccount_UC(IAccountRepository accountRepo,
+            IUnitOfWorkApplication uow,
             IValidator<AccountDTOInput> validator,
             IMapper mapper
             )
@@ -35,7 +35,8 @@ namespace ComputerSales.Application.UseCase.Account_UC
 
             // Map sang entity
             Account entity = _mapper.Map<Account>(input);
-                
+
+            //input.ToEntity();
 
             // Tạo
             await _accountRepo.AddAccount(entity, ct);

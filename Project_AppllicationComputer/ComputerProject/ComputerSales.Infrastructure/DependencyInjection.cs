@@ -67,7 +67,7 @@ namespace ComputerSales.Infrastructure
            services.AddScoped<DeleteRole_UC>();
 
             //==============    Accounts    ===============//
-           services.AddScoped<CreateAccount_UC>();
+           //services.AddScoped<CreateAccount_UC>();
            services.AddScoped<UpdateAccount_UC>();
            services.AddScoped<GetAccount_UC>();
             services.AddScoped<GetAccountByEmail_UC>();

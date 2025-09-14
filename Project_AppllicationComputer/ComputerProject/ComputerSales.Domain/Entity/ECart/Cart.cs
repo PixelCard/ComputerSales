@@ -17,5 +17,26 @@
 
         //1-N
         public ICollection<CartItem> Items { get; set; } = new List<CartItem>();
+        public static Cart Create(int userId, decimal subtotal, decimal discountTotal, decimal shippingFee, int status = 0)
+        {
+            return new Cart
+            {
+                UserID = userId,
+                Status = status,
+                Subtotal = subtotal,
+                DiscountTotal = discountTotal,
+                ShippingFee = shippingFee,
+                GrandTotal = (subtotal - discountTotal) + shippingFee,
+                CreatedAt = DateTime.UtcNow,
+                UpdateAt = DateTime.UtcNow
+            };
+        }
+
+        // Logic tính lại grand total
+        public void RecalculateTotals()
+        {
+            GrandTotal = (Subtotal - DiscountTotal) + ShippingFee;
+            UpdateAt = DateTime.UtcNow;
+        }
     }
 }
