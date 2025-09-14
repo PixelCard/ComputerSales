@@ -70,6 +70,7 @@ namespace ComputerSales.Infrastructure
            services.AddScoped<CreateAccount_UC>();
            services.AddScoped<UpdateAccount_UC>();
            services.AddScoped<GetAccount_UC>();
+            services.AddScoped<GetAccountByEmail_UC>();
            services.AddScoped<DeleteAccount_UC>();
 
             /********************Product Over View**************************/

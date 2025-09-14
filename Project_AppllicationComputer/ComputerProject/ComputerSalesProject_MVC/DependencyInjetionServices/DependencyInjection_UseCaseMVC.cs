@@ -9,6 +9,7 @@ namespace ComputerSalesProject_MVC.DependencyInjetionServices
         {
             //------------------------Account-------------------------------
             services.AddScoped<CreateAccount_UC>();
+            services.AddScoped<GetAccountByEmail_UC>();
 
 
             //------------------------Customer-------------------------------

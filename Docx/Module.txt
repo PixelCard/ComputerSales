@@ -4,10 +4,16 @@
 		---SDT/Email
 		---API(GOOGLE,FB)
 	-Đăng ký 
-	
+		--Mã hóa Pass Key (SHA-256)
+
+
 	-Forget Password
 		--API email google send Code (OPTIONAL)
-		--API SMS send code (OPTIONAL)
+		--SMS send code (OTP) 
+
+
+	-Active Account
+		--Token Email Verify and Link To Verify Account
 		
 2.Product (Computer)
 	--Combo (Optional) 
