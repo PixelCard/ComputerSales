@@ -1,16 +1,16 @@
-﻿
+﻿using ComputerSales.Application.Common.Mapping;
 
-//namespace API_ComputerProject.Extensions
-//{
-//    public static class ServiceExtensions
-//    {
-//        public static IServiceCollection ConfigureAutoMapper(this IServiceCollection services)
-//        {
+namespace API_ComputerProject.Extensions
+{
+    public static class ServiceExtensions
+    {
+        public static IServiceCollection ConfigureAutoMapper(this IServiceCollection services)
+        {
 
-//            services.AddAuto(typeof(MappingProfile));
+            services.AddAutoMapper(typeof(MappingProfile));
 
-//            return services;
-//        }
+            return services;
+        }
 
-//    }
-//}
+    }
+}

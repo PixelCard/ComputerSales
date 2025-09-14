@@ -26,8 +26,6 @@ namespace ComputerSales.Application.Common.Mapping
 
 
             CreateMap<Customer,CustomerOutputDTO>();
-            CreateMap<ProductNewsInputDTO, ProductNews>();
-
         }
     }
 }
