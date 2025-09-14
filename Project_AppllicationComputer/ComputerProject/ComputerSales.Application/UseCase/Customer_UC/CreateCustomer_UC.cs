@@ -34,15 +34,13 @@ namespace ComputerSales.Application.UseCase.Customer_UC
         {
             await _validator.ValidateAndThrowAsync(input, ct);
 
-            Customer entity = mapper.Map<Customer>(input); 
+            Customer entity = input.ToEntity(); 
 
             await respository.AddAsync(entity, ct);
 
             await unitOfWorkApplication.SaveChangesAsync(ct);
 
-            var result = mapper.Map<CustomerOutputDTO>(entity);
-
-            return result;
+            return entity.ToResult();
         }
     }
 }

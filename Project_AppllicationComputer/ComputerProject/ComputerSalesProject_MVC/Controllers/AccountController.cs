@@ -3,9 +3,7 @@ using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCase.Customer_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.GetAccountByEmail;
-using ComputerSales.Application.UseCaseDTO.Account_DTO.GetAccountByID;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
-using ComputerSales.Domain.Entity;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 namespace ComputerSalesProject_MVC.Controllers
