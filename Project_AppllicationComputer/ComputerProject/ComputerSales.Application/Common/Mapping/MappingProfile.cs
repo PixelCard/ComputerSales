@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductNews_DTO;
 using ComputerSales.Domain.Entity;
+using ComputerSales.Domain.Entity.ENews;
 
 namespace ComputerSales.Application.Common.Mapping
 {
@@ -8,9 +10,9 @@ namespace ComputerSales.Application.Common.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Account, AccountOutputDTO2>();
             CreateMap<AccountDTOInput, Account>();
-            
+            CreateMap<ProductNewsInputDTO, ProductNews>();
+
         }
     }
 }

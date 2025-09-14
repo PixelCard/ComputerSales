@@ -1,5 +1,4 @@
-﻿using API_ComputerProject.Extensions;
-using ComputerSales.Infrastructure;
+﻿using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,9 +15,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
+////builder.Services.ConfigureAutoMapper();
+///
 builder.Services.ConfigureAutoMapper();
 
 builder.Services.AddApplicationUseCase();
+
+
+////builder.Services.AddApplicationUseCase();
 
 
 var app = builder.Build();

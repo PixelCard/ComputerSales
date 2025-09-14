@@ -11,17 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UseCaseDTO\ProductNews_DTO\DeleteProductNews\" />
-    <Folder Include="UseCaseDTO\ProductNews_DTO\getProductNewByID\" />
-    <Folder Include="UseCaseDTO\ProductNews_DTO\UpdateProductNews\" />
     <Folder Include="UseCaseDTO\Product_DTO\" />
-    <Folder Include="UseCase\OrderDetails_UC\" />
     <Folder Include="UseCase\Product_UC\" />
   </ItemGroup>
 
   <ItemGroup>
-    
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
   </ItemGroup>
 
