@@ -22,6 +22,8 @@ using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
 using ComputerSales.Infrastructure.Repositories.Respository_ImplementationInterface;
 using ComputerSales.Infrastructure.Repositories.Role_Respo;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
+using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
+using ComputerSales.Infrastructure.Sercurity.JWT.Respository;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +50,10 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IProductOptionalTypeRespositorycs, ProdcutOptionalType_Respository>();
           
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
+
+            // JWT generator
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
             return services;
         }
 

@@ -48,5 +48,8 @@ namespace ComputerSales.Infrastructure.Repositories.Role_Respo
                       .AsNoTracking()
                       .FirstOrDefaultAsync(r => r.IDRole == IDRole, ct);
         }
+
+        public Task<Role?> GetByNameAsync(string name, CancellationToken ct = default)
+            => _db.Roles.FirstOrDefaultAsync(r => r.TenRole.ToLower() == name.ToLower(), ct);
     }
 }

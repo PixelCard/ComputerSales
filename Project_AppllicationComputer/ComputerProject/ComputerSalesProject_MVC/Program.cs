@@ -3,6 +3,7 @@ using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCase.Customer_UC;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
+using ComputerSales.Infrastructure.Sercurity.JWT.Extensions;
 using ComputerSalesProject_MVC.DependencyInjetionServices;
 using ComputerSalesProject_MVC.Extensions;
 
@@ -10,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Dependency Injection
 builder.Services.AddControllersWithViews();
+
+
+builder.Services.AddJwtAuth(builder.Configuration, requireHttps: false);
 
 
 builder.Services.AddInfrastructure(builder.Configuration);
