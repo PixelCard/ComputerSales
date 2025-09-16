@@ -20,6 +20,7 @@ builder.Services.AddJwtAuth(builder.Configuration, requireHttps: false);
 
 // gọi Infrastructure + ApplicationUseCase
 builder.Services.AddInfrastructure(builder.Configuration);
+
 builder.Services.AddApplicationUseCase();
 
 // UnitOfWork
@@ -31,14 +32,13 @@ builder.Services.ConfigureAutoMapper();
 // Add UseCase for MVC
 builder.Services.AddUseCaseMVC();
 
-// ====================================================
-// Build app
-// ====================================================
-var app = builder.Build();
+
 
 // ====================================================
 // Middleware pipeline
 // ====================================================
+var app = builder.Build();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -49,14 +49,14 @@ app.UseAuthorization();
 
 app.UseRouting();
 
-// map route cho Areas
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{area:exists}/{controller=Product}/{action=Index}/{id?}");
-
-// map route mặc định (không có area)
+//// map route cho Areas
 //app.MapControllerRoute(
 //    name: "default",
-//    pattern: "{controller=Home}/{action=Index}/{id?}");
+//    pattern: "{area:exists}/{controller=Product}/{action=Index}/{id?}");
+
+// map route mặc định (không có area)
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
