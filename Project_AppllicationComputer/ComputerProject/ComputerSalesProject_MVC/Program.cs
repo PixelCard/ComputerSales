@@ -4,6 +4,7 @@ using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Infrastructure.Sercurity.JWT.Extensions;
 using ComputerSalesProject_MVC.DependencyInjetionServices;
 using ComputerSalesProject_MVC.Extensions;
+using ComputerSalesProject_MVC.MiddleWareCustome;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,10 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 
+app.UseMiddleware<AutoRefreshAccessMiddleware>();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.UseRouting();

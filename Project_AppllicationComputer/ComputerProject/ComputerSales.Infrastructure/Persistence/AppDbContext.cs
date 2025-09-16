@@ -6,6 +6,7 @@ using ComputerSales.Domain.Entity.ECustomer;
 using ComputerSales.Domain.Entity.EOptional;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EProvider;
+using ComputerSales.Domain.Entity.ERefreshToken;
 using ComputerSales.Domain.Entity.EVariant;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ namespace ComputerSales.Infrastructure.Persistence
     public class AppDbContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Role> Roles { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Product> Products { get; set; }

@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
+using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
 using ComputerSales.Application.Interface.InterfaceRespository;
 using ComputerSales.Application.Interface.Product_Interface;
 using ComputerSales.Application.Interface.Role_Interface;
@@ -19,9 +20,11 @@ using ComputerSales.Infrastructure.Persistence;
 using ComputerSales.Infrastructure.Repositories.Account_Respo;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
+using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
 using ComputerSales.Infrastructure.Repositories.Respository_ImplementationInterface;
 using ComputerSales.Infrastructure.Repositories.Role_Respo;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
+using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
 using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
 using ComputerSales.Infrastructure.Sercurity.JWT.Respository;
 using FluentValidation;
@@ -48,7 +51,8 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IValidator<AccountDTOInput>, CreateAccountValidator>();
             services.AddScoped<IValidator<CustomerInputDTO>, CreateCustomerValidator>();
             services.AddScoped<IProductOptionalTypeRespositorycs, ProdcutOptionalType_Respository>();
-          
+            services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
+            services.Configure<JwtOptions>(config.GetSection("Jwt"));
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
 
             // JWT generator

@@ -52,6 +52,19 @@ namespace ComputerSales.Infrastructure.Sercurity.JWT.Extensions
                         ClockSkew = TimeSpan.Zero          // bỏ lệch mặc định 5 phút
                     };
 
+                    o.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = ctx =>
+                        {
+                            if (string.IsNullOrEmpty(ctx.Token) &&
+                                ctx.Request.Cookies.TryGetValue("access_token", out var t))
+                            {
+                                ctx.Token = t; // Lấy token từ cookie khi không có Authorization header
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
+
                     // cho phép caller bổ sung cấu hình handler (events, map inbound claims…)
                     extra?.Invoke(o);
                 });
