@@ -26,4 +26,8 @@
     <ProjectReference Include="..\ComputerSales.Infrastructure\ComputerSales.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Models\" />
+  </ItemGroup>
+
 </Project>
