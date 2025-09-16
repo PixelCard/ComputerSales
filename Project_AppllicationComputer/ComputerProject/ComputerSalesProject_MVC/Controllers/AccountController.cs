@@ -1,112 +1,150 @@
-﻿using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Application.UseCase.Account_UC;
-using ComputerSales.Application.UseCase.Customer_UC;
-using ComputerSales.Application.UseCaseDTO.Account_DTO;
-using ComputerSales.Application.UseCaseDTO.Account_DTO.GetAccountByEmail;
-using ComputerSales.Application.UseCaseDTO.Customer_DTO;
+﻿using ComputerSales.Application.Interface.Account_Interface;
+using ComputerSales.Application.Interface.Role_Interface;
+using ComputerSales.Application.Interface.UnitOfWork;
+using ComputerSales.Domain.Entity;
+using ComputerSales.Domain.Entity.ECustomer;
+using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
 using ComputerSalesProject_MVC.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 namespace ComputerSalesProject_MVC.Controllers
 {
+    [Route("[controller]")]
     public class AccountController : Controller
     {
-        private readonly CreateAccount_UC _createAccount;
-
-        private readonly CreateCustomer_UC createCustomer_UC;
-
-        private readonly GetAccountByEmail_UC _getAccount;
-
+        //---------------------------------------Attribute--------------------------------------------------
+        private readonly IJwtTokenGenerator _jwt;
+        private readonly IAccountRepository _accountService;
+        private readonly IRoleRepository _roleService;
         private readonly IUnitOfWorkApplication _uow;
 
+        //---------------------------------------Constructor--------------------------------------------------
         public AccountController(
-            CreateAccount_UC createAccount, 
-            CreateCustomer_UC _createCustomer_UC,
-            GetAccountByEmail_UC getAccount,
-            IUnitOfWorkApplication unitOfWorkApplication)
+            IJwtTokenGenerator jwt, 
+            IAccountRepository accountService, 
+            IRoleRepository roleService, 
+            IUnitOfWorkApplication uow)
         {
-            _createAccount = createAccount;
-            createCustomer_UC = _createCustomer_UC;
-            _getAccount = getAccount;
-            _uow = unitOfWorkApplication;
+            _jwt = jwt;
+            _accountService = accountService;
+            _roleService = roleService;
+            _uow = uow;
         }
 
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        //---------------------------------------Get--------------------------------------------------
+        [HttpGet("Login")]
+        [AllowAnonymous]
+        public IActionResult Login() => View();
 
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View(new RegisterViewModel());
-        }
+        [AllowAnonymous]
+        [HttpGet("Register")]
+        public IActionResult Register() => View(); 
 
-        [HttpPost]
+
+        //---------------------------------------Post--------------------------------------------------
+        [HttpPost("Login")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel vm, CancellationToken ct)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel vm, CancellationToken ct)
         {
-            // Map VM -> DTO Account
-            var accountInput = new AccountDTOInput(
-                Email: vm.Email,
-                Pass: vm.PasswordHash,      
-                IDRole: 1      
-            );
+            var acc = await _accountService.GetAccountByEmail(vm.email, ct);
+
+            //var hash = BCrypt.Net.BCrypt.HashPassword(vm.pass); 
+            
+            //Không nên hash pass rồi so sánh vs pass ma lấy ra từ account 
+
+            //Bởi vì nó sẽ làm ra các trường id khác nhau làm cho dù nó có cùng mã hash nhưng khác salt(id  hash) khác nên sẽ khác
+
+            if (acc == null || !BCrypt.Net.BCrypt.Verify(vm.pass, acc.Pass))
+            {
+                ModelState.AddModelError("", "Sai tài khoản/mật khẩu");
+                return View(vm);
+            }
+
+            if (acc.Role == null) acc.Role = await _roleService.GetRole(acc.IDRole, ct);
+
+            var token = _jwt.Generate(acc);
+
+            // Lưu JWT vào cookie (HTTP-only)
+            Response.Cookies.Append("access_token", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
+
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        [ValidateAntiForgeryToken]
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromForm] RegisterViewModel req, CancellationToken ct)
+        {
+            // 1) Validate cơ bản
+            var email = (req.Email ?? "").Trim().ToLowerInvariant();
+            
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(req.Password))
+                return BadRequest(new { message = "Email và mật khẩu là bắt buộc." });
+
+            // 2) Check trùng email
+            var existed = await _accountService.GetAccountByEmail(email, ct); 
+
+            if (existed != null)
+                return Conflict(new { message = "Email đã tồn tại." });
+
+            // 3) Xác định RoleId
+            var roleId = req.RoleId ?? 1;
+
+            if (!ModelState.IsValid) return View(req);
+
+            // 4) Hash mật khẩu 
+            var hash = BCrypt.Net.BCrypt.HashPassword(req.Password); // luôn hash ở server
+
+
+            // 4.1) Tạo Account + gán Customer (1-1)
+            var acc = Account.Create(email, hash, roleId);
+
+            // Nếu bạn đã có entity Customer, map các field tương ứng ở đây:
+            acc.Customer = new Customer
+            {
+                Name = req.UserName,                  
+                Description = req.Description_User,       
+                Date = req.Date.Value
+            };
 
             await _uow.BeginTransactionAsync(ct);
 
             try
             {
-                // 1) Tạo ACCOUNT -> lấy IDAccount
-                var accountOut = await _createAccount.HandleAsync(accountInput, ct);
 
-                // 2) Tạo CUSTOMER gắn với IDAccount vừa có
-                var customerInput = new CustomerInputDTO(
-                    IMG: null,                                  
-                    Name: vm.UserName,
-                    Description: vm.Description_User,
-                    Date: vm.Date ?? DateTime.Today,
-                    IDAccount: accountOut.IDAccount             
-                );
+                // 5) Lưu DB
+                await _accountService.AddAccount(acc, ct);
+                await _uow.SaveChangesAsync(ct);
 
-                await createCustomer_UC.HandleAsync(customerInput, ct);
+                // 6) Nạp Role để nhúng claim (nếu navigation chưa được load)
+                acc.Role = acc.Role ?? await _roleService.GetRole(acc.IDRole, ct);
+
+                // 7) Sinh JWT
+                var token = _jwt.Generate(acc);
 
                 await _uow.CommitAsync(ct);
 
+                // 8) Trả về Trang home
                 return RedirectToAction("Login", "Account");
+
             }
             catch (Exception ex)
             {
                 await _uow.RollbackAsync(ct);
-
-                ViewBag.Error = "Đăng ký thất bại: " + ex.Message;
-
-                return View(vm);
-            }
-        }
-
-
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel vm,CancellationToken ct)
-        {
-            var inputDTO = new getAccountByEmailInput(vm.Email);
-
-
-            var accounts = _getAccount.HandleAsync(inputDTO, ct);
-
-            try
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            catch(Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                return View(vm);
+                throw;
             }
         }
     }
 }
+
 
 
 

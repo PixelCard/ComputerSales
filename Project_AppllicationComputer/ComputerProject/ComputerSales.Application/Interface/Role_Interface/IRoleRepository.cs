@@ -11,5 +11,7 @@ namespace ComputerSales.Application.Interface.Role_Interface
         Task DeleteRoleAsync(int roleId, byte[]? rowVersion, CancellationToken ct = default);
 
         Task<Role?> GetRole(int roleId, CancellationToken ct);
+
+        Task<Role?> GetByNameAsync(string name, CancellationToken ct = default);
     }
 }

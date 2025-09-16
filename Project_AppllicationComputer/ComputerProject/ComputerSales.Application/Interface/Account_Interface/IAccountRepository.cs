@@ -10,6 +10,8 @@ namespace ComputerSales.Application.Interface.Account_Interface
 
         Task DeleteAccountAsync(int IDAccount, CancellationToken ct = default);
 
+        Task<bool> ExistsByEmailAsync(string Email, CancellationToken ct = default);
+
         // Cho phép null vì có thể không tìm thấy
         Task<Account?> GetAccount(int IDAccount, CancellationToken ct); // lấy theo ID
         Task<Account?> GetAccountByRole(int IDRole, CancellationToken ct = default);
