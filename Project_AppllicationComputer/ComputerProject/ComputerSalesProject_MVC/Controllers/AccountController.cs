@@ -17,7 +17,6 @@ namespace ComputerSalesProject_MVC.Controllers
         private readonly IJwtTokenGenerator _jwt;
         private readonly IAccountRepository _accountService;
         private readonly IRoleRepository _roleService;
-
         private readonly IUnitOfWorkApplication _uow;
 
         //---------------------------------------Constructor--------------------------------------------------
@@ -34,7 +33,7 @@ namespace ComputerSalesProject_MVC.Controllers
         }
 
         //---------------------------------------Get--------------------------------------------------
-        [HttpGet("login")]
+        [HttpGet("Login")]
         [AllowAnonymous]
         public IActionResult Login() => View();
 
@@ -44,14 +43,20 @@ namespace ComputerSalesProject_MVC.Controllers
 
 
         //---------------------------------------Post--------------------------------------------------
-        [HttpPost("login")]
+        [HttpPost("Login")]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel vm, CancellationToken ct)
         {
-            var acc = await _accountService.GetAccountByEmail(vm.Email, ct);
+            var acc = await _accountService.GetAccountByEmail(vm.email, ct);
 
-            if (acc == null || acc.Pass != vm.PasswordHash)
+            //var hash = BCrypt.Net.BCrypt.HashPassword(vm.pass); 
+            
+            //Không nên hash pass rồi so sánh vs pass ma lấy ra từ account 
+
+            //Bởi vì nó sẽ làm ra các trường id khác nhau làm cho dù nó có cùng mã hash nhưng khác salt(id  hash) khác nên sẽ khác
+
+            if (acc == null || !BCrypt.Net.BCrypt.Verify(vm.pass, acc.Pass))
             {
                 ModelState.AddModelError("", "Sai tài khoản/mật khẩu");
                 return View(vm);
@@ -128,7 +133,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 await _uow.CommitAsync(ct);
 
                 // 8) Trả về Trang home
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "Account");
 
             }
             catch (Exception ex)
