@@ -6,7 +6,6 @@ using ComputerSales.Domain.Entity.ECustomer;
 using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 namespace ComputerSalesProject_MVC.Controllers
 {

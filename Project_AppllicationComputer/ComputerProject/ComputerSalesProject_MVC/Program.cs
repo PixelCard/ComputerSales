@@ -1,6 +1,4 @@
 ﻿using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Application.UseCase.Account_UC;
-using ComputerSales.Application.UseCase.Customer_UC;
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Infrastructure.Sercurity.JWT.Extensions;
