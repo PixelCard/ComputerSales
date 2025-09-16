@@ -496,3 +496,7 @@ appsettings.Development.json
 # Ignore build output
 bin/
 obj/
+
+
+.vs/
+*.sqlite
