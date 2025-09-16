@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Project_AppllicationComputer",
+    "\\Project_AppllicationComputer\\ComputerProject",
+    "\\Project_AppllicationComputer\\ComputerProject\\API_ComputerProject"
   ],
-  "SelectedNode": "\\ComputerProject.sln",
+  "SelectedNode": "\\Project_AppllicationComputer\\ComputerProject\\ComputerProject.sln",
   "PreviewInSolutionExplorer": false
 }

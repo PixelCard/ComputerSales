@@ -7,5 +7,7 @@
         long ProviderID,
         string Slug,
         string SKU
+
     );
+
 }
