@@ -482,3 +482,21 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+
+# Ignore development settings (chứa secret, connection string)
+appsettings.Development.json
+
+# Ignore user secret folder
+*.user
+*.userosscache
+*.suo
+.vscode/
+
+# Ignore build output
+bin/
+obj/
+
+
+.vs/
+*.sqlite

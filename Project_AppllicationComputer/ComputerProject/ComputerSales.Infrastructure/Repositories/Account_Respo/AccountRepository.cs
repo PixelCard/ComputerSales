@@ -79,7 +79,7 @@ namespace ComputerSales.Infrastructure.Repositories.Account_Respo
                       .FirstOrDefaultAsync(a => a.IDAccount == IDAccount, ct);
         }
 
-
-
+        public Task<bool> ExistsByEmailAsync(string Email, CancellationToken ct = default) => 
+            _db.Accounts.AnyAsync(u => u.Email == Email, ct);
     }
 }

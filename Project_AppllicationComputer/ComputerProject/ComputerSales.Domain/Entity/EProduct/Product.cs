@@ -32,7 +32,7 @@ namespace ComputerSales.Domain.Entity.EProduct
 
             // Navigations
             public Accessories Accessories { get; set; } = null!;
-            public Provider Provider { get; set; } = null!;
+            public Provider Provider { get; set; } = null!; //1-1
             public ProductOverview? ProductOverview { get; set; }           // 1-1
             public ProductProtection? ProductProtection { get; set; }       // 1-1
 
