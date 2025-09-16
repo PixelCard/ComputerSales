@@ -7,7 +7,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
     [Area("Admin")]
     public class ProductController : Controller
     {
-        public readonly I
+     
       
     }
 }
