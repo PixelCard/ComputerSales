@@ -4,5 +4,7 @@
 
 <p>Day la trang home controller</p>
 
-
-@Html.ActionLink("Di toi trang LTweb", "LTweb", "Home")
+<div class="mt-4 space-x-4">
+    @Html.ActionLink("Di toi trang LTweb", "LTweb", "Home", null, new { @class = "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" })
+    @Html.ActionLink("Xem Giỏ Hàng", "CartHome", "Cart", null, new { @class = "bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600" })
+</div>

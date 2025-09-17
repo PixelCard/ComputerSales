@@ -14,16 +14,14 @@ namespace ComputerSales.Infrastructure.Repositories.RefreshToken_Respo
     {
         private readonly AppDbContext _db;
         private readonly JwtOptions _opt;
-        private readonly UnitOfWork_Infa unitOfWork_Infa;
 
         public RefreshTokenRespo(
             AppDbContext db,
-            IOptions<JwtOptions> opt,
-            UnitOfWork_Infa _unitOfWork_Infa)
+            IOptions<JwtOptions> opt
+            )
         {
             _db = db;
             _opt = opt.Value;
-            unitOfWork_Infa= _unitOfWork_Infa;
         }
 
         // Lấy refresh token còn hiệu lực (RevokedAt == null & chưa hết hạn)

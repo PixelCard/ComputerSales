@@ -15,6 +15,8 @@ namespace ComputerSales.Infrastructure.Persistence
     public class AppDbContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
+        public DbSet<CartPromotion> CartPromotions { get; set; }
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Role> Roles { get; set; }
         public DbSet<Customer> Customers { get; set; }

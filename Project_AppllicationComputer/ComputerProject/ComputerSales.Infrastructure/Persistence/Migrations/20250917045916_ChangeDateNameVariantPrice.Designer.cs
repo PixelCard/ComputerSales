@@ -4,6 +4,7 @@ using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComputerSales.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250917045916_ChangeDateNameVariantPrice")]
+    partial class ChangeDateNameVariantPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,72 +221,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                             t.HasCheckConstraint("CK_CartItem_UnitPrice_NonNegative", "[UnitPrice] >= 0");
                         });
-                });
-
-            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartPromotion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("AppliedAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("CartID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PromotionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartID");
-
-                    b.HasIndex("PromotionId");
-
-                    b.ToTable("CartPromotions");
-                });
-
-            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Promotion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPercentage")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ValidFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ValidTo")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("Promotions");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECategory.Accessories", b =>
@@ -847,25 +784,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Navigation("ParentItem");
                 });
 
-            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartPromotion", b =>
-                {
-                    b.HasOne("ComputerSales.Domain.Entity.ECart.Cart", "Cart")
-                        .WithMany("Promotions")
-                        .HasForeignKey("CartID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ComputerSales.Domain.Entity.ECart.Promotion", "Promotion")
-                        .WithMany()
-                        .HasForeignKey("PromotionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Cart");
-
-                    b.Navigation("Promotion");
-                });
-
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECustomer.Customer", b =>
                 {
                     b.HasOne("ComputerSales.Domain.Entity.Account", "Account")
@@ -1061,8 +979,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Cart", b =>
                 {
                     b.Navigation("Items");
-
-                    b.Navigation("Promotions");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartItem", b =>

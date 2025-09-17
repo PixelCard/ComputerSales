@@ -1,4 +1,5 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
+using ComputerSales.Application.Interface.Cart_Interface;
 using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
 using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
 using ComputerSales.Application.Interface.InterfaceRespository;
@@ -6,6 +7,10 @@ using ComputerSales.Application.Interface.Product_Interface;
 using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCase.Account_UC;
+using ComputerSales.Application.UseCase.Cart_UC.Commands.AddProtectionPlan;
+using ComputerSales.Application.UseCase.Cart_UC.Commands.RemoveItem;
+using ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity;
+using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
 using ComputerSales.Application.UseCase.Customer_UC;
 using ComputerSales.Application.UseCase.Order_UC;
 using ComputerSales.Application.UseCase.Product_UC;
@@ -18,6 +23,8 @@ using ComputerSales.Application.Validator.AccountValidator;
 using ComputerSales.Application.Validator.CustomerValidator;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSales.Infrastructure.Repositories.Account_Respo;
+using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead;
+using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartWrite;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
 using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
@@ -51,9 +58,12 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IValidator<AccountDTOInput>, CreateAccountValidator>();
             services.AddScoped<IValidator<CustomerInputDTO>, CreateCustomerValidator>();
             services.AddScoped<IProductOptionalTypeRespositorycs, ProdcutOptionalType_Respository>();
+            services.AddScoped<ICartReadRespository, CartReadRespository>();
+            services.AddScoped<ICartWriteRepository, CartWriteRepository>();
             services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
             services.Configure<JwtOptions>(config.GetSection("Jwt"));
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
+
 
             // JWT generator
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -98,7 +108,7 @@ namespace ComputerSales.Infrastructure
             /*****************************************************/
 
             //============  Order   ================//
-           services.AddScoped<CreateOrder_UC>();
+            services.AddScoped<CreateOrder_UC>();
             //==========================================
 
 
@@ -106,6 +116,13 @@ namespace ComputerSales.Infrastructure
            services.AddScoped<CreateCustomer_UC>();
            services.AddScoped<DeleteCustomer_UC>();
            services.AddScoped<getCustomerByID>();
+
+
+            //================= Cart ==============//
+            services.AddScoped<GetCartPageQueryHandler>();
+            services.AddScoped<UpdateQuantityCommandHandler>();
+            services.AddScoped<RemoveItemCommandHandler>();
+            services.AddScoped<AddProtectionPlanCommandHandler>();
 
             return services;
         }

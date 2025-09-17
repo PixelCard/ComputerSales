@@ -1,10 +1,13 @@
-﻿using ComputerSales.Application.Interface.UnitOfWork;
+﻿using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
+using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Infrastructure;
+using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Infrastructure.Sercurity.JWT.Extensions;
 using ComputerSalesProject_MVC.DependencyInjetionServices;
 using ComputerSalesProject_MVC.Extensions;
 using ComputerSalesProject_MVC.MiddleWareCustome;
+using Microsoft.Identity.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +24,6 @@ builder.Services.AddJwtAuth(builder.Configuration, requireHttps: false);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddApplicationUseCase();
-
-// UnitOfWork
-builder.Services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
 
 // AutoMapper
 builder.Services.ConfigureAutoMapper();
