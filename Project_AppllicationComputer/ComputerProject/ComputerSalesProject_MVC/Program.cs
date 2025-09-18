@@ -62,3 +62,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
+// Thêm dòng này:
+public partial class Program { }

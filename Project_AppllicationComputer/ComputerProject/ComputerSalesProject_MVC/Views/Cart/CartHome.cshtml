@@ -1,21 +1,64 @@
 ﻿@using ComputerSales.Application.UseCaseDTO.Cart_DTO.Cart_Page
 @model CartPageDTO
+
 @{
     ViewData["Title"] = "Shopping Cart";
 }
 
-<div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
-                Shopping Cart (@Model.ItemsCount Items)
-            </h1>
+<style>
+  /* --- Chỉ áp dụng khi in --- */
+  @@media print {
 
-            <div class="hidden sm:flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
-                <button class="text-blue-600 hover:underline whitespace-nowrap">MOVE ALL TO WISH LIST</button>
-                <button class="text-blue-600 hover:underline whitespace-nowrap">REMOVE ALL</button>
-                <button class="text-blue-600 hover:underline whitespace-nowrap">PRINT</button>
+    /* 1) Ẩn mọi thứ mặc định */
+    body * { visibility: hidden; }
+
+    /* 2) Chỉ hiển thị vùng bạn muốn in (ví dụ .print-area) */
+    .print-area, .print-area * { visibility: visible; }
+
+    /* 3) Đặt vùng in lên đầu trang */
+    .print-area {
+      position: absolute; left: 0; top: 0; right: 0;
+      padding: 16px 24px;
+      box-shadow: none !important; border: 0 !important; background: #fff !important;
+    }
+
+    /* 4) Tối ưu kiểu chữ khi in */
+    .print-title { font-size: 18pt; font-weight: 700; margin-bottom: 8pt; }
+    .print-row   { display: flex; justify-content: space-between; margin: 4pt 0; font-size: 11pt; }
+    .print-total { font-weight: 700; font-size: 13pt; margin-top: 8pt; border-top: 1px solid #ccc; padding-top: 6pt; }
+
+    /* 5) Ẩn các nút/đường viền */
+    .no-print { display: none !important; }
+
+    /* 6) Lề trang khi in */
+    @@page { margin: 12mm; }
+  }
+</style>
+
+<div class="min-h-screen bg-gray-50 py-8 print-area" style="width: 100vw; max-width: none;">
+    <div class="w-full px-4 sm:px-6 lg:px-8" style="width: 100%; max-width: none;">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center" style="gap:2.5rem">
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
+                    Shopping Cart (@Model.ItemsCount Items)
+                </h1>
+                
+                <div class="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                <button class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 whitespace-nowrap no-print">
+                    <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                    </svg>
+                    MOVE ALL TO WISH LIST
+                </button>
+                <button class="inline-flex items-center gap-2 text-gray-800 hover:text-red-600 whitespace-nowrap no-print">
+                    <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M6 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
+                        <path fill-rule="evenodd" d="M4 5a1 1 0 011-1h10a1 1 0 011 1v1H4V5zm2-2a2 2 0 00-2 2v1H3a1 1 0 100 2h1v8a2 2 0 002 2h8a2 2 0 002-2V8h1a1 1 0 100-2h-1V5a2 2 0 00-2-2H6z" clip-rule="evenodd" />
+                    </svg>
+                    REMOVE ALL
+                </button>
+                </div>
             </div>
         </div>
 
@@ -142,12 +185,15 @@
             <!-- Right Column - Summary -->
             <div class="w-full lg:w-80">
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 lg:sticky lg:top-8">
-                    <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Summary</h2>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-900">Summary</h2>
+                        <button class="text-blue-600 hover:underline text-sm no-print" onclick="window.print()">PRINT</button>
+                    </div>
 
                     <div class="space-y-3 mb-4">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Item(s):</span>
-                            <<span class="font-semibold">@Model.Subtotal.ToString("C")</span>
+                            <span class="font-semibold">@Model.Subtotal.ToString("C")</span>
                         </div>
 
                         <div class="flex justify-between items-center">
