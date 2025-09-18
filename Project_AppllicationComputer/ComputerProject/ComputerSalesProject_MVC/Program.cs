@@ -19,13 +19,17 @@ builder.Services.AddJwtAuth(builder.Configuration, requireHttps: false);
 // gọi Infrastructure + ApplicationUseCase
 builder.Services.AddInfrastructure(builder.Configuration);
 
+
 builder.Services.AddApplicationUseCase();
+
 
 // UnitOfWork
 builder.Services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
 
+
 // AutoMapper
 builder.Services.ConfigureAutoMapper();
+
 
 // Add UseCase for MVC
 builder.Services.AddUseCaseMVC();
@@ -47,14 +51,17 @@ app.UseAuthorization();
 
 app.UseRouting();
 
-//// map route cho Areas
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{area:exists}/{controller=Product}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
 
 // map route mặc định (không có area)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 
 app.Run();

@@ -1,8 +1,8 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model IEnumerable<ProductCardVM>
 
-<p>Day la trang home controller</p>
-
-
-@Html.ActionLink("Di toi trang LTweb", "LTweb", "Home")
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+    @foreach (var p in Model)
+    {
+        @await Html.PartialAsync("_ProductCard", p)
+    }
+</div>
