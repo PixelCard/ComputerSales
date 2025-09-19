@@ -2,13 +2,16 @@
 using ComputerSales.Domain.Entity.E_Order;
 using ComputerSales.Domain.Entity.EAccount;
 using ComputerSales.Domain.Entity.ECart;
+using ComputerSales.Domain.Entity.ECategory;
 using ComputerSales.Domain.Entity.ECustomer;
 using ComputerSales.Domain.Entity.EOptional;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EProvider;
 using ComputerSales.Domain.Entity.ERefreshToken;
 using ComputerSales.Domain.Entity.EVariant;
+using ComputerSales.Infrastructure.Persistence.Configuration;
 using Microsoft.EntityFrameworkCore;
+using System.Security.AccessControl;
 
 namespace ComputerSales.Infrastructure.Persistence
 {
@@ -35,6 +38,7 @@ namespace ComputerSales.Infrastructure.Persistence
         public DbSet<VariantImage> variantImages => Set<VariantImage>();
         public DbSet<VariantOptionValue> variantOptionValues => Set<VariantOptionValue>();
         public DbSet<VariantPrice> variantPrices => Set<VariantPrice>();
+        public DbSet<Accessories> accessories => Set<Accessories>();
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder b)
