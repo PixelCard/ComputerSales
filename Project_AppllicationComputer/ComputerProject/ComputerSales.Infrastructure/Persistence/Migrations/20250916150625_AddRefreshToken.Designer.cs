@@ -4,6 +4,7 @@ using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComputerSales.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250916150625_AddRefreshToken")]
+    partial class AddRefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,72 +221,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                             t.HasCheckConstraint("CK_CartItem_UnitPrice_NonNegative", "[UnitPrice] >= 0");
                         });
-                });
-
-            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartPromotion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("AppliedAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("CartID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PromotionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartID");
-
-                    b.HasIndex("PromotionId");
-
-                    b.ToTable("CartPromotions");
-                });
-
-            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Promotion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsPercentage")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ValidFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ValidTo")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("Promotions");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECategory.Accessories", b =>
@@ -597,11 +534,23 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("RevokedAt")
+                    b.Property<string>("ReplacedByToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Revoked")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("RevokedByIp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -685,18 +634,18 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
 
+                    b.Property<DateTime>("EffectiveFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EffectiveTo")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("ValidFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ValidTo")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("VariantId")
                         .HasColumnType("int");
@@ -705,9 +654,9 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("VariantId");
 
-                    b.HasIndex("VariantId", "Status", "ValidFrom", "ValidTo");
+                    b.HasIndex("VariantId", "Status", "EffectiveFrom", "EffectiveTo");
 
-                    b.HasIndex("VariantId", "Currency", "Status", "ValidFrom", "ValidTo");
+                    b.HasIndex("VariantId", "Currency", "Status", "EffectiveFrom", "EffectiveTo");
 
                     b.ToTable("VariantPrice", null, t =>
                         {
@@ -845,25 +794,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("ParentItem");
-                });
-
-            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartPromotion", b =>
-                {
-                    b.HasOne("ComputerSales.Domain.Entity.ECart.Cart", "Cart")
-                        .WithMany("Promotions")
-                        .HasForeignKey("CartID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ComputerSales.Domain.Entity.ECart.Promotion", "Promotion")
-                        .WithMany()
-                        .HasForeignKey("PromotionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Cart");
-
-                    b.Navigation("Promotion");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECustomer.Customer", b =>
@@ -1061,8 +991,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Cart", b =>
                 {
                     b.Navigation("Items");
-
-                    b.Navigation("Promotions");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartItem", b =>

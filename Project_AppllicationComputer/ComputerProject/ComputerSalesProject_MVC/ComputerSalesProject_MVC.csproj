@@ -9,6 +9,7 @@
   <ItemGroup>
     <None Remove="Views\Account\2hspxr20.hv1~" />
     <None Remove="Views\Account\klfwqyfu.5yj~" />
+    <None Remove="Views\Cart\hlgh0cfk.lh1~" />
   </ItemGroup>
 
   <ItemGroup>

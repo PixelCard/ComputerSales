@@ -17,6 +17,9 @@
 
         //1-N
         public ICollection<CartItem> Items { get; set; } = new List<CartItem>();
+
+        public ICollection<CartPromotion> Promotions { get; set; } = new List<CartPromotion>();
+
         public static Cart Create(int userId, decimal subtotal, decimal discountTotal, decimal shippingFee, int status = 0)
         {
             return new Cart
