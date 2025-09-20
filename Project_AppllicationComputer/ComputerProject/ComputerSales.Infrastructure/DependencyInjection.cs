@@ -7,7 +7,7 @@ using ComputerSales.Application.Interface.Product_Interface;
 using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCase.Account_UC;
-using ComputerSales.Application.UseCase.Cart_UC.Commands.AddProtectionPlan;
+using ComputerSales.Application.UseCase.Cart_UC.Commands.AddCart;
 using ComputerSales.Application.UseCase.Cart_UC.Commands.RemoveItem;
 using ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity;
 using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
@@ -122,8 +122,7 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<GetCartPageQueryHandler>();
             services.AddScoped<UpdateQuantityCommandHandler>();
             services.AddScoped<RemoveItemCommandHandler>();
-            services.AddScoped<AddProtectionPlanCommandHandler>();
-
+            services.AddScoped<AddItemCommandHandler>();
             return services;
         }
     }

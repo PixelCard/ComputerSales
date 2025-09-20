@@ -13,6 +13,7 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity
     {
         private readonly ICartWriteRepository _repo;
         private readonly IUnitOfWorkApplication unitOfWorkApplication;
+        const int LIMIT = 3;
         public UpdateQuantityCommandHandler(ICartWriteRepository repo,IUnitOfWorkApplication unitOfWorkApplication)
         {
             _repo = repo;
@@ -23,7 +24,7 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity
         {
             var cart = await _repo.GetByIdAsync(cmd.CartId, ct) ?? throw new InvalidOperationException("Cart not found");
             var item = cart.Items.First(x => x.ID == cmd.ItemId);
-            item.Quantity = Math.Max(1, cmd.Quantity);
+            item.Quantity = Math.Clamp(cmd.Quantity, 1, LIMIT); 
 
             // domain rule: tính Subtotal theo UnitPrice ; Cart tự tính GrandTotal
             cart.Subtotal = cart.Items.Sum(i => i.UnitPrice * i.Quantity);
