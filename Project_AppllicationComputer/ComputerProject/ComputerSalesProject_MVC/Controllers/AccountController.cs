@@ -120,6 +120,8 @@ namespace ComputerSalesProject_MVC.Controllers
             {
                 Name = req.UserName,                  
                 Description = req.Description_User,       
+                address=req.address,
+                sdt=req.phone,
                 Date = req.Date.Value
             };
 

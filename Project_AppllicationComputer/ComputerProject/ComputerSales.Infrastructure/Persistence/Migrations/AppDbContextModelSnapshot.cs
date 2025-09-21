@@ -332,6 +332,15 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("address")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("sdt")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.HasKey("CustomerID");
 
                     b.HasIndex("IDAccount")
@@ -393,6 +402,51 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("OptionalValue", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EPayment.PaymentMethod", b =>
+                {
+                    b.Property<int>("PaymentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("PaymentID");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("PaymentMethod", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PaymentID = 1,
+                            Code = "COD",
+                            IsActive = true,
+                            Name = "Cash on Delivery"
+                        },
+                        new
+                        {
+                            PaymentID = 2,
+                            Code = "ZALOPAY",
+                            IsActive = true,
+                            Name = "ZaloPay"
+                        });
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.Product", b =>
@@ -723,6 +777,9 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
 
+                    b.Property<int?>("CustomerID")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("DiscountTotal")
                         .HasColumnType("decimal(18,2)");
 
@@ -732,7 +789,12 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasComputedColumnSql("[Subtotal] - [DiscountTotal] + [ShippingFee]", true);
 
                     b.Property<int>("IDCustomer")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("CustomerID");
+
+                    b.Property<string>("OrderNote")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
@@ -741,7 +803,8 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<int?>("PaymentID")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("PaymentID");
 
                     b.Property<decimal>("ShippingFee")
                         .HasColumnType("decimal(18,2)");
@@ -756,9 +819,17 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.HasKey("OrderID");
 
+                    b.HasIndex("CustomerID");
+
                     b.HasIndex("IDCustomer");
 
-                    b.ToTable("Order", (string)null);
+                    b.HasIndex("PaymentID");
+
+                    b.ToTable("Order", null, t =>
+                    {
+                            t.Property("CustomerID")
+                                .HasColumnName("CustomerID");
+                    });
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.OrderDetail", b =>
@@ -803,7 +874,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("TotalPrice")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("decimal(18,2)")
-                        .HasComputedColumnSql("[UnitPrice] * [Quantity] - [Discount]", true);
+                        .HasComputedColumnSql("[UnitPrice] - [Discount] * [Quantity]", true);
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
@@ -1013,13 +1084,26 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.Order", b =>
                 {
-                    b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", "Customer")
+                    b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", null)
                         .WithMany("Orders")
+                        .HasForeignKey("CustomerID");
+
+                    b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", "Customer")
+                        .WithMany()
                         .HasForeignKey("IDCustomer")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_Order_Customer_CustomerID");
+
+                    b.HasOne("ComputerSales.Domain.Entity.EPayment.PaymentMethod", "Payment")
+                        .WithMany("Orders")
+                        .HasForeignKey("PaymentID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Order_PaymentMethod_PaymentID");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.OrderDetail", b =>
@@ -1090,6 +1174,11 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.EOptional.OptionalValue", b =>
                 {
                     b.Navigation("VariantOptionValues");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EPayment.PaymentMethod", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.Product", b =>

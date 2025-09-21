@@ -11,6 +11,7 @@ namespace ComputerSales.Application.Interface.Cart_Interface
 {
     public interface ICartReadRespository
     {
+        Task ClearAsync(int userId, CancellationToken ct);
         Task<Cart?> GetByUserAsync(int userId, CancellationToken ct = default);
         Task<Dictionary<int, ProductVariant>> GetVariantsAsync(int[] variantIds, CancellationToken ct = default);
     }

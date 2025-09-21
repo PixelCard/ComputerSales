@@ -2,7 +2,10 @@
 using ComputerSales.Application.UseCase.Cart_UC.Commands.RemoveItem;
 using ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity;
 using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
+using ComputerSales.Application.UseCase.Order_UC;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Contracts;
+using System.Security.Claims;
 
 namespace ComputerSalesProject_MVC.Controllers
 {
@@ -17,7 +20,8 @@ namespace ComputerSalesProject_MVC.Controllers
             GetCartPageQueryHandler get, 
             UpdateQuantityCommandHandler upd, 
             RemoveItemCommandHandler rm, 
-            AddItemCommandHandler addItem )
+            AddItemCommandHandler addItem
+            )
         {
             _get = get;
             _upd = upd;
@@ -27,7 +31,13 @@ namespace ComputerSalesProject_MVC.Controllers
 
         public async Task<IActionResult> CartHome(CancellationToken ct)
         {
-            int userId = int.Parse(User.FindFirst("uid")?.Value ?? "1"); //Tìm claim đầu tiên có type "uid".
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");//Tìm claim đầu tiên có type "NameIdentifier".
+
+            if (userId == 0)
+            {
+                return RedirectToAction("Login", "Account");
+            } 
+
             var vm = await _get.Handle(new GetCartPageQuery(userId), ct);
             return View(vm);
         }
@@ -60,13 +70,26 @@ namespace ComputerSalesProject_MVC.Controllers
             qty = Math.Clamp(qty, 1, 3);
 
             // Lấy userId từ claim (giống CartHome); fallback = 1 khi local
-            int userId = int.Parse(User.FindFirst("uid")?.Value ?? "1");
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+
+            if(userId == 0)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
             await _addItem.Handle(new AddItemCommand(userId, productId, productVariantId, qty), ct);
 
             // tuỳ ý: về CartHome hoặc ở lại trang sản phẩm
             return RedirectToAction(nameof(CartHome), new { t = DateTimeOffset.UtcNow.ToUnixTimeSeconds() });
 
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult checkout()
+        {
+            return RedirectToAction("OrderHome", "Order");
         }
     }
 }

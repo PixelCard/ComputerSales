@@ -11,6 +11,7 @@ namespace ComputerSales.Application.UseCaseDTO.Order_DTO
                 input.IDCustomer,
                 input.PaymentID,
                 input.OrderStatus,
+                input.OrderNote,
                 input.Subtotal,
                 input.DiscountTotal,
                 input.ShippingFee
@@ -25,6 +26,7 @@ namespace ComputerSales.Application.UseCaseDTO.Order_DTO
                 e.OrderID,        // <- THÊM & đặt đúng vị trí đầu tiên
                 e.OrderTime,
                 e.IDCustomer,
+                e.OrderNote,
                 e.PaymentID,
                 e.OrderStatus,
                 e.GrandTotal,
