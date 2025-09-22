@@ -1,6 +1,14 @@
-﻿@model IEnumerable<ProductCardVM>
+﻿@model HomeIndexVM
+
+@await Html.PartialAsync("_Header")
+@await Html.PartialAsync("_Banner")
+
+@* _ProductNew cần IEnumerable<ProductListItemVM> *@
+@await Html.PartialAsync("_ProductNew", Model.NewArrivals)
+
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-    @foreach (var p in Model)
+    @foreach (var p in Model.Featured)
     {
         @await Html.PartialAsync("_ProductCard", p)
     }
+</div>

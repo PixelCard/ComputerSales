@@ -1,4 +1,5 @@
 ﻿@model ProductCardVM
+
 @{
     // Tính giá hiển thị & phần trăm giảm
     var hasDiscount = Model.DiscountPrice > 0 && Model.DiscountPrice < Model.Price;
@@ -16,21 +17,28 @@
         ? Math.Round((Model.Price - Model.DiscountPrice) / Model.Price * 100, 0)
         : 0;
 }
+
 <div class="rounded-2xl border shadow-sm hover:shadow-md transition p-4 max-w-xs bg-white flex flex-col">
 
     <!-- Label góc trên -->
     <div class="mb-2">
         <span class="inline-flex items-center gap-1 bg-blue-600 text-white text-[11px] font-semibold px-2 py-1 rounded-md">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4 2 8-6.5-4.5L5.5 21l2-8L2 9h7z" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3 7h7l-5.5 4 2 8-6.5-4.5L5.5 21l2-8L2 9h7z" />
+            </svg>
             Select
         </span>
     </div>
 
-    <!-- Ảnh -->
-    <div class="mb-3">
+    <!-- Ảnh (click -> trang chi tiết) -->
+    <a asp-controller="Product"
+       asp-action="Details"
+       asp-route-id="@Model.ProductId"
+       class="block mb-3">
         <img src="@(Model.Images?.FirstOrDefault() ?? "/images/placeholder.png")"
-             alt="@Model.Name" class="w-full h-44 object-contain" />
-    </div>
+             alt="@Model.Name"
+             class="w-full h-44 object-contain" />
+    </a>
 
     <!-- Nhóm label icon -->
     <div class="flex items-center gap-2 text-[12px] text-gray-600 mb-2">
@@ -41,7 +49,7 @@
             </svg>
             Free ship
         </span>
-        <!-- Bảo hành/Đổi trả -->
+        <!-- Đổi trả -->
         <span class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4zM7 10l5 5 5-5-1.4-1.4L12 12.2 8.4 8.6 7 10z" />
@@ -57,21 +65,17 @@
         </span>
     </div>
 
-    <!-- Tên + mô tả ngắn -->
+    <!-- Tên (click -> trang chi tiết) -->
     <h3 class="font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">
-        @Model.Name
+        <a asp-controller="Product"
+           asp-action="Details"
+           asp-route-id="@Model.ProductId"
+           class="hover:text-blue-700">
+            @Model.Name
+        </a>
     </h3>
-    <p class="text-sm text-gray-600 mb-2 line-clamp-2">
-        @Model.ShortDescription
-    </p>
 
-    <!-- Promo code (nếu có – bạn có thể thêm field vào VM) -->
-  @*   @if (!string.IsNullOrWhiteSpace(Model.Promo))
-    {
-        <p class="text-[13px] text-red-600 mb-2">
-            @Model.Promo
-        </p>
-    } *@
+    <p class="text-sm text-gray-600 mb-2 line-clamp-2">@Model.ShortDescription</p>
 
     <!-- Badge Save % -->
     @if (hasDiscount && savePercent > 0)
@@ -83,7 +87,9 @@
 
     <!-- Giá -->
     <div class="flex items-baseline gap-2 mb-3">
-        <span class="inline-flex items-baseline" @Html.Raw(PriceToParts(showPrice))></span>
+        <span class="inline-flex items-baseline">
+            @Html.Raw(PriceToParts(showPrice))
+        </span>
         @if (hasDiscount)
         {
             <span class="text-gray-400 line-through">$@Model.Price.ToString("0.00")</span>
@@ -99,7 +105,7 @@
                 @foreach (var v in Model.Variants)
                 {
                     var vPrice = v.DiscountPrice > 0 && v.DiscountPrice < v.Price ? v.DiscountPrice : v.Price;
-                    <option value="@v.VariantId">@v.SKU - $@vPrice.ToString("0.00")</option>
+                    <option value="@v.VariantId">@v.SKU - $@vPrice</option>
                 }
             </select>
         </div>
