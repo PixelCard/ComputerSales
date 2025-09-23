@@ -10,6 +10,11 @@ namespace ComputerSales.Domain.Entity.ECustomer
         public string? IMG { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
+
+        public string? sdt { get; set; }
+
+        public string address { get; set; }
+
         public DateTime Date { get; set; } //ngày sinh
 
 
@@ -19,10 +24,12 @@ namespace ComputerSales.Domain.Entity.ECustomer
 
         //1 customer có N order : 1-N
         public ICollection<Order> Orders { get; set; } = new List<Order>();
-        public static Customer create(string? img, string name, string? description, DateTime date, int idAccount)
+        public static Customer create(string? img, string name, string? description,string address,string? sdt, DateTime date, int idAccount)
             => new Customer { 
                 IMG = img, 
                 Name = name, 
+                address = address,
+                sdt = sdt,
                 Description = description, 
                 Date = date, 
                 IDAccount = idAccount };

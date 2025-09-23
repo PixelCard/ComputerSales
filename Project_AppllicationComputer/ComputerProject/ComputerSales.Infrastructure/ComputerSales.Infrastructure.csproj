@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\Order_Respo\" />
     <Folder Include="Repositories\Product_Respo\" />
     <Folder Include="Repositories\UnitOfWork\" />
   </ItemGroup>

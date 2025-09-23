@@ -3,18 +3,14 @@ using ComputerSales.Application.UseCaseDTO.Cart_DTO.Cart_Items;
 using ComputerSales.Application.UseCaseDTO.Cart_DTO.Cart_Page;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EVariant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage
 {
     public sealed class GetCartPageQueryHandler
     {
         private readonly ICartReadRespository _repo;
-        public GetCartPageQueryHandler(ICartReadRespository repo) => _repo = repo;
+        const decimal DEFAULT_PLAN_PRICE = 24m;
+        public GetCartPageQueryHandler(ICartReadRespository repo) { _repo = repo; }
 
         public async Task<CartPageDTO> Handle(GetCartPageQuery q, CancellationToken ct = default)
         {
@@ -22,59 +18,55 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage
             var cart = await _repo.GetByUserAsync(q.UserId, ct);
             if (cart == null) return new CartPageDTO();
 
-            //2.Chuẩn bị dữ liệu variant
+            // 2) lấy variants cho item trong giỏ
             var variantIds = cart.Items.Where(i => i.ProductVariantID.HasValue)
                                        .Select(i => i.ProductVariantID!.Value)
-                                       .Distinct().ToArray(); //Lấy tất cả ProductVariantID trong giỏ sau đó bỏ vào 1 cái mảng
+                                       .Distinct()
+                                       .ToArray();
 
-            var variants = await _repo.GetVariantsAsync(variantIds, ct); //dictionary<variantId → ProductVariant>
+            var variants = await _repo.GetVariantsAsync(variantIds, ct);
 
-            //3.Hàm phụ chọn giá active
-
-            //Trong một list VariantPrice, chọn cái đang hiệu lực (theo ValidFrom/ValidTo).
-
-            //Nếu nhiều giá chồng nhau, lấy cái mới nhất.
+            // 3) chọn giá đang hiệu lực
+            var now = DateTime.UtcNow;
 
             VariantPrice? Active(IEnumerable<VariantPrice> ps) =>
-                ps.OrderByDescending(p => p.ValidFrom ?? DateTime.MinValue)
-                  .FirstOrDefault(p => (!p.ValidFrom.HasValue || p.ValidFrom <= DateTime.UtcNow)
-                                    && (!p.ValidTo.HasValue || p.ValidTo >= DateTime.UtcNow));
+                ps.Where(p => p.Status == PriceStatus.Active
+                           && (p.ValidFrom == null || p.ValidFrom <= now)
+                           && (p.ValidTo == null || p.ValidTo >= now))
+                  .OrderByDescending(p => p.ValidFrom ?? DateTime.MinValue)
+                  .FirstOrDefault();
 
-
-            //4.Hàm phụ dựng chuỗi OptionSummary
-
-            /*
-                Đi qua từng VariantOptionValue (ví dụ: Style=Faster, Options=4TB).
-
-                Nhóm theo OptionType.Name, ghép value theo SortOrder.
-
-                Kết quả: "Style: Faster • Options: 4TB".
-
-             */
-
+            // 4) option summary
             string BuildOptionSummary(ProductVariant? v)
             {
-                if (v == null) return "";
+                if (v?.VariantOptionValues == null || v.VariantOptionValues.Count == 0) return "";
                 var parts = v.VariantOptionValues
-                    .Select(x => new { T = x.OptionalValue!.OptionType!.Name, V = x.OptionalValue.Value, O = x.OptionalValue.SortOrder })
+                    .Where(x => x.OptionalValue != null && x.OptionalValue.OptionType != null)
+                    .Select(x => new { T = x.OptionalValue!.OptionType!.Name, V = x.OptionalValue!.Value, O = x.OptionalValue!.SortOrder })
                     .OrderBy(x => x.O).GroupBy(x => x.T)
                     .Select(g => $"{g.Key}: {string.Join(", ", g.Select(x => x.V))}");
                 return string.Join(" • ", parts);
             }
 
-
-            //5.Map từng CartItem → CartLineVM
-            var lines = cart.Items.Select(i =>
+            // 5) map từng dòng
+            var lines = new List<CartItemsDTO>();
+            foreach (var i in cart.Items)
             {
                 variants.TryGetValue(i.ProductVariantID ?? -1, out var v);
                 var ap = Active(v?.VariantPrices ?? Array.Empty<VariantPrice>());
                 var list = ap?.Price ?? i.UnitPrice;
-                var sale = ap?.DiscountPrice ?? i.UnitPrice;
+                var sale = ap != null
+                    ? Math.Max(0, ap.Price - (ap.DiscountPrice > 0 ? ap.DiscountPrice : 0))
+                    : i.UnitPrice;
 
-                return new CartItemsDTO
+                var imageUrl = (v?.VariantImages != null && v.VariantImages.Count > 0)
+                    ? v.VariantImages.OrderBy(vi => vi.SortOrder).First().Url
+                    : i.ImageUrl;
+
+                var line = new CartItemsDTO
                 {
                     CartItemId = i.ID,
-                    ImageUrl = v?.VariantImages.FirstOrDefault()?.Url ?? i.ImageUrl,
+                    ImageUrl = imageUrl,
                     Name = i.Name,
                     SKU = i.SKU,
                     OptionSummary = string.IsNullOrWhiteSpace(i.OptionSummary) ? BuildOptionSummary(v) : i.OptionSummary,
@@ -85,16 +77,17 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage
                     IsChildService = i.ParentItemID.HasValue,
                     ParentItemId = i.ParentItemID
                 };
-            }).ToList();
+                lines.Add(line);
+            }
 
-            // Tổng theo SalePrice của item chính
-            var subtotal = lines.Where(l => !l.IsChildService).Sum(l => l.SalePrice * l.Quantity);
+            // 6) tổng: tính cả service để khớp grand total
+            var subtotal = lines.Sum(l => l.ListPrice * l.Quantity);
+            var itemsCount = lines.Count(l => !l.IsChildService);
 
-            // Không ghi DB trong Query; chỉ mirror từ entity
             return new CartPageDTO
             {
                 CartId = cart.ID,
-                ItemsCount = cart.Items.Count,
+                ItemsCount = itemsCount,
                 Subtotal = subtotal,
                 DiscountTotal = cart.DiscountTotal,
                 ShippingFee = cart.ShippingFee,

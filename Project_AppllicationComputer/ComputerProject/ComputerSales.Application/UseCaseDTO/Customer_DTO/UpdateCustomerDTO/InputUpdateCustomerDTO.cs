@@ -11,7 +11,8 @@ namespace ComputerSales.Application.UseCaseDTO.Customer_DTO.UpdateCustomerDTO
       string? IMG ,
       string Name ,
       string? Description ,
+      string? sdt,
+      string address,
       DateTime Date 
-        
     );
 }

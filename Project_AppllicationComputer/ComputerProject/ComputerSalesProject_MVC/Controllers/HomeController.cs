@@ -1,4 +1,5 @@
-﻿using ComputerSales.Infrastructure.Persistence;
+using ComputerSales.Domain.Entity.EVariant;
+using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,6 @@ namespace ComputerSalesProject_MVC.Controllers
         public async Task<IActionResult> Index()
         {
             var now = DateTime.UtcNow;
-
             // Lấy danh sách cho lưới dưới (Featured/Popular/…)
             var featured = await _context.Products
                 .AsNoTracking()
@@ -273,7 +273,15 @@ namespace ComputerSalesProject_MVC.Controllers
                         .OrderByDescending(vp => vp.ValidFrom)
                         .Select(vp => vp.Currency)
                         .FirstOrDefault() ?? "$",
+                    // Ảnh đại diện: lấy 1 ảnh sort nhỏ nhất trong tất cả variants
+                    Images = p.ProductVariants
+                             .SelectMany(v => v.VariantImages
+                                 .OrderBy(vi => vi.SortOrder)
+                                 .Select(vi => vi.Url))
+                             .Take(1)
+                             .ToList(),
 
+                    // Giá cấp product: chọn dòng giá đang hiệu lực “mới nhất” trên mọi variant
                     Price = p.ProductVariants
                             .SelectMany(v => v.VariantPrices)
                             .Where(vp => (vp.ValidFrom == null || vp.ValidFrom <= now) &&
@@ -301,7 +309,5 @@ namespace ComputerSalesProject_MVC.Controllers
 
             return View("NewArrivals", items);
         }
-
-
     }
 }

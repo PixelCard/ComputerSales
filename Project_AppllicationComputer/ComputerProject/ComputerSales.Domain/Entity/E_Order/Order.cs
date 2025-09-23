@@ -1,7 +1,19 @@
 ﻿using ComputerSales.Domain.Entity.ECustomer;
+using ComputerSales.Domain.Entity.EPayment;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ComputerSales.Domain.Entity.E_Order
 {
+    public enum OrderStatus
+    {
+        ChoXacNhan = 1, // Mới đặt, chờ shop xác nhận
+        DangDongGoi = 2, // Đang chuẩn bị/đóng gói
+        DangGiao = 3, // Đang giao hàng
+        DaGiaoThanhCong = 4, // Giao thành công
+        DaHuy = 5  // Đã hủy
+    }
+
+
     public class Order
     {
         public int OrderID { get; set; }
@@ -17,8 +29,9 @@ namespace ComputerSales.Domain.Entity.E_Order
         //======================================================//
         public int? PaymentID { get; set; }
 
+        public string? OrderNote {  get; set; }
     
-        public int OrderStatus { get; set; }
+        public OrderStatus OrderStatus { get; set; }
 
         public decimal Subtotal { get; set; }       // tổng trước giảm
         public decimal DiscountTotal { get; set; }  // tổng giảm giá
@@ -40,13 +53,17 @@ namespace ComputerSales.Domain.Entity.E_Order
         // 1 order có nhiều product , mỗi product sẽ tạo thành 1 order details
         public ICollection<OrderDetail> Details { get; set; } = new List<OrderDetail>();
 
+
+        [ForeignKey(nameof(PaymentID))]              
+        public PaymentMethod? Payment { get; set; }  
+
         //======================================================//
 
 
 
 
         //================= Factory Method =================//
-        public static Order Create(DateTime orderTime, int customerID, int? paymentID, int orderStatus, decimal subtotal, decimal discountTotal, decimal shippingFee)
+        public static Order Create(DateTime orderTime, int customerID, int? paymentID, OrderStatus orderStatus,string? OrderNote, decimal subtotal, decimal discountTotal, decimal shippingFee)
         {
             var grandTotal = subtotal - discountTotal + shippingFee;
             return new Order
@@ -55,6 +72,7 @@ namespace ComputerSales.Domain.Entity.E_Order
                 IDCustomer = customerID,
                 PaymentID = paymentID,
                 OrderStatus = orderStatus,
+                OrderNote = OrderNote,
                 Subtotal = subtotal,
                 DiscountTotal = discountTotal,
                 ShippingFee = shippingFee,

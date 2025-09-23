@@ -10,5 +10,8 @@ namespace ComputerSales.Application.Interface.Cart_Interface
     public interface ICartWriteRepository
     {
         Task<Cart?> GetByIdAsync(int cartId, CancellationToken ct = default);
+
+        Task<Cart> CreateAsync(Cart cart, CancellationToken ct = default);
+        Task AddItemAsync(CartItem item, CancellationToken ct = default);
     }
 }

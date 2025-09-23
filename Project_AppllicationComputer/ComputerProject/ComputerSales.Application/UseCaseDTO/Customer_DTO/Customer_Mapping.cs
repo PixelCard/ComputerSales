@@ -1,4 +1,5 @@
 ﻿using ComputerSales.Domain.Entity.ECustomer;
+using System.ComponentModel.DataAnnotations;
 
 namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
 {
@@ -10,6 +11,8 @@ namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
                 input.IMG,
                 input.Name,
                 input.Description,
+                input.address,
+                input.sdt,
                 input.Date,
                 input.IDAccount
             );
@@ -22,8 +25,10 @@ namespace ComputerSales.Application.UseCaseDTO.Customer_DTO
                 e.IMG,
                 e.Name,
                 e.Description,
+                e.sdt,
+                e.address,
                 e.Date,
-                e.IDAccount 
+                e.IDAccount
             );
         }
     }

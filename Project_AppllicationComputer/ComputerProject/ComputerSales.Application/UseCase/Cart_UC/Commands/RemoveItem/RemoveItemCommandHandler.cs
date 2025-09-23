@@ -25,7 +25,7 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Commands.RemoveItem
             cart.Items.Remove(item);
 
             cart.Subtotal = cart.Items.Sum(i => i.UnitPrice * i.Quantity);
-            cart.RecalculateTotals(); // :contentReference[oaicite:6]{index=6}
+            cart.RecalculateTotals(); 
             await unitOfWorkApplication.SaveChangesAsync(ct);
         }
     }

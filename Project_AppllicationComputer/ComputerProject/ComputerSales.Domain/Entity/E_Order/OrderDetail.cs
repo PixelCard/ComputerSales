@@ -49,7 +49,6 @@ namespace ComputerSales.Domain.Entity.E_Order
                 Quantity = quantity,
                 UnitPrice = unitPrice,
                 Discount = discount,
-                TotalPrice = (unitPrice - discount) * quantity,
                 SKU = sku,
                 Name = name,
                 OptionSummary = optionSummary,

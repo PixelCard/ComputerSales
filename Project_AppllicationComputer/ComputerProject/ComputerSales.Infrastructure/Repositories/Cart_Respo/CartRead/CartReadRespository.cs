@@ -15,6 +15,13 @@ namespace ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead
             _db = db;
         }
 
+        public async Task ClearAsync(int userId, CancellationToken ct)
+        {
+            await _db.CartItems
+            .Where(x => x.Cart.UserID == userId)
+            .ExecuteDeleteAsync(ct);
+        }
+
         public Task<Cart?> GetByUserAsync(int userId, CancellationToken ct = default)
             => _db.Carts.Include(c => c.Items)  // lấy Cart + Items (CartItem có Parent/Children sẵn) :                       
                     .FirstOrDefaultAsync(c => c.UserID == userId, ct);

@@ -1,0 +1,338 @@
+﻿@using ComputerSales.Application.UseCaseDTO.Order_DTO
+@model OrderPageViewModel
+@{
+    ViewData["Title"] = "Checkout Page";
+}
+
+<style>
+    /* --- Font fixes và text truncation --- */
+    body, * {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+    
+    /* Text truncation cho tên sản phẩm */
+    .product-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.4;
+        max-height: 2.8em; /* 2 lines * 1.4 line-height */
+    }
+    
+    .product-name-single {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+    
+    /* Fix cho các button và text */
+    button, .font-bold, .font-semibold {
+        font-family: inherit;
+        font-weight: inherit;
+    }
+
+    .checkout-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        width: 100vw;
+        max-width: none;
+    }
+    
+    .form-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    @@media (min-width: 640px) {
+        .form-input {
+            padding: 12px 16px;
+        }
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: #14b8a6;
+        box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    @@media (min-width: 640px) {
+        .btn-primary {
+            padding: 14px 24px;
+            font-size: 16px;
+        }
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
+    }
+    
+    .payment-option {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+    
+    .payment-option:hover {
+        border-color: #14b8a6;
+        background-color: #f0fdfa;
+    }
+    
+    .payment-option.selected {
+        border-color: #14b8a6;
+        background-color: #f0fdfa;
+    }
+    
+    .payment-option input[type="radio"] {
+        margin: 0;
+        margin-right: 8px;
+        accent-color: #14b8a6;
+    }
+    
+    .payment-option .flex {
+        align-items: center;
+        display: flex;
+    }
+    
+    .product-image {
+        width: 64px;
+        height: 64px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    @@media (min-width: 640px) {
+        .product-image {
+            width: 80px;
+            height: 80px;
+        }
+    }
+    
+    
+    .color-swatch {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #e5e7eb;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .color-swatch.selected {
+        border-color: #14b8a6;
+        box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+    }
+</style>
+
+<div class="checkout-container">
+  <form asp-controller="Order" asp-action="PlaceOrder" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-16">
+
+        <!-- LEFT: Shipping Address -->
+        <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-8 space-y-4 sm:space-y-6">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Checkout Page</h1>
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">Shipping Address</h2>
+          </div>
+
+          <div class="space-y-4 sm:space-y-6">
+            <!-- Full Name -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+              <input asp-for="orderCheckoutInput.FullName" class="form-input" placeholder="Enter your full name" />
+              <span asp-validation-for="orderCheckoutInput.FullName" class="text-red-600 text-xs"></span>
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500 text-sm">🇻🇳 +84</span>
+                </div>
+                <input asp-for="orderCheckoutInput.Phone" class="form-input pl-16" placeholder="********" />
+              </div>
+              <span asp-validation-for="orderCheckoutInput.Phone" class="text-red-600 text-xs"></span>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email address (optional)</label>
+              <input asp-for="orderCheckoutInput.Email" type="email" class="form-input" placeholder="Enter your email" />
+              <span asp-validation-for="orderCheckoutInput.Email" class="text-red-600 text-xs"></span>
+            </div>
+
+            <!-- Address -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+              <input asp-for="orderCheckoutInput.Address" class="form-input" placeholder="Enter your full address" />
+              <span asp-validation-for="orderCheckoutInput.Address" class="text-red-600 text-xs"></span>
+            </div>
+
+            <!-- Notes -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Order notes (optional)</label>
+              <textarea asp-for="orderCheckoutInput.Notes" class="form-input h-24 resize-none" placeholder="share your notes"></textarea>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn-primary w-full flex items-center justify-center space-x-2">
+              <span>Place Order</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Order Summary + Payment -->
+        <div class="space-y-4 sm:space-y-6">
+          <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-8">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Your order</h2>
+
+            <!-- Render cart items từ Model.Cart -->
+            @foreach (var line in Model.cartPageDTO.Lines)
+            {
+              <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-4 sm:mb-6">
+                <img src="@line.ImageUrl" alt="@line.Name"
+                     class="product-image w-16 h-16 sm:w-20 sm:h-20 mx-auto sm:mx-0" />
+                <div class="flex-1 text-center sm:text-left">
+                  <h3 class="font-semibold text-gray-900 text-sm sm:text-base product-name">@line.Name</h3>
+                  @if (!string.IsNullOrWhiteSpace(line.Name))
+                  {
+                    <div class="flex items-center justify-center sm:justify-start space-x-2 mt-2">
+                      <span class="text-xs sm:text-sm text-gray-600">Variant</span>
+                      <span class="px-2 py-1 bg-green-100 text-green-800 text-xs sm:text-sm rounded border border-green-200">
+                        @line.Name
+                      </span>
+                    </div>
+                  }
+                </div>
+                <div class="flex flex-col items-center sm:items-end">
+                  <div class="text-sm sm:text-base font-medium text-gray-900">
+                    Quantity: <span class="font-bold">@line.Quantity</span>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-sm sm:text-base font-bold text-gray-900">@((line.SalePrice).ToString("C"))</div>
+                    @if (line.ListPrice > line.SalePrice)
+                    {
+                      <div class="text-xs text-gray-400 line-through">@((line.ListPrice).ToString("C"))</div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Payment Options (bind enum) -->
+            <div class="mb-4 sm:mb-6">
+              <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">How you'll pay</h3>
+
+              <div class="space-y-2 sm:space-y-3">
+                <label class="payment-option @(Model.orderCheckoutInput.Payment == PaymentKind.COD ? "selected" : "")">
+                  <div class="flex items-center space-x-2 sm:space-x-3">
+                    <input type="radio" asp-for="orderCheckoutInput.Payment" value="COD" class="text-teal-600"
+                           checked="@(Model.orderCheckoutInput.Payment == PaymentKind.COD)" />
+                    <span class="font-medium text-sm sm:text-base">COD</span>
+                  </div>
+                </label>
+
+                <label class="payment-option @(Model.orderCheckoutInput.Payment == PaymentKind.ZaloPay ? "selected" : "")">
+                  <div class="flex items-center space-x-2 sm:space-x-3">
+                    <input type="radio" asp-for="orderCheckoutInput.Payment" value="ZaloPay" class="text-teal-600"
+                           checked="@(Model.orderCheckoutInput.Payment == PaymentKind.ZaloPay)" />
+                    <span class="font-medium text-sm sm:text-base">ZaloPay</span>
+                  </div>
+                </label>
+              </div>
+              <span asp-validation-for="orderCheckoutInput.Payment" class="text-red-600 text-xs"></span>
+            </div>
+
+            <!-- Totals -->
+            @{
+              var itemsTotal = Model.cartPageDTO.Lines.Sum(i => i.SalePrice * i.Quantity);
+              var shopDiscount = Model.cartPageDTO.DiscountTotal; 
+              var subTotal = itemsTotal - shopDiscount;
+              var shipping = Model.cartPageDTO.ShippingFee;
+              var grandTotal = subTotal + shipping;
+              var itemCount = Model.cartPageDTO.Lines.Sum(i => i.Quantity);
+            }
+            <div class="border-t pt-3 sm:pt-4 space-y-2 sm:space-y-3">
+              <div class="flex justify-between text-sm sm:text-base">
+                <span class="text-gray-600">Item(s) total:</span>
+                <span class="font-medium">@((itemsTotal).ToString("C"))</span>
+              </div>
+              <div class="flex justify-between text-sm sm:text-base">
+                <span class="text-gray-600">Shop discount:</span>
+                <span class="font-medium text-green-600">-@((shopDiscount).ToString("C"))</span>
+              </div>
+              <div class="flex justify-between text-sm sm:text-base">
+                <span class="text-gray-600">Subtotal:</span>
+                <span class="font-medium">@((subTotal).ToString("C"))</span>
+              </div>
+              <div class="flex justify-between text-sm sm:text-base">
+                <span class="text-gray-600">Shipping:</span>
+                <span class="font-medium">@((shipping).ToString("C"))</span>
+              </div>
+              <div class="flex justify-between text-base sm:text-lg font-bold border-t pt-2 sm:pt-3">
+                <span>Total (@itemCount item):</span>
+                <span>@((grandTotal).ToString("C"))</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </form>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+  <script>
+    // Tên input đúng theo asp-for: "orderCheckoutInput.Payment"
+    document.querySelectorAll('input[name="orderCheckoutInput.Payment"]').forEach(radio => {
+      radio.addEventListener('change', function () {
+        document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+        this.closest('.payment-option')?.classList.add('selected');
+      });
+    });
+    
+    // Khởi tạo trạng thái selected khi trang load
+    document.addEventListener('DOMContentLoaded', function() {
+      const checkedRadio = document.querySelector('input[name="orderCheckoutInput.Payment"]:checked');
+      if (checkedRadio) {
+        checkedRadio.closest('.payment-option')?.classList.add('selected');
+      }
+    });
+  </script>
+}

@@ -11,6 +11,7 @@ namespace ComputerSales.Application.Interface.Cart_Interface
     {
         Task<CartItemsDTO> GetCartPageAsync(int userId, CancellationToken ct = default);
         Task UpdateQuantityAsync(int cartId, int itemId, int qty, CancellationToken ct = default);
+        Task AddItemAsync(int userId, int productId, int? productVariantId, int qty, CancellationToken ct = default);
         Task RemoveItemAsync(int cartId, int itemId, CancellationToken ct = default);
         Task AddProtectionPlanAsync(int cartId, int parentItemId, int planVariantId, CancellationToken ct = default);
     }

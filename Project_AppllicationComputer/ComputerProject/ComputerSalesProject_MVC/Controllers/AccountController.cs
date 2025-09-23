@@ -80,16 +80,8 @@ namespace ComputerSalesProject_MVC.Controllers
             });
 
 
-            // Refresh token (dài hạn) -> lưu DB + cookie HttpOnly
+            // Refresh token (dài hạn) -> lưu DB 
             var rt = await _refresh.IssueAsync(acc, ct);
-
-            Response.Cookies.Append("refresh_token", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = false,           
-                SameSite = SameSiteMode.Strict,
-                Expires = new DateTimeOffset(rt.Expires)
-            });
 
             return RedirectToAction("Index", "Home");
         }
@@ -128,6 +120,8 @@ namespace ComputerSalesProject_MVC.Controllers
             {
                 Name = req.UserName,                  
                 Description = req.Description_User,       
+                address=req.address,
+                sdt=req.phone,
                 Date = req.Date.Value
             };
 

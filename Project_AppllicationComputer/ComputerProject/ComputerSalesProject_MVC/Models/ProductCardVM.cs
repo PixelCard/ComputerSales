@@ -8,6 +8,8 @@
     public decimal Price { get; set; }
     public decimal DiscountPrice { get; set; }
 
+    public int? SelectedVariantId { get; set; }
+
     public List<string> Images { get; set; } = new();
     public List<VariantVM> Variants { get; set; } = new();
 }
