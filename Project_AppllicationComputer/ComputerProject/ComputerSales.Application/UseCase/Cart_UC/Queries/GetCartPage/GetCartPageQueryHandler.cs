@@ -23,13 +23,8 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage
                                        .Select(i => i.ProductVariantID!.Value)
                                        .Distinct()
                                        .ToArray();
-            var variants = await _repo.GetVariantsAsync(variantIds, ct);
 
-            // 2b) lấy trước variants của protection plans (nếu có)
-            var productIdsMain = cart.Items.Where(i => !i.ParentItemID.HasValue && i.ProductID.HasValue)
-                                           .Select(i => i.ProductID!.Value)
-                                           .Distinct()
-                                           .ToList();
+            var variants = await _repo.GetVariantsAsync(variantIds, ct);
 
             // 3) chọn giá đang hiệu lực
             var now = DateTime.UtcNow;
@@ -86,7 +81,7 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage
             }
 
             // 6) tổng: tính cả service để khớp grand total
-            var subtotal = lines.Sum(l => l.SalePrice * l.Quantity);
+            var subtotal = lines.Sum(l => l.ListPrice * l.Quantity);
             var itemsCount = lines.Count(l => !l.IsChildService);
 
             return new CartPageDTO

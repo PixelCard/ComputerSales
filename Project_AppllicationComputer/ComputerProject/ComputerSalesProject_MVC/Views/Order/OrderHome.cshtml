@@ -242,8 +242,12 @@
                   <div class="text-sm sm:text-base font-medium text-gray-900">
                     Quantity: <span class="font-bold">@line.Quantity</span>
                   </div>
-                  <div class="text-sm text-gray-600">
-                    @line.ListPrice.ToString("n0") ₫
+                  <div class="text-right">
+                    <div class="text-sm sm:text-base font-bold text-gray-900">@((line.SalePrice).ToString("C"))</div>
+                    @if (line.ListPrice > line.SalePrice)
+                    {
+                      <div class="text-xs text-gray-400 line-through">@((line.ListPrice).ToString("C"))</div>
+                    }
                   </div>
                 </div>
               </div>
@@ -275,8 +279,8 @@
 
             <!-- Totals -->
             @{
-              var itemsTotal = Model.cartPageDTO.Lines.Sum(i => i.ListPrice * i.Quantity);
-              var shopDiscount = Model.cartPageDTO.DiscountTotal; // hoặc 0 nếu chưa có
+              var itemsTotal = Model.cartPageDTO.Lines.Sum(i => i.SalePrice * i.Quantity);
+              var shopDiscount = Model.cartPageDTO.DiscountTotal; 
               var subTotal = itemsTotal - shopDiscount;
               var shipping = Model.cartPageDTO.ShippingFee;
               var grandTotal = subTotal + shipping;
@@ -285,23 +289,23 @@
             <div class="border-t pt-3 sm:pt-4 space-y-2 sm:space-y-3">
               <div class="flex justify-between text-sm sm:text-base">
                 <span class="text-gray-600">Item(s) total:</span>
-                <span class="font-medium">@itemsTotal.ToString("n0") ₫</span>
+                <span class="font-medium">@((itemsTotal).ToString("C"))</span>
               </div>
               <div class="flex justify-between text-sm sm:text-base">
                 <span class="text-gray-600">Shop discount:</span>
-                <span class="font-medium text-green-600">-@shopDiscount.ToString("n0") ₫</span>
+                <span class="font-medium text-green-600">-@((shopDiscount).ToString("C"))</span>
               </div>
               <div class="flex justify-between text-sm sm:text-base">
                 <span class="text-gray-600">Subtotal:</span>
-                <span class="font-medium">@subTotal.ToString("n0") ₫</span>
+                <span class="font-medium">@((subTotal).ToString("C"))</span>
               </div>
               <div class="flex justify-between text-sm sm:text-base">
                 <span class="text-gray-600">Shipping:</span>
-                <span class="font-medium">@shipping.ToString("n0") ₫</span>
+                <span class="font-medium">@((shipping).ToString("C"))</span>
               </div>
               <div class="flex justify-between text-base sm:text-lg font-bold border-t pt-2 sm:pt-3">
                 <span>Total (@itemCount item):</span>
-                <span>@grandTotal.ToString("n0") ₫</span>
+                <span>@((grandTotal).ToString("C"))</span>
               </div>
             </div>
           </div>

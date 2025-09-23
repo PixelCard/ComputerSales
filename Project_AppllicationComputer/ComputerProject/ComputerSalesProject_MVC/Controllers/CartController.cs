@@ -2,9 +2,7 @@
 using ComputerSales.Application.UseCase.Cart_UC.Commands.RemoveItem;
 using ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity;
 using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
-using ComputerSales.Application.UseCase.Order_UC;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.Contracts;
 using System.Security.Claims;
 
 namespace ComputerSalesProject_MVC.Controllers

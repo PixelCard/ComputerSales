@@ -212,8 +212,13 @@
 
                     <div class="space-y-3 mb-4">
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Item(s):</span>
+                            <span class="text-gray-600">Item(@Model.ItemsCount):</span>
                             <span class="font-semibold">@Model.Subtotal.ToString("C")</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">DiscountTotal(@Model.ItemsCount):</span>
+                            <span class="font-semibold">@Model.DiscountTotal.ToString("C")</span>
                         </div>
 
                         <div class="flex justify-between items-center">
