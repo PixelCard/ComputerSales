@@ -11,8 +11,26 @@ namespace ComputerSales.Domain.Entity
 
         public int IDRole { get; set; }
 
+        public bool EmailConfirmed { get; private set; }
+        public DateTime? VerifyKeyExpiresAt { get; private set; }
+        public DateTime? LockoutUntil { get; private set; }
+        public int VerifySendCountToday { get; private set; }
+        public DateOnly? VerifySendCountDate { get; private set; }
+
+        public void MarkVerifyWindow(DateTime expiresAt) => VerifyKeyExpiresAt = expiresAt;
+        public void ConfirmEmail() { EmailConfirmed = true; VerifyKeyExpiresAt = null; }
+        public void LockoutFor(TimeSpan span) => LockoutUntil = DateTime.UtcNow.Add(span);
+        public bool IsLocked() => LockoutUntil.HasValue && LockoutUntil > DateTime.UtcNow;
+
+        public void BumpSendCount()
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            if (VerifySendCountDate != today) { VerifySendCountDate = today; VerifySendCountToday = 0; }
+            VerifySendCountToday++;
+        }
+
         // navigation propro
-        
+
 
         //mỗi account chỉ có 1 role
         public Role Role { get; set; }   // hoặc virtual Role Role { get; set; }

@@ -1,5 +1,4 @@
-﻿@model ComputerSalesProject_MVC.Models.RegisterViewModel
-
+﻿@model ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO.RegisterRequestDTO
 @{
     ViewData["Title"] = "Đăng ký tài khoản";
     Layout = null;
@@ -74,6 +73,16 @@
         @using (Html.BeginForm("Register", "Account", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
+
+            @* Thông báo nhẹ nếu cần *@
+            @if (TempData["Info"] != null)
+            {
+                <div class="mb-4 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
+                    @TempData["Info"]
+                </div>
+            }
+
+
             <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm">
                 <!-- Profile Picture Section -->
                 <div class="flex flex-col items-center mb-8">
@@ -142,6 +151,16 @@
             </div>
         }
     </div>
+
+    <script>
+        // Chống submit nhiều lần
+        const form = document.getElementById('registerForm');
+        const btn = document.getElementById('submitBtn');
+        form.addEventListener('submit', () => {
+          btn.disabled = true;
+          btn.textContent = 'Processing...';
+        });
+    </script>
 </body>
 </html>
 

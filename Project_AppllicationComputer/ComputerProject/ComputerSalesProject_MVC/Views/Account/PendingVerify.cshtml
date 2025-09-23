@@ -1,0 +1,90 @@
+﻿@model ComputerSales.Application.UseCaseDTO.Account_DTO.EmailVerify_DTO.PendingVerifyRequest
+@{
+    Layout = null;
+    var expIso = Model.VerifyExpiresAtUtc.ToString("o");
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Chờ xác thực email</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-purple-600 flex items-center justify-center">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center">
+        <h2 class="text-xl font-bold text-purple-700">Xác thực email</h2>
+        <p class="mt-2 text-gray-600">
+            Chúng tôi đã gửi một liên kết xác thực đến email của bạn.
+        </p>
+
+        <div class="mt-6">
+            <div class="text-gray-500 text-sm">Liên kết sẽ hết hạn sau</div>
+            <div class="text-3xl font-extrabold text-purple-700">
+                <span id="left">@Model.SecondsLeft</span>
+            </div>
+        </div>
+
+        <form id="resendForm" method="post" action="/Account/ResendVerify" class="mt-6">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="uid" value="@Model.AccountId" />
+            <button id="resendBtn" disabled
+                    class="w-full border-2 border-purple-600 text-purple-600 font-semibold py-2 rounded-xl hover:bg-purple-50 disabled:opacity-50">
+                Gửi lại liên kết
+            </button>
+        </form>
+
+        <div id="msg" class="mt-3 text-sm text-red-600"></div>
+
+        <div class="mt-6 text-sm text-gray-500">
+            Sai email? <a href="/Account/Register" class="text-purple-600 underline">Đăng ký lại</a>
+            &nbsp;|&nbsp; <a href="/Account/Login" class="text-purple-600 underline">Về trang đăng nhập</a>
+        </div>
+    </div>
+
+    <script>
+        const leftEl = document.getElementById('left'); // chỗ hiển thị số giây còn lại
+        const btn = document.getElementById('resendBtn'); // nút Gửi lại
+        const msg = document.getElementById('msg'); // ô hiện thông báo lỗi
+        const exp = new Date("@expIso").getTime();// thời điểm hết hạn 
+
+        //Tính thời gian giảm dần sau đó cập nhật lên UI
+        function tick(){
+          const now = Date.now();
+          const s = Math.max(0, Math.floor((exp - now)/1000));
+          leftEl.textContent = s;
+          btn.disabled = s > 0;
+          if(s === 0) clearInterval(tmr);
+        }
+        tick();
+
+        const tmr = setInterval(tick, 1000);// chạy mỗi giây
+
+        document.getElementById('resendForm').addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          if(btn.disabled) return; // phòng trường hợp chưa hết hạn
+          msg.textContent = "";
+          btn.disabled = true; btn.textContent = "Đang gửi...";
+          try{
+            const fd = new FormData(e.target); // lấy dữ liệu form
+            const r = await fetch(e.target.action, { method: 'POST', body: fd }); // gọi /Account/ResendVerify
+            const j = await r.json();
+            if(j.ok){
+              // reload để đếm lại theo expUtc mới
+              const url = new URL(window.location.href);
+              url.searchParams.set('uid', fd.get('uid'));
+              url.searchParams.set('expUtc', j.expUtc);
+              window.location.href = url.toString();
+            }else{
+              msg.textContent = j.message || "Gửi lại không thành công.";
+            }
+          }catch(err){
+            msg.textContent = "Có lỗi kết nối. Vui lòng thử lại.";
+          }finally{
+            btn.disabled = false; btn.textContent = "Gửi lại liên kết";
+          }
+        });
+    </script>
+</body>
+</html>

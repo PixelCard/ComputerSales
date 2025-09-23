@@ -12,13 +12,14 @@
 
   <ItemGroup>
     <Folder Include="UseCaseDTO\Product_DTO\" />
-    <Folder Include="UseCase\Cart_UC\Contracts\" />
     <Folder Include="UseCase\Product_UC\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

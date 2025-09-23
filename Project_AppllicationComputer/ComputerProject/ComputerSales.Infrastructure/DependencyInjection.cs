@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.Interface.Cart_Interface;
+using ComputerSales.Application.Interface.Interface_Email_Respository;
 using ComputerSales.Application.Interface.Interface_OrderFromCart;
 using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
 using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
@@ -30,12 +31,14 @@ using ComputerSales.Infrastructure.Repositories.Account_Respo;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartWrite;
 using ComputerSales.Infrastructure.Repositories.Customer_Respo;
+using ComputerSales.Infrastructure.Repositories.EmailVerifyKeyRepository;
 using ComputerSales.Infrastructure.Repositories.OrderCart_Respo;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
 using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
 using ComputerSales.Infrastructure.Repositories.Respository_ImplementationInterface;
 using ComputerSales.Infrastructure.Repositories.Role_Respo;
+using ComputerSales.Infrastructure.Repositories.SmtpEmailSender_Respository;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Infrastructure.Repositories.VariantPrice_Respo;
 using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
@@ -71,6 +74,8 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IVariantPriceRespo, VariantPriceRespo>();
             services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
             services.AddScoped<ICustomerRespo, CustomerRespo>();
+            services.AddScoped<IEmailVerifyKeyRepository, EmailVerifyKeyRepository>();
+            services.AddScoped<IEmailSender, SmtpEmailSenderRespo>();
             services.Configure<JwtOptions>(config.GetSection("Jwt"));
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
 
@@ -127,8 +132,11 @@ namespace ComputerSales.Infrastructure
 
             //================= Account ==============//
             services.AddScoped<CreateCustomer_UC>();
-           services.AddScoped<DeleteCustomer_UC>();
-           services.AddScoped<getCustomerByID>();
+            services.AddScoped<DeleteCustomer_UC>();
+            services.AddScoped<getCustomerByID>();
+            services.AddScoped<RegisterAccount_UC>();
+            services.AddScoped<VerifyEmail_UC>();
+            services.AddScoped<ResendVerifyEmail_UC>();
 
 
             //================= Cart ==============//

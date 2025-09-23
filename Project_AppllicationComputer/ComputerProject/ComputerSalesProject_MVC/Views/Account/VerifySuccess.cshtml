@@ -1,0 +1,38 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Xác thực thành công</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-purple-600 flex items-center justify-center">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center">
+        <div class="mx-auto w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
+            <svg class="w-10 h-10 text-purple-700" viewBox="0 0 24 24" fill="none">
+                <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <h1 class="mt-6 text-2xl font-extrabold text-purple-700">Xác thực email thành công!</h1>
+        <p class="mt-2 text-gray-600">Tài khoản của bạn đã được kích hoạt.</p>
+
+        <div class="mt-6 flex flex-col gap-3">
+            <a href="/Account/Login"
+               class="w-full inline-block px-4 py-2 rounded-xl border-2 border-purple-600 text-white bg-purple-600 font-semibold hover:opacity-90 text-center">
+                Đăng nhập ngay
+            </a>
+            <a href="/"
+               class="w-full inline-block px-4 py-2 rounded-xl border-2 border-purple-600 text-purple-600 font-semibold hover:bg-purple-50 text-center">
+                Về trang chủ
+            </a>
+        </div>
+
+        <p class="mt-6 text-xs text-gray-400">
+            Nếu bạn không thực hiện hành động này, vui lòng đổi mật khẩu để đảm bảo an toàn.
+        </p>
+    </div>
+</body>
+</html>

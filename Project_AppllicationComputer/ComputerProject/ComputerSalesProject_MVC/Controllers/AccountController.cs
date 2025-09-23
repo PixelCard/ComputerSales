@@ -2,12 +2,15 @@
 using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
 using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Domain.Entity;
-using ComputerSales.Domain.Entity.ECustomer;
+using ComputerSales.Application.UseCase.Account_UC;
+using ComputerSales.Application.UseCaseDTO.Account_DTO.EmailVerify_DTO;
+using ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO;
 using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
 using ComputerSalesProject_MVC.Models;
+using ComputerSales.Application.UseCaseDTO.Account_DTO.ResendVerifyEmaiDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 namespace ComputerSalesProject_MVC.Controllers
 {
     [Route("[controller]")]
@@ -19,21 +22,30 @@ namespace ComputerSalesProject_MVC.Controllers
         private readonly IRoleRepository _roleService;
         private readonly IUnitOfWorkApplication _uow;
         private readonly IResfreshTokenRespo _refresh;
+        private readonly RegisterAccount_UC _register;
+        private readonly VerifyEmail_UC _verify;
+        private readonly ResendVerifyEmail_UC _resend;
 
-        //---------------------------------------Constructor--------------------------------------------------
-        public AccountController(
-            IJwtTokenGenerator jwt, 
+        public AccountController(IJwtTokenGenerator jwt, 
             IAccountRepository accountService, 
             IRoleRepository roleService, 
-            IUnitOfWorkApplication uow,
-            IResfreshTokenRespo refresh)
+            IUnitOfWorkApplication uow, 
+            IResfreshTokenRespo refresh, 
+            RegisterAccount_UC register, VerifyEmail_UC verify, 
+            ResendVerifyEmail_UC resend)
         {
             _jwt = jwt;
             _accountService = accountService;
             _roleService = roleService;
             _uow = uow;
             _refresh = refresh;
+            _register = register;
+            _verify = verify;
+            _resend = resend;
         }
+
+        //---------------------------------------Constructor--------------------------------------------------
+
 
         //---------------------------------------Get--------------------------------------------------
         [HttpGet("Login")]
@@ -89,69 +101,148 @@ namespace ComputerSalesProject_MVC.Controllers
 
         [ValidateAntiForgeryToken]
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromForm] RegisterViewModel req, CancellationToken ct)
+        public async Task<IActionResult> Register([FromForm] RegisterRequestDTO req, CancellationToken ct)
         {
-            // 1) Validate cơ bản
-            var email = (req.Email ?? "").Trim().ToLowerInvariant();
-            
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(req.Password))
-                return BadRequest(new { message = "Email và mật khẩu là bắt buộc." });
-
-            // 2) Check trùng email
-            var existed = await _accountService.GetAccountByEmail(email, ct); 
-
-            if (existed != null)
-                return Conflict(new { message = "Email đã tồn tại." });
-
-            // 3) Xác định RoleId
-            var roleId = req.RoleId ?? 1;
-
             if (!ModelState.IsValid) return View(req);
 
-            // 4) Hash mật khẩu 
-            var hash = BCrypt.Net.BCrypt.HashPassword(req.Password); // luôn hash ở server
-
-
-            // 4.1) Tạo Account + gán Customer (1-1)
-            var acc = Account.Create(email, hash, roleId);
-
-            // Nếu bạn đã có entity Customer, map các field tương ứng ở đây:
-            acc.Customer = new Customer
+            // Chuẩn hóa email
+            var email = (req.Email ?? string.Empty).Trim().ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(req.Password))
             {
-                Name = req.UserName,                  
-                Description = req.Description_User,       
-                address=req.address,
-                sdt=req.phone,
-                Date = req.Date.Value
-            };
+                ModelState.AddModelError(string.Empty, "Email và mật khẩu là bắt buộc.");
+                return View(req);
+            }
 
-            await _uow.BeginTransactionAsync(ct);
+            // Kiểm tra trùng email
+            var existed = await _accountService.GetAccountByEmail(email, ct);
+            if (existed != null)
+            {
+                ModelState.AddModelError(string.Empty, "Email đã tồn tại.");
+                return View(req);
+            }
 
             try
             {
+                // UC sẽ: tạo Account, tạo verify key 60s, set VerifyKeyExpiresAt, gửi email, commit
+                await _register.Handle(req, ct);
 
-                // 5) Lưu DB
-                await _accountService.AddAccount(acc, ct);
-                await _uow.SaveChangesAsync(ct);
+                // LẤY LẠI account theo email để biết ID và thời điểm hết hạn verify.
+                var acc = await _accountService.GetAccountByEmail(email, ct);
 
-                // 6) Nạp Role để nhúng claim (nếu navigation chưa được load)
-                acc.Role = acc.Role ?? await _roleService.GetRole(acc.IDRole, ct);
+                if (acc == null)
+                {
+                    // Phòng hờ: nếu vì lý do gì đó chưa đọc lại được account
+                    TempData["Info"] = "Đăng ký thành công. Vui lòng kiểm tra email để xác thực.";
+                    return RedirectToAction(nameof(Login));
+                }
 
-                // 7) Sinh JWT
-                var token = _jwt.Generate(acc);
+                // 2) Lấy mốc hết hạn đếm ngược cho màn PendingVerify.
+                //    UC khi tạo key cần set acc.VerifyKeyExpiresAt = expireAt;
+                //    nếu vì lý do nào đó chưa có, fallback +60s để UI vẫn hiển thị.
+                var expUtc = acc.VerifyKeyExpiresAt ?? DateTime.UtcNow.AddSeconds(60);
 
-                await _uow.CommitAsync(ct);
-
-                // 8) Trả về Trang home
-                return RedirectToAction("Login", "Account");
-
+                // 3) Điều hướng sang trang “PendingVerify”,
+                //  truyền kèm:
+                //    - uid: để link “Gửi lại” (Resend) biết account nào
+                //    - expUtc: để View hiển thị đồng hồ đếm ngược chính xác
+                return RedirectToAction(nameof(PendingVerify), new
+                {
+                    uid = acc.IDAccount,
+                    expUtc = expUtc.ToString("o")
+                });
             }
             catch (Exception ex)
             {
-                await _uow.RollbackAsync(ct);
-                throw;
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(req);
             }
         }
+
+        // =================== PENDING VERIFY (đếm ngược) ===================
+        [HttpGet("PendingVerify")]
+        [AllowAnonymous]
+        public IActionResult PendingVerify([FromQuery] int uid, [FromQuery] string expUtc)
+        {
+            DateTime expiresAtUtc =
+                DateTime.TryParse(expUtc, null, System.Globalization.DateTimeStyles.RoundtripKind, out var t)
+                ? t
+                : DateTime.UtcNow.AddSeconds(60);
+
+            var vm = new PendingVerifyRequest
+            {
+                AccountId = uid,
+                VerifyExpiresAtUtc = expiresAtUtc
+            };
+
+            return View(vm); // Views/Account/PendingVerify.cshtml
+        }
+
+        // =================== VERIFY (link trong email) ===================
+        // Ví dụ link: /Account/Verify?uid=123&key=Base64UrlRawKey
+        [HttpGet("Verify")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Verify([FromQuery] int uid, [FromQuery] string key, CancellationToken ct)
+        {
+            if (uid <= 0 || string.IsNullOrWhiteSpace(key))
+                return BadRequest("Thiếu tham số xác thực.");
+
+            try
+            {
+                await _verify.Handle(new VerifyEmailRequest(uid, key),ct);
+                TempData["SuccessMessage"] = "Xác thực email thành công!";
+                return RedirectToAction(nameof(VerifySuccess));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+
+                // lấy lại expUtc (nếu còn) để tiếp tục hiển thị countdown
+                var acc = await _accountService.GetAccountByID(uid, ct);
+                var expUtc = acc?.VerifyKeyExpiresAt ?? DateTime.UtcNow.AddSeconds(60);
+
+                return RedirectToAction(nameof(PendingVerify), new
+                {
+                    uid,
+                    expUtc = expUtc.ToString("o")
+                });
+            }
+        }
+
+        [HttpGet("VerifySuccess")]
+        [AllowAnonymous]
+        public IActionResult VerifySuccess() => View(); // Views/Account/VerifySuccess.cshtml
+
+        // =================== RESEND VERIFY (nút trên PendingVerify) ===================
+        [HttpPost("ResendVerify")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendVerify([FromForm] int uid, CancellationToken ct)
+        {
+            if (uid <= 0) return BadRequest(new { ok = false, message = "Thiếu uid." });
+
+            try
+            {
+                // UC sinh key mới 60s + gửi email (áp dụng rate limit/lockout)
+                var request = new ResendVerifyEmailDTO(uid);
+
+                await _resend.Handle(request, ct);
+
+                // Đọc lại account để lấy VerifyKeyExpiresAt vừa set trong UC
+                var acc = await _accountService.GetAccountByID(uid, ct);   
+                var newExpireAtUtc = acc?.VerifyKeyExpiresAt ?? DateTime.UtcNow.AddSeconds(60);
+
+                return Ok(new
+                {
+                    ok = true,
+                    expUtc = newExpireAtUtc.ToString("o")
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { ok = false, message = ex.Message });
+            }
+        }
+
 
 
         // ====== Refresh (MVC) ======
@@ -208,6 +299,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 : RedirectToAction("Index", "Home");
         }
 
+
         // ====== Logout (MVC) ======
         [HttpPost("Logout")]
         [ValidateAntiForgeryToken]
@@ -222,6 +314,9 @@ namespace ComputerSalesProject_MVC.Controllers
 
             return RedirectToAction(nameof(Login));
         }
+
+
+
     }
 }
 
