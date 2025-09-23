@@ -19,7 +19,7 @@ public class VariantVM
     public int VariantId { get; set; }
     public string SKU { get; set; } = "";
     public int Quantity { get; set; }
-    public decimal Price { get; set; }
-    public decimal DiscountPrice { get; set; }
+    public decimal? Price { get; set; }            // <- đổi sang decimal?
+    public decimal? DiscountPrice { get; set; }    // <- đổi sang decimal?
     public List<string> Images { get; set; } = new();
 }

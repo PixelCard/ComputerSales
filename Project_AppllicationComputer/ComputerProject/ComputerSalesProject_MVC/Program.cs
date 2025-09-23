@@ -55,6 +55,9 @@ app.UseAuthorization();
 app.UseRouting();
 
 
+//dùng cho logo
+app.UseStaticFiles();
+
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");

@@ -9,7 +9,6 @@
   <ItemGroup>
     <None Remove="Views\Account\2hspxr20.hv1~" />
     <None Remove="Views\Account\klfwqyfu.5yj~" />
-    <None Remove="Views\Cart\hlgh0cfk.lh1~" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +33,11 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\ProductControllers\" />
+    <Folder Include="Image\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\image\Logo.jpg" />
   </ItemGroup>
 
 </Project>

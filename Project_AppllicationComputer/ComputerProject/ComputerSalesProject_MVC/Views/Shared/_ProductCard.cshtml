@@ -1,4 +1,5 @@
 ﻿@model ProductCardVM
+
 @{
     // --- Tính giá hiển thị & % giảm ---
     var hasDiscount = Model.DiscountPrice > 0;
@@ -72,6 +73,7 @@
     </span>
   }
 
+
   <!-- Giá -->
   <div class="flex items-baseline gap-2 mb-3">
     @Html.Raw(PriceToParts(showPrice))
@@ -89,6 +91,7 @@
     @* Nếu đã biết 1 variant -> gửi hidden *@
     @if (Model.SelectedVariantId is int vid)
     {
+
       <input type="hidden" name="productVariantId" value="@vid" />
     }
     else if (Model.Variants != null && Model.Variants.Any())
@@ -119,7 +122,6 @@
         </select>
       </div>
     }
-
     <input type="number" name="qty" value="1" min="1" class="w-20 border rounded px-2 py-1 mr-2" />
     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition">
       Add to Cart
