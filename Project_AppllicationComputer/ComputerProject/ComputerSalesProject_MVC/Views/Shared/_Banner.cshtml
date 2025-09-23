@@ -9,8 +9,7 @@
 
             <!-- SIDEBAR -->
             <aside class="col-span-12 md:col-span-3">
-                <div class="rounded-2xl p-3 sm:p-4 shadow-lg
-                  bg-gradient-to-b from-[#153b76] to-[#244d87] text-white">
+                <div class="rounded-2xl p-3 sm:p-4 shadow-lg bg-gradient-to-b from-slate-900 to-indigo-800 text-white">
                     <ul class="space-y-2">
                         <!-- item -->
                         <li>
@@ -18,7 +17,7 @@
                                 <span class="flex items-center gap-3">
                                     <!-- icon -->
                                     <svg class="w-5 h-5 opacity-90" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h8v6H3V5Zm10 0h8v6h-8V5ZM3 13h8v6H3v-6Zm10 0h8v6h-8v-6Z" /></svg>
-                                    <span class="font-medium">Components & Storage</span>
+                                    <span class="font-medium">Linh kiện & Lưu trữ</span>
                                 </span>
                                 <svg class="w-4 h-4 opacity-70" viewBox="0 0 24 24" fill="currentColor"><path d="M9 18l6-6-6-6" /></svg>
                             </a>
@@ -27,7 +26,7 @@
                             <a class="flex items-center justify-between gap-3 px-3 py-3 rounded-xl hover:bg-white/10">
                                 <span class="flex items-center gap-3">
                                     <svg class="w-5 h-5 opacity-90" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v10H4V6Zm0 12h16v2H4v-2Z" /></svg>
-                                    <span class="font-medium">Computer Systems</span>
+                                    <span class="font-medium">Máy tính để bàn & Laptop</span>
                                 </span>
                                 <svg class="w-4 h-4 opacity-70" viewBox="0 0 24 24" fill="currentColor"><path d="M9 18l6-6-6-6" /></svg>
                             </a>
@@ -36,7 +35,7 @@
                             <a class="flex items-center justify-between gap-3 px-3 py-3 rounded-xl hover:bg-white/10">
                                 <span class="flex items-center gap-3">
                                     <svg class="w-5 h-5 opacity-90" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h12v4H6V4Zm-2 6h16v10H4V10Z" /></svg>
-                                    <span class="font-medium">Computer Peripherals</span>
+                                    <span class="font-medium">Thiết bị ngoại vi</span>
                                 </span>
                                 <svg class="w-4 h-4 opacity-70" viewBox="0 0 24 24" fill="currentColor"><path d="M9 18l6-6-6-6" /></svg>
                             </a>
@@ -55,7 +54,7 @@
                             <a class="flex items-center justify-between gap-3 px-3 py-3 rounded-xl hover:bg-white/10">
                                 <span class="flex items-center gap-3">
                                     <svg class="w-5 h-5 opacity-90" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4h14v6H5V4Zm0 8h14v8H5v-8Z" /></svg>
-                                    <span class="font-medium">More</span>
+                                    <span class="font-medium">Mạng & Phần mềm</span>
                                 </span>
                                 <svg class="w-4 h-4 opacity-70" viewBox="0 0 24 24" fill="currentColor"><path d="M9 18l6-6-6-6" /></svg>
                             </a>
@@ -66,20 +65,24 @@
 
             <!-- HERO -->
             <div class="col-span-12 md:col-span-6">
-                <div class="rounded-2xl overflow-hidden shadow-lg bg-white">
-                    <!-- tỉ lệ ảnh 16:9 -->
-                    <div class="relative w-full pt-[56.25%] bg-gradient-to-tr from-[#0b3d91] to-[#5422d6]">
+                <div class="rounded-2xl overflow-hidden shadow-lg bg-slate-900">
+                    <div class="relative w-full pt-[56.25%]">
                         <img class="absolute inset-0 w-full h-full object-cover"
-                             src="https://images.unsplash.com/photo-1542751110-97427bbecf20?q=80&w=1600&auto=format&fit=crop"
-                             alt="Hero banner" />
-                    </div>
-                    <div class="p-4 sm:p-5">
-                        <h3 class="text-2xl font-extrabold text-[#0b2f63]">TECHTEMBER — Shock the Competition</h3>
-                        <p class="text-gray-600 mt-1">Power up deals on PC components, systems and more.</p>
-                        <button class="mt-3 inline-flex items-center gap-2 rounded-full bg-[#2b5fb7] hover:bg-[#224f9a] text-white px-4 py-2">
-                            Power up
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7v-4H4v-6h9V5Z" /></svg>
-                        </button>
+                             src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1600&auto=format&fit=crop"
+                             alt="High-end PC hardware" />
+                        <div class="absolute inset-0 bg-gradient-to-tr from-slate-900/80 via-indigo-900/40 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6 text-white">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-1 text-[11px] rounded-full bg-white/10 backdrop-blur">New arrivals</span>
+                                <span class="px-2 py-1 text-[11px] rounded-full bg-indigo-500/70">Up to 30% off</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold leading-tight">Build Your Next Performance PC</h3>
+                            <p class="text-white/85 mt-1">CPU, GPU, NVMe SSD và nhiều hơn cho game & sáng tạo.</p>
+                            <button class="mt-3 inline-flex items-center gap-2 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2">
+                                Mua ngay
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5l7 7-7 7v-4H4v-6h9V5Z" /></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,14 +90,14 @@
             <!-- RIGHT PROMO -->
             <div class="col-span-12 md:col-span-3">
                 <div class="rounded-2xl p-0 overflow-hidden shadow-lg bg-white">
-                    <div class="bg-gradient-to-b from-[#1b4a93] to-[#2b6bcf] text-white p-5">
-                        <h3 class="text-3xl font-extrabold leading-tight">Computer<br />Peripherals</h3>
+                    <div class="bg-gradient-to-b from-indigo-700 to-indigo-900 text-white p-5">
+                        <h3 class="text-3xl font-extrabold leading-tight">Laptop &<br />Gaming Gear</h3>
                         <a class="inline-flex items-center gap-1 text-white/90 underline mt-2" href="#">Shop now</a>
                     </div>
                     <div class="p-4">
                         <img class="w-full rounded-xl"
-                             src="https://images.unsplash.com/photo-1587202372775-98927b59e88d?q=80&w=1400&auto=format&fit=crop"
-                             alt="Peripherals" />
+                             src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1400&auto=format&fit=crop"
+                             alt="Laptop and peripherals" />
                     </div>
                 </div>
             </div>
@@ -105,13 +108,13 @@
         <section class="grid grid-cols-12 gap-4 mt-4">
             <!-- Card 1 -->
             <div class="col-span-12 md:col-span-6">
-                <div class="bg-[#1f67b5] text-white rounded-2xl p-4 sm:p-5 shadow-lg">
+                <div class="bg-indigo-800 text-white rounded-2xl p-4 sm:p-5 shadow-lg">
                     <div class="flex items-start justify-between">
                         <div>
                             <h4 class="font-bold">AMD</h4>
-                            <p class="mt-1 font-semibold">Combo up savings <span class="text-yellow-300">$123.00</span></p>
+                            <p class="mt-1 font-semibold">Combo ưu đãi đến <span class="text-yellow-300">$123.00</span></p>
                         </div>
-                        <a class="text-white/90 underline">More options</a>
+                        <a class="text-white/90 underline">Xem thêm</a>
                     </div>
 
                     <!-- items strip -->
@@ -127,7 +130,7 @@
                         </div>
 
                         <div class="mt-3 flex items-center gap-3">
-                            <button class="w-8 h-8 rounded-full bg-white/80 text-[#1f67b5] font-bold">+</button>
+                            <button class="w-8 h-8 rounded-full bg-white/80 text-indigo-800 font-bold">+</button>
                             <div class="w-20 h-14 rounded-lg bg-white overflow-hidden flex items-center justify-center">
                                 <img src="https://images.unsplash.com/photo-1555618568-9e7fce6d5f72?q=80&w=400&auto=format&fit=crop"
                                      class="w-full h-full object-cover" alt="Mainboard" />
@@ -147,7 +150,7 @@
                             <div class="text-white/70 line-through">$993.98</div>
                         </div>
                         <div class="flex gap-3">
-                            <button class="rounded-full bg-white text-[#1f67b5] hover:bg-blue-50 px-4 py-2">Build with it</button>
+                            <button class="rounded-full bg-white text-indigo-800 hover:bg-blue-50 px-4 py-2">Build with it</button>
                             <button class="rounded-full bg-[#f7a928] hover:bg-[#e1981e] text-[#0b2f63] px-4 py-2">Add to cart ▸</button>
                         </div>
                     </div>
@@ -156,13 +159,13 @@
 
             <!-- Card 2 -->
             <div class="col-span-12 md:col-span-6">
-                <div class="bg-[#89b3e8] text-[#0b2f63] rounded-2xl p-4 sm:p-5 shadow-lg">
+                <div class="bg-indigo-100 text-[#0b2f63] rounded-2xl p-4 sm:p-5 shadow-lg">
                     <div class="flex items-start justify-between">
                         <div>
                             <h4 class="font-bold">NAS</h4>
-                            <p class="mt-1 font-semibold">Combo up savings <span class="text-[#0b2f63]/80">$69.00</span></p>
+                            <p class="mt-1 font-semibold">Tiết kiệm combo <span class="text-[#0b2f63]/80">$69.00</span></p>
                         </div>
-                        <a class="text-[#0b2f63]/80 underline">More options</a>
+                        <a class="text-[#0b2f63]/80 underline">Xem thêm</a>
                     </div>
 
                     <div class="mt-4 rounded-xl bg-white/70 p-3">

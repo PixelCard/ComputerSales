@@ -7,6 +7,277 @@
         .Take(8).ToList();
 }
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+    function chgQty(n){
+      const el = document.getElementById('qty');
+      let v = parseInt(el.value||'1',10)+n;
+      if(isNaN(v) || v<1) v=1;
+      el.value=v;
+    }
+
+    // ============ ADD: chọn variant -> đổi ảnh và load option types ============
+    async function selectVariant(btn){
+        try{
+            const id = btn.getAttribute('data-variant-id');
+            const sku = btn.getAttribute('data-variant-sku');
+            const price = btn.getAttribute('data-variant-price');
+            const discount = btn.getAttribute('data-variant-discount');
+            
+            if(!id) return;
+
+            console.log('Selected variant:', { id, sku, price, discount });
+
+            // lưu lại variant đã chọn
+            const hid = document.getElementById('selectedVariantId');
+            if(hid) hid.value = id;
+
+            // gọi API lấy data variant (ảnh/giá/option types)
+            const res = await fetch(`/product/variant-data/${id}`);
+            if(!res.ok) {
+                console.log('API call failed, using fallback data');
+                // Fallback: sử dụng data từ button attributes
+                updateVariantDisplay(sku, price, discount);
+                loadOptionTypesFallback(id);
+                return;
+            }
+            const data = await res.json();
+
+            // đổi ảnh chính
+            if (data?.images?.length){
+                const main = document.getElementById('mainImg');
+                if(main) main.src = data.images[0];
+
+                // render lại thumbnails
+                renderThumbs(data.images);
+            }
+
+            // Cập nhật thông tin variant
+            updateVariantDisplay(data?.variantSku || sku, data?.price || price, data?.discountPrice || discount);
+
+            // Load option types
+            if (data?.optionTypes && data.optionTypes.length > 0) {
+                loadOptionTypes(data.optionTypes);
+            } else {
+                // Fallback: load option types từ API riêng
+                await loadOptionTypesFromAPI(id);
+            }
+
+            // highlight nút đang chọn
+            document.querySelectorAll('[data-variant-id]')
+                .forEach(b => b.classList.remove('border-blue-600','ring-2','ring-blue-200','bg-blue-50'));
+            btn.classList.add('border-blue-600','ring-2','ring-blue-200','bg-blue-50');
+
+        }catch(e){
+            console.error('Error selecting variant:', e);
+        }
+    }
+
+    // Cập nhật hiển thị thông tin variant
+    function updateVariantDisplay(sku, price, discount) {
+        // Cập nhật Variant SKU hiển thị
+        const variantSkuSpan = [...document.querySelectorAll('span')]
+           .find(s => s.textContent?.trim().startsWith('• Variant:'));
+        if(variantSkuSpan && sku){
+           variantSkuSpan.textContent = `• Variant: ${sku}`;
+        }
+
+        // Cập nhật giá nếu cần
+        if (price) {
+            const currentPrice = parseFloat(price) - parseFloat(discount || 0);
+            console.log('Updating price to:', currentPrice);
+            // Có thể cập nhật giá ở đây nếu cần
+        }
+    }
+
+    // Load option types từ API
+    async function loadOptionTypesFromAPI(variantId) {
+        try {
+            const res = await fetch(`/product/variant-options/${variantId}`);
+            if (res.ok) {
+                const optionTypes = await res.json();
+                loadOptionTypes(optionTypes);
+            } else {
+                loadOptionTypesFallback(variantId);
+            }
+        } catch (e) {
+            console.error('Error loading option types:', e);
+            loadOptionTypesFallback(variantId);
+        }
+    }
+
+    // Load option types (render UI) - sử dụng VariantSummaryVM format
+    function loadOptionTypes(optionTypes) {
+        const container = document.getElementById('optionTypesContainer');
+        const optionsDiv = document.getElementById('variantOptions');
+        
+        if (!container || !optionTypes || optionTypes.length === 0) {
+            if (optionsDiv) optionsDiv.classList.add('hidden');
+            return;
+        }
+
+        container.innerHTML = '';
+        
+        optionTypes.forEach(optionType => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'border rounded-lg p-3 bg-gray-50';
+            
+            optionDiv.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-medium text-gray-800">${optionType.name}</h4>
+                    <span class="text-sm text-gray-500">${optionType.description || ''}</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    ${optionType.values.map(value => `
+                        <button type="button" 
+                                class="px-3 py-1.5 text-sm border rounded-md bg-white hover:border-blue-500 hover:bg-blue-50 transition
+                                       ${value.isSelected ? 'border-blue-600 bg-blue-50' : 'border-gray-300'}"
+                                data-option-type-id="${optionType.id}"
+                                data-variant-id="${value.variantId}"
+                                data-sku="${value.sku}"
+                                data-quantity="${value.quantity}"
+                                data-display-price="${value.displayPrice}"
+                                onclick="selectOptionValue(this)">
+                            <div class="text-left">
+                                <div class="font-medium">${value.name}</div>
+                                <div class="text-xs text-gray-500">SKU: ${value.sku}</div>
+                                <div class="text-xs text-gray-500">Còn: ${value.quantity}</div>
+                                ${value.displayPrice > 0 ? `<div class="text-xs text-green-600">+$${value.displayPrice}</div>` : ''}
+                            </div>
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            
+            container.appendChild(optionDiv);
+        });
+
+        if (optionsDiv) optionsDiv.classList.remove('hidden');
+    }
+
+    // Fallback: tạo option types mẫu sử dụng VariantSummaryVM format
+    function loadOptionTypesFallback(variantId) {
+        // Sử dụng format tương thích với VariantSummaryVM
+       
+
+        loadOptionTypes(sampleOptionTypes);
+    }
+
+    // Xử lý chọn option value - sử dụng VariantSummaryVM data
+    function selectOptionValue(btn) {
+        // Remove selection from siblings
+        const optionTypeId = btn.getAttribute('data-option-type-id');
+        const siblings = document.querySelectorAll(`[data-option-type-id="${optionTypeId}"]`);
+        siblings.forEach(sibling => {
+            sibling.classList.remove('border-blue-600', 'bg-blue-50');
+            sibling.classList.add('border-gray-300');
+        });
+
+        // Add selection to clicked button
+        btn.classList.remove('border-gray-300');
+        btn.classList.add('border-blue-600', 'bg-blue-50');
+
+        // Lấy thông tin từ VariantSummaryVM
+        const variantId = btn.getAttribute('data-variant-id');
+        const sku = btn.getAttribute('data-sku');
+        const quantity = btn.getAttribute('data-quantity');
+        const displayPrice = btn.getAttribute('data-display-price');
+
+        console.log('Selected option (VariantSummaryVM):', {
+            optionTypeId: optionTypeId,
+            variantId: variantId,
+            sku: sku,
+            quantity: quantity,
+            displayPrice: displayPrice
+        });
+
+        // Kiểm tra số lượng còn lại
+        if (parseInt(quantity) <= 0) {
+            alert('Sản phẩm này đã hết hàng!');
+            return;
+        }
+
+        // Cập nhật giá tổng
+        updateTotalPrice();
+        
+        // Có thể lưu thông tin variant được chọn vào hidden input
+        updateSelectedVariantInfo(variantId, sku, displayPrice);
+    }
+
+    // Cập nhật giá tổng dựa trên các option được chọn (VariantSummaryVM)
+    function updateTotalPrice() {
+        const selectedOptions = document.querySelectorAll('.border-blue-600[data-variant-id]');
+        let totalAdjustment = 0;
+        
+        selectedOptions.forEach(option => {
+            const displayPrice = parseFloat(option.getAttribute('data-display-price') || 0);
+            totalAdjustment += displayPrice;
+        });
+
+        console.log('Total price adjustment (VariantSummaryVM):', totalAdjustment);
+        
+        // Có thể cập nhật giá hiển thị ở đây
+        // Ví dụ: cập nhật giá trong price panel
+        const basePrice = @Model.Price; // Giá cơ bản từ model
+        const newTotalPrice = basePrice + totalAdjustment;
+        console.log('New total price:', newTotalPrice);
+    }
+
+    // Cập nhật thông tin variant được chọn
+    function updateSelectedVariantInfo(variantId, sku, displayPrice) {
+        // Có thể lưu vào hidden inputs hoặc state
+        const selectedVariants = document.getElementById('selectedVariants') || createSelectedVariantsInput();
+        
+        // Lưu thông tin variant được chọn
+        const variantInfo = {
+            variantId: variantId,
+            sku: sku,
+            displayPrice: displayPrice,
+            timestamp: Date.now()
+        };
+        
+        console.log('Updated selected variant info:', variantInfo);
+        
+        // Có thể gửi lên server khi cần
+        // hoặc lưu vào localStorage
+        localStorage.setItem('selectedVariant_' + variantId, JSON.stringify(variantInfo));
+    }
+
+    // Tạo hidden input để lưu thông tin variants được chọn
+    function createSelectedVariantsInput() {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.id = 'selectedVariants';
+        input.name = 'selectedVariants';
+        document.querySelector('form')?.appendChild(input);
+        return input;
+    }
+
+    function renderThumbs(urls){
+        const wrap = document.getElementById('thumbs');
+        if(!wrap) return;
+        wrap.innerHTML = '';
+        urls.forEach((url, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'rounded-lg border border-gray-200 bg-white hover:border-blue-500 p-1';
+            btn.onclick = () => { const main = document.getElementById('mainImg'); if(main){ main.src = url; } };
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'thumb ' + idx;
+            img.className = 'w-20 h-14 object-cover rounded border border-gray-200';
+            btn.appendChild(img);
+            wrap.appendChild(btn);
+        });
+    }
+  window.chgQty = chgQty;
+  window.selectVariant = selectVariant;
+  window.selectOptionValue = selectOptionValue;
+  // các helper nếu cần dùng ở inline khác:
+  window.updateVariantDisplay = updateVariantDisplay;
+  window.loadOptionTypes = loadOptionTypes;
+  window.loadOptionTypesFromAPI = loadOptionTypesFromAPI;
+  window.loadOptionTypesFallback = loadOptionTypesFallback;
+  window.renderThumbs = renderThumbs;
+</script>
 
 <main class="max-w-[1320px] xl:max-w-[1400px] mx-auto px-3 lg:px-4 py-6">
 
@@ -75,10 +346,19 @@
                                hover:border-blue-500 hover:bg-blue-50 transition
                                @(Model.VariantId == v.VariantId ? "border-blue-600 ring-2 ring-blue-200" : "border-gray-300")"
                                         data-variant-id="@v.VariantId"
+                                        data-variant-sku="@v.SKU"
                                         onclick="selectVariant(this)">
                                     @v.SKU
                                 </button>
                             }
+                        </div>
+                        
+                        <!-- Hiển thị Option Types của variant được chọn -->
+                        <div id="variantOptions" class="mt-4 hidden">
+                            <div class="text-sm font-medium mb-2">Tùy chọn sản phẩm</div>
+                            <div id="optionTypesContainer" class="space-y-3">
+                                <!-- Option types sẽ được load động -->
+                            </div>
                         </div>
                     </div>
                 }
@@ -184,6 +464,9 @@
                     </button>
                 </div>
 
+                <!-- Hidden input để lưu variant ID -->
+                <input type="hidden" id="selectedVariantId" name="selectedVariantId" value="@Model.VariantId" />
+
                 <!-- CTAs -->
                 <button class="mt-4 w-full rounded-full bg-[#f7a928] hover:bg-[#e1981e] text-[#0b2f63] font-semibold py-3 inline-flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13L5.4 5M7 13l-2 7h2l2-7m8 0l2 7h2l-2-7" /></svg>
@@ -243,71 +526,3 @@
     </section>
 </main>
 
-<script>
-    function chgQty(n){
-      const el = document.getElementById('qty');
-      let v = parseInt(el.value||'1',10)+n;
-      if(isNaN(v) || v<1) v=1;
-      el.value=v;
-    }
-
-    // ============ ADD: chọn variant -> đổi ảnh ============
-    async function selectVariant(btn){
-        try{
-            const id = btn.getAttribute('data-variant-id');
-            if(!id) return;
-
-            // lưu lại variant đã chọn
-            const hid = document.getElementById('selectedVariantId');
-            if(hid) hid.value = id;
-
-            // gọi API lấy data variant (ảnh/giá nếu cần)
-            const res = await fetch(`/product/variant-data/${id}`);
-            if(!res.ok) return;
-            const data = await res.json();
-
-            // đổi ảnh chính
-            if (data?.images?.length){
-                const main = document.getElementById('mainImg');
-                if(main) main.src = data.images[0];
-
-                // render lại thumbnails
-                renderThumbs(data.images);
-            }
-
-            // (OPTIONAL) nếu muốn đổi luôn Variant SKU hiển thị
-            const variantSkuSpan = [...document.querySelectorAll('span')]
-               .find(s => s.textContent?.trim().startsWith('• Variant:'));
-            if(variantSkuSpan && data?.variantSku){
-               variantSkuSpan.textContent = `• Variant: ${data.variantSku}`;
-            }
-
-            // (OPTIONAL) nếu muốn đổi giá, có thể cập nhật ở đây từ data.price
-
-            // highlight nút đang chọn
-            document.querySelectorAll('[data-variant-id]')
-                .forEach(b => b.classList.remove('border-blue-600','ring-2','ring-blue-200','bg-blue-50'));
-            btn.classList.add('border-blue-600','ring-2','ring-blue-200','bg-blue-50');
-
-        }catch(e){
-            console.error(e);
-        }
-    }
-
-    function renderThumbs(urls){
-        const wrap = document.getElementById('thumbs');
-        if(!wrap) return;
-        wrap.innerHTML = '';
-        urls.forEach((url, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'rounded-lg border border-gray-200 bg-white hover:border-blue-500 p-1';
-            btn.onclick = () => { const main = document.getElementById('mainImg'); if(main){ main.src = url; } };
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'thumb ' + idx;
-            img.className = 'w-20 h-14 object-cover rounded border border-gray-200';
-            btn.appendChild(img);
-            wrap.appendChild(btn);
-        });
-    }
-</script>

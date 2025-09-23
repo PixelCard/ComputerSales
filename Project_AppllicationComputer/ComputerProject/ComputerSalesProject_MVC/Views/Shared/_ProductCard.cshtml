@@ -18,7 +18,7 @@
         : 0;
 }
 
-<div class="rounded-2xl border shadow-sm hover:shadow-md transition p-4 max-w-xs bg-white flex flex-col">
+<div class="rounded-2xl border shadow-sm hover:shadow-md transition p-6 max-w-sm bg-white flex flex-col">
   <!-- Label góc trên -->
   <div class="mb-2">
     <span class="inline-flex items-center gap-1 bg-blue-600 text-white text-[11px] font-semibold px-2 py-1 rounded-md">
@@ -30,13 +30,15 @@
   </div>
 
   <!-- Ảnh -->
-  <div class="mb-3">
-    <img src="@(Model.Images?.FirstOrDefault() ?? "/images/placeholder.png")"
-         alt="@Model.Name" class="w-full h-44 object-contain" />
+  <div class="mb-4">
+    <a href="@Url.Action("Details", "Product", new { id = Model.ProductId })">
+      <img src="@(Model.Images?.FirstOrDefault() ?? "/images/placeholder.png")"
+           alt="@Model.Name" class="w-full h-48 object-contain cursor-pointer hover:opacity-90 transition" />
+    </a>
   </div>
 
   <!-- Nhóm label icon -->
-  <div class="flex items-center gap-2 text-[12px] text-gray-600 mb-2">
+  <div class="flex flex-wrap items-center gap-2 text-[12px] text-gray-600 mb-3">
     <span class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
         <path d="M3 7h11v7h-1.35a3.5 3.5 0 10-6.3 0H6a3 3 0 100 2h1.35a3.5 3.5 0 106.3 0H18a2 2 0 002-2v-4l-3-3h-2V5H3v2zM18 9.5h2.5L18 7v2.5z" />
@@ -58,10 +60,10 @@
   </div>
 
   <!-- Tên + mô tả ngắn -->
-  <h3 class="font-semibold text-gray-900 leading-snug mb-1 line-clamp-2">
+  <h3 class="font-semibold text-gray-900 leading-snug mb-2 line-clamp-2 text-lg">
     @Model.Name
   </h3>
-  <p class="text-sm text-gray-600 mb-2 line-clamp-2">
+  <p class="text-sm text-gray-600 mb-3 line-clamp-2">
     @Model.ShortDescription
   </p>
 
@@ -75,11 +77,13 @@
 
 
   <!-- Giá -->
-  <div class="flex items-baseline gap-2 mb-3">
-    @Html.Raw(PriceToParts(showPrice))
+  <div class="flex items-baseline gap-2 mb-4">
+    <div id="mainPrice_@Model.ProductId">
+      @Html.Raw(PriceToParts(showPrice))
+    </div>
     @if (hasDiscount)
     {
-      <span class="text-gray-400 line-through">$@Model.Price.ToString("0.00")</span>
+      <span id="mainOriginalPrice_@Model.ProductId" class="text-gray-400 line-through">$@Model.Price.ToString("0.00")</span>
     }
   </div>
 
@@ -96,9 +100,9 @@
     }
     else if (Model.Variants != null && Model.Variants.Any())
     {
-      <div class="mb-3">
-        <label class="text-sm text-gray-700">Phiên bản</label>
-        <select name="productVariantId" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm" required>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Phiên bản</label>
+        <select name="productVariantId" id="variantSelect_@Model.ProductId" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
           @* Placeholder nếu chưa có SelectedVariantId *@
           @if (!Model.SelectedVariantId.HasValue)
           {
@@ -113,21 +117,139 @@
                         if (isSelected)
                         {
                             @:
-                            <option value="@v.VariantId" selected>@v.SKU - $@vPrice.ToString("0.00")</option>
+                            <option value="@v.VariantId" selected data-price="@vPrice" data-original-price="@price" data-sku="@v.SKU">@v.SKU - $@vPrice.ToString("0.00")</option>
                         }
                         else
                         {
                             @:
-                            <option value="@v.VariantId">@v.SKU - $@vPrice.ToString("0.00")</option>
+                            <option value="@v.VariantId" data-price="@vPrice" data-original-price="@price" data-sku="@v.SKU">@v.SKU - $@vPrice.ToString("0.00")</option>
                         }
                     }
         </select>
+        
+        <!-- Hiển thị thông tin variant được chọn -->
+        <div id="variantInfo_@Model.ProductId" class="mt-2 p-3 bg-gray-50 rounded-lg text-sm">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">SKU:</span>
+            <span id="selectedSKU_@Model.ProductId" class="font-medium">@(Model.SelectedVariantId.HasValue ? Model.Variants.FirstOrDefault(v => v.VariantId == Model.SelectedVariantId.Value)?.SKU : "Chọn phiên bản")</span>
+          </div>
+          <div class="flex justify-between items-center mt-1">
+            <span class="text-gray-600">Giá:</span>
+            <span id="selectedPrice_@Model.ProductId" class="font-bold text-blue-600">$@showPrice.ToString("0.00")</span>
+          </div>
+          <div class="flex justify-between items-center mt-1">
+            <span class="text-gray-600">Giá gốc:</span>
+            <span id="originalPrice_@Model.ProductId" class="text-gray-400 line-through">$@Model.Price.ToString("0.00")</span>
+          </div>
+        </div>
       </div>
     }
-    <input type="number" name="qty" value="1" min="1" class="w-20 border rounded px-2 py-1 mr-2" />
-    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl transition">
+    <!-- Quantity và Add to Cart -->
+    <div class="flex items-center gap-3 mb-3">
+      <label class="text-sm font-medium text-gray-700">Số lượng:</label>
+      <input type="number" name="qty" value="1" min="1" max="3" 
+             class="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
+    
+    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition duration-200 shadow-sm hover:shadow-md">
       Add to Cart
     </button>
   </form>
+    <script>
+        // Đợi DOM load xong
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('=== Product Card Script Loaded ===');
+
+            // Tìm tất cả select variant
+            const variantSelects = document.querySelectorAll('select[name="productVariantId"]');
+            console.log('Found variant selects:', variantSelects.length);
+
+            variantSelects.forEach(function (select, index) {
+                console.log('Setting up select #' + index, select.id);
+
+                // Thêm event listener
+                select.addEventListener('change', function () {
+                    console.log('=== Variant Changed ===');
+                    console.log('Select element:', this);
+                    console.log('Selected value:', this.value);
+                    console.log('Selected option:', this.options[this.selectedIndex]);
+
+                    const selectedOption = this.options[this.selectedIndex];
+
+                    if (selectedOption && selectedOption.value) {
+                        // Lấy data từ option
+                        const price = selectedOption.getAttribute('data-price');
+                        const originalPrice = selectedOption.getAttribute('data-original-price');
+                        const sku = selectedOption.getAttribute('data-sku');
+
+                        console.log('Variant data:', { price, originalPrice, sku });
+
+                        // Lấy product ID từ select ID
+                        const productId = this.id.replace('variantSelect_', '');
+                        console.log('Product ID:', productId);
+
+                        // Cập nhật thông tin variant
+                        updateVariantInfo(productId, sku, price, originalPrice);
+                    }
+                });
+            });
+
+            function updateVariantInfo(productId, sku, price, originalPrice) {
+                console.log('Updating variant info for product:', productId);
+
+                // Cập nhật SKU
+                const skuElement = document.getElementById('selectedSKU_' + productId);
+                if (skuElement) {
+                    skuElement.textContent = sku;
+                    console.log('Updated SKU to:', sku);
+                } else {
+                    console.log('SKU element not found:', 'selectedSKU_' + productId);
+                }
+
+                // Cập nhật giá
+                const priceElement = document.getElementById('selectedPrice_' + productId);
+                if (priceElement) {
+                    priceElement.textContent = '$' + parseFloat(price).toFixed(2);
+                    console.log('Updated price to:', price);
+                } else {
+                    console.log('Price element not found:', 'selectedPrice_' + productId);
+                }
+
+                // Cập nhật giá gốc
+                const originalPriceElement = document.getElementById('originalPrice_' + productId);
+                if (originalPriceElement) {
+                    if (parseFloat(originalPrice) > parseFloat(price)) {
+                        originalPriceElement.textContent = '$' + parseFloat(originalPrice).toFixed(2);
+                        originalPriceElement.style.display = 'block';
+                    } else {
+                        originalPriceElement.style.display = 'none';
+                    }
+                    console.log('Updated original price');
+                } else {
+                    console.log('Original price element not found:', 'originalPrice_' + productId);
+                }
+
+                // Cập nhật giá chính
+                const mainPriceElement = document.getElementById('mainPrice_' + productId);
+                if (mainPriceElement) {
+                    const formattedPrice = formatPrice(price);
+                    mainPriceElement.innerHTML = formattedPrice;
+                    console.log('Updated main price');
+                } else {
+                    console.log('Main price element not found:', 'mainPrice_' + productId);
+                }
+            }
+
+            function formatPrice(price) {
+                const p = parseFloat(price);
+                const s = p.toFixed(2);
+                const i = s.substring(0, s.indexOf('.'));
+                const c = s.substring(s.indexOf('.') + 1);
+                return `<span class="text-2xl font-bold text-gray-900">$${i}</span><span class="align-top text-sm font-semibold">.${c}</span>`;
+            }
+        });
+    </script>
 </div>
+
+
 
