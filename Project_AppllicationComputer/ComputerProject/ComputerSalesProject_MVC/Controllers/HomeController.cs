@@ -273,13 +273,6 @@ namespace ComputerSalesProject_MVC.Controllers
                         .OrderByDescending(vp => vp.ValidFrom)
                         .Select(vp => vp.Currency)
                         .FirstOrDefault() ?? "$",
-                    // Ảnh đại diện: lấy 1 ảnh sort nhỏ nhất trong tất cả variants
-                    Images = p.ProductVariants
-                             .SelectMany(v => v.VariantImages
-                                 .OrderBy(vi => vi.SortOrder)
-                                 .Select(vi => vi.Url))
-                             .Take(1)
-                             .ToList(),
 
                     // Giá cấp product: chọn dòng giá đang hiệu lực “mới nhất” trên mọi variant
                     Price = p.ProductVariants

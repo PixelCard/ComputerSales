@@ -1,4 +1,5 @@
 ﻿using ComputerSales.Infrastructure.Persistence;
+using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

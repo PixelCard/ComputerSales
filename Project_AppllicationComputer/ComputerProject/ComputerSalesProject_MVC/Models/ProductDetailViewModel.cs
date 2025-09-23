@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using ComputerSales.Domain.Entity.EProduct;
-using ComputerSales.Domain.Entity.EVariant;
-using ComputerSales.Domain.Entity.EOptional;
+﻿using ComputerSales.Domain.Entity.EProduct;
+using ComputerSalesProject_MVC.Models;
 
 public sealed class ProductDetailViewModel
 {

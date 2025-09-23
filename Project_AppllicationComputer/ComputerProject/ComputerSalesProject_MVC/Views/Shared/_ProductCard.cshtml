@@ -106,8 +106,10 @@
           }
           @foreach (var v in Model.Variants)
           {
-              var vPrice = Math.Max(0, v.Price - (v.DiscountPrice > 0 ? v.DiscountPrice : 0));
-              var isSelected = Model.SelectedVariantId.HasValue && Model.SelectedVariantId.Value == v.VariantId;
+                        decimal price = v.Price ?? 0m;
+                        decimal discount = Math.Max(v.DiscountPrice ?? 0m, 0m);
+                        decimal vPrice = Math.Max(0m, price - discount);
+                        var isSelected = Model.SelectedVariantId.HasValue && Model.SelectedVariantId.Value == v.VariantId;
                         if (isSelected)
                         {
                             @:
