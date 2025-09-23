@@ -11,5 +11,7 @@ namespace ComputerSales.Application.Interface.Product_Interface
         Task DeleteProductAsync(long productId, byte[]? rowVersion, CancellationToken ct = default);
 
         Task<Product> GetProduct(long productId, CancellationToken ct);
+
+        Task<List<Product>> GetAllProductsAsync(CancellationToken ct);
     }
 }

@@ -34,8 +34,8 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
              .HasConversion<int>()
              .IsRequired();
 
-            b.Property(x => x.EffectiveFrom).IsRequired();
-            b.Property(x => x.EffectiveTo).IsRequired();
+            b.Property(x => x.ValidFrom);
+            b.Property(x => x.ValidTo);
 
             // N-1: VariantPrice -> ProductVariant
             b.HasOne(x => x.Variant)
@@ -49,10 +49,10 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
             b.HasCheckConstraint("CK_VariantPrice_FromBeforeTo", "[EffectiveFrom] < [EffectiveTo]");
 
 
-            b.HasIndex(x => new { x.VariantId, x.Status, x.EffectiveFrom, x.EffectiveTo });
+            b.HasIndex(x => new { x.VariantId, x.Status, x.ValidFrom, x.ValidTo });
 
             // Index truy vấn nhanh
-            b.HasIndex(x => new { x.VariantId, x.Currency, x.Status, x.EffectiveFrom, x.EffectiveTo });
+            b.HasIndex(x => new { x.VariantId, x.Currency, x.Status, x.ValidFrom, x.ValidTo });
         }
     }
 }

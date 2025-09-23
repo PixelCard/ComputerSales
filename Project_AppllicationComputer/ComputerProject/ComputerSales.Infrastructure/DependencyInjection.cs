@@ -1,27 +1,44 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
+using ComputerSales.Application.Interface.Cart_Interface;
+using ComputerSales.Application.Interface.Interface_OrderFromCart;
 using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
+using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
+using ComputerSales.Application.Interface.Interface_VariantPriceRespo;
+using ComputerSales.Application.Interface.InterfaceCustomerRespo;
 using ComputerSales.Application.Interface.InterfaceRespository;
 using ComputerSales.Application.Interface.Product_Interface;
 using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCase.Account_UC;
+using ComputerSales.Application.UseCase.Cart_UC.Commands.AddCart;
+using ComputerSales.Application.UseCase.Cart_UC.Commands.RemoveItem;
+using ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity;
+using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
 using ComputerSales.Application.UseCase.Customer_UC;
 using ComputerSales.Application.UseCase.Order_UC;
 using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCase.ProductOvetView_UC;
 using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Application.UseCase.Role_UC;
+using ComputerSales.Application.UseCase.VariantPrice_UC.variantGetPriceByVariantID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using ComputerSales.Application.Validator.AccountValidator;
 using ComputerSales.Application.Validator.CustomerValidator;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSales.Infrastructure.Repositories.Account_Respo;
+using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead;
+using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartWrite;
+using ComputerSales.Infrastructure.Repositories.Customer_Respo;
+using ComputerSales.Infrastructure.Repositories.OrderCart_Respo;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
+using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
 using ComputerSales.Infrastructure.Repositories.Respository_ImplementationInterface;
 using ComputerSales.Infrastructure.Repositories.Role_Respo;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
+using ComputerSales.Infrastructure.Repositories.VariantPrice_Respo;
+using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
 using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
 using ComputerSales.Infrastructure.Sercurity.JWT.Respository;
 using FluentValidation;
@@ -48,8 +65,15 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IValidator<AccountDTOInput>, CreateAccountValidator>();
             services.AddScoped<IValidator<CustomerInputDTO>, CreateCustomerValidator>();
             services.AddScoped<IProductOptionalTypeRespositorycs, ProdcutOptionalType_Respository>();
-          
+            services.AddScoped<ICartReadRespository, CartReadRespository>();
+            services.AddScoped<IOrderFromCart, OrderFromCartRespository>();
+            services.AddScoped<ICartWriteRepository, CartWriteRepository>();
+            services.AddScoped<IVariantPriceRespo, VariantPriceRespo>();
+            services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
+            services.AddScoped<ICustomerRespo, CustomerRespo>();
+            services.Configure<JwtOptions>(config.GetSection("Jwt"));
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
+
 
             // JWT generator
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -94,14 +118,39 @@ namespace ComputerSales.Infrastructure
             /*****************************************************/
 
             //============  Order   ================//
-           services.AddScoped<CreateOrder_UC>();
+            services.AddScoped<CreateOrder_UC>();
+            services.AddScoped<DeleteOrder_UC>();
+            services.AddScoped<GetOrderByIDCustomerAndOrderID>();
+            services.AddScoped<UpdateOrder_UC>();
             //==========================================
 
 
             //================= Account ==============//
-           services.AddScoped<CreateCustomer_UC>();
+            services.AddScoped<CreateCustomer_UC>();
            services.AddScoped<DeleteCustomer_UC>();
            services.AddScoped<getCustomerByID>();
+
+
+            //================= Cart ==============//
+            services.AddScoped<GetCartPageQueryHandler>();
+            services.AddScoped<UpdateQuantityCommandHandler>();
+            services.AddScoped<RemoveItemCommandHandler>();
+            services.AddScoped<AddItemCommandHandler>();
+
+
+            //================= Customer ==============//
+            services.AddScoped<getCustomerByUserID>();
+
+            services.AddScoped<getCustomerByID>();
+
+            services.AddScoped<DeleteCustomer_UC>();
+
+            services.AddScoped<CreateCustomer_UC>();
+
+            services.AddScoped<UpdateCustomer_UC>();
+
+            //================= Variant Price ==============//
+            services.AddScoped<variantGetPriceByVariantID_UC>();
 
             return services;
         }

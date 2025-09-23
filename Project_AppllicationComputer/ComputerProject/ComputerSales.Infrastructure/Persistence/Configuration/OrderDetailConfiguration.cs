@@ -43,7 +43,7 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
              .HasColumnType("decimal(18,2)")
 
              //tự động tính sau đó input vào totalprice
-             .HasComputedColumnSql("[UnitPrice] * [Quantity] - [Discount]", stored: true);
+             .HasComputedColumnSql("[UnitPrice] - [Discount] * [Quantity]", stored: true);
 
             e.Property(x => x.SKU)
              .HasMaxLength(100);

@@ -17,14 +17,22 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
             e.Property(o => o.OrderID).ValueGeneratedOnAdd();
 
             // Quan hệ với Customer (1-N)
+            e.Property(o => o.IDCustomer).HasColumnName("CustomerID");
+
             e.HasOne(o => o.Customer)
-                .WithMany(c => c.Orders)   // giả sử Customer có ICollection<Order> Orders
-                .HasForeignKey(o => o.IDCustomer)
-                .OnDelete(DeleteBehavior.Cascade);
+                   .WithMany(c => c.Orders)
+                   .HasForeignKey(o => o.IDCustomer)
+                   .OnDelete(DeleteBehavior.Cascade)
+                   .HasConstraintName("FK_Order_Customer_CustomerID");
 
 
-            e.Property(e => e.PaymentID)
-                .IsRequired(false);
+            e.Property(o => o.PaymentID).HasColumnName("PaymentID");
+
+            e.HasOne(o => o.Payment)                    
+               .WithMany(pm => pm.Orders)                 
+               .HasForeignKey(o => o.PaymentID)
+               .OnDelete(DeleteBehavior.Restrict)      
+               .HasConstraintName("FK_Order_PaymentMethod_PaymentID"); 
 
             // Thời gian đơn hàng
             e.Property(o => o.OrderTime)
@@ -56,6 +64,8 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
             // Trạng thái bản ghi
             e.Property(o => o.Status)
                 .HasDefaultValue(true);
+
+            e.Property(o => o.OrderNote).HasMaxLength(1000);
         }
     }
 }

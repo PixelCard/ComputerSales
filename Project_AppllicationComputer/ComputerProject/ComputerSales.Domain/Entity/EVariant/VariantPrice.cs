@@ -16,8 +16,8 @@ namespace ComputerSales.Domain.Entity.EVariant
         public decimal Price { get; set; }
         public decimal DiscountPrice { get; set; }
         public PriceStatus Status { get; set; }
-        public DateTime EffectiveFrom { get; set; }
-        public DateTime EffectiveTo { get; set; }
+        public DateTime? ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
 
         public ProductVariant Variant { get; set; }
     }

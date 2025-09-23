@@ -45,6 +45,7 @@ namespace ComputerSales.Application.UseCase.Order_UC
             entity.Subtotal = input.Subtotal;
             entity.DiscountTotal = input.DiscountTotal;
             entity.ShippingFee = input.ShippingFee;
+            entity.OrderNote = input.OrderNote;
             entity.Status = input.Status;
 
             // TÍNH LẠI GrandTotal (bỏ qua input.GrandTotal)

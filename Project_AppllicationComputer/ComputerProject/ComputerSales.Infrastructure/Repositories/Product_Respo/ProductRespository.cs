@@ -47,5 +47,13 @@ namespace ComputerSales.Infrastructure.Repositories.Product_Respo
                       .AsNoTracking() // đọc không track để nhẹ
                       .FirstOrDefaultAsync(p => p.ProductID == productId, ct);
         }
+        public async Task<List<Product>> GetAllProductsAsync(CancellationToken ct)
+        {
+            return await _db.Products
+                            .AsNoTracking() // chỉ đọc cho nhẹ
+                            .Where(p => !p.IsDeleted) // nếu bạn có soft delete
+                            .ToListAsync(ct);
+        }
+
     }
 }

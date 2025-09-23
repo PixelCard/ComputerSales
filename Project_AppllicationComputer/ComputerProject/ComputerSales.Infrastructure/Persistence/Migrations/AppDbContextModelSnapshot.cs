@@ -220,6 +220,72 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartPromotion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AppliedAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("CartID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PromotionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartID");
+
+                    b.HasIndex("PromotionId");
+
+                    b.ToTable("CartPromotions");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Promotion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPercentage")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Promotions");
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECategory.Accessories", b =>
                 {
                     b.Property<long>("AccessoriesID")
@@ -242,7 +308,8 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                 {
                     b.Property<int>("CustomerID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("IDCustomer");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerID"));
 
@@ -264,6 +331,15 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("address")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("sdt")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
 
                     b.HasKey("CustomerID");
 
@@ -326,6 +402,51 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("OptionalValue", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EPayment.PaymentMethod", b =>
+                {
+                    b.Property<int>("PaymentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentID"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("PaymentID");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("PaymentMethod", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PaymentID = 1,
+                            Code = "COD",
+                            IsActive = true,
+                            Name = "Cash on Delivery"
+                        },
+                        new
+                        {
+                            PaymentID = 2,
+                            Code = "ZALOPAY",
+                            IsActive = true,
+                            Name = "ZaloPay"
+                        });
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.Product", b =>
@@ -519,6 +640,38 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.ToTable("Provider", (string)null);
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ERefreshToken.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.EVariant.VariantImage", b =>
                 {
                     b.Property<int>("Id")
@@ -586,18 +739,18 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("decimal(18,2)")
                         .HasDefaultValue(0m);
 
-                    b.Property<DateTime>("EffectiveFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("EffectiveTo")
-                        .HasColumnType("datetime2");
-
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("VariantId")
                         .HasColumnType("int");
@@ -606,9 +759,9 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("VariantId");
 
-                    b.HasIndex("VariantId", "Status", "EffectiveFrom", "EffectiveTo");
+                    b.HasIndex("VariantId", "Status", "ValidFrom", "ValidTo");
 
-                    b.HasIndex("VariantId", "Currency", "Status", "EffectiveFrom", "EffectiveTo");
+                    b.HasIndex("VariantId", "Currency", "Status", "ValidFrom", "ValidTo");
 
                     b.ToTable("VariantPrice", null, t =>
                         {
@@ -624,6 +777,9 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
 
+                    b.Property<int?>("CustomerID")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("DiscountTotal")
                         .HasColumnType("decimal(18,2)");
 
@@ -633,7 +789,12 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasComputedColumnSql("[Subtotal] - [DiscountTotal] + [ShippingFee]", true);
 
                     b.Property<int>("IDCustomer")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("CustomerID");
+
+                    b.Property<string>("OrderNote")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
@@ -642,7 +803,8 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<int?>("PaymentID")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("PaymentID");
 
                     b.Property<decimal>("ShippingFee")
                         .HasColumnType("decimal(18,2)");
@@ -657,9 +819,17 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.HasKey("OrderID");
 
+                    b.HasIndex("CustomerID");
+
                     b.HasIndex("IDCustomer");
 
-                    b.ToTable("Order", (string)null);
+                    b.HasIndex("PaymentID");
+
+                    b.ToTable("Order", null, t =>
+                    {
+                            t.Property("CustomerID")
+                                .HasColumnName("CustomerID");
+                    });
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.OrderDetail", b =>
@@ -704,7 +874,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("TotalPrice")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("decimal(18,2)")
-                        .HasComputedColumnSql("[UnitPrice] * [Quantity] - [Discount]", true);
+                        .HasComputedColumnSql("[UnitPrice] - [Discount] * [Quantity]", true);
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
@@ -746,6 +916,25 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("ParentItem");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartPromotion", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.ECart.Cart", "Cart")
+                        .WithMany("Promotions")
+                        .HasForeignKey("CartID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ComputerSales.Domain.Entity.ECart.Promotion", "Promotion")
+                        .WithMany()
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Promotion");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECustomer.Customer", b =>
@@ -841,6 +1030,17 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.ERefreshToken.RefreshToken", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.EVariant.VariantImage", b =>
                 {
                     b.HasOne("ComputerSales.Domain.Entity.EProduct.ProductVariant", "Variant")
@@ -884,13 +1084,26 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.Order", b =>
                 {
-                    b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", "Customer")
+                    b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", null)
                         .WithMany("Orders")
+                        .HasForeignKey("CustomerID");
+
+                    b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", "Customer")
+                        .WithMany()
                         .HasForeignKey("IDCustomer")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_Order_Customer_CustomerID");
+
+                    b.HasOne("ComputerSales.Domain.Entity.EPayment.PaymentMethod", "Payment")
+                        .WithMany("Orders")
+                        .HasForeignKey("PaymentID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_Order_PaymentMethod_PaymentID");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.OrderDetail", b =>
@@ -932,6 +1145,8 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Cart", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("Promotions");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartItem", b =>
@@ -959,6 +1174,11 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.EOptional.OptionalValue", b =>
                 {
                     b.Navigation("VariantOptionValues");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EPayment.PaymentMethod", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.Product", b =>

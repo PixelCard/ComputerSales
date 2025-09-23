@@ -5,6 +5,8 @@
      string? IMG,
      string Name,
      string? Description,
+     string? sdt,
+    string address,
      DateTime Date,
      int IDAccount
     );

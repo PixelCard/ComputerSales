@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComputerSales.Infrastructur
 		{5664C06A-5D15-4182-8851-54A092748B03} = {5664C06A-5D15-4182-8851-54A092748B03}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerSalesProject_MVC", "ComputerSalesProject_MVC\ComputerSalesProject_MVC.csproj", "{C2770932-E54D-42E1-A8BF-6F88FE6B1AE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComputerSalesProject_MVC", "ComputerSalesProject_MVC\ComputerSalesProject_MVC.csproj", "{C2770932-E54D-42E1-A8BF-6F88FE6B1AE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

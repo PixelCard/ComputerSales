@@ -1,34 +1,27 @@
-﻿@model ComputerSalesProject_MVC.Models.ProductViewModel
+﻿@model IEnumerable<ComputerSales.Application.UseCaseDTO.Product_DTO.ProductOutputDTOcs>
 
-<h2>Add Product</h2>
-@*
-  *@
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label>SKU</label>
-        <input asp-for="SKU" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Slug</label>
-        <input asp-for="Slug" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Short Description</label>
-        <input asp-for="ShortDescription" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Accessories ID</label>
-        <input asp-for="AccessoriesID" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Provider ID</label>
-        <input asp-for="ProviderID" class="form-control" />
-    </div>
+<h2>Danh sách sản phẩm</h2>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mã Sản Phẩm</th>
+            <th>SKU</th>
+            <th>Slug</th>
+            <th>Mô tả</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductID</td>
+                <td>@item.SKU</td>
+                <td>@item.Slug</td>
+                <td>@item.ShortDescription</td>
+                <td>@item.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>

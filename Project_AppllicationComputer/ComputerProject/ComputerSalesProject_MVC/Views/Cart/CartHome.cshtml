@@ -1,0 +1,284 @@
+﻿@using ComputerSales.Application.UseCaseDTO.Cart_DTO.Cart_Page
+@model CartPageDTO
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<style>
+  /* --- Font fixes và text truncation --- */
+  body, * {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+  
+  /* Text truncation cho tên sản phẩm */
+  .product-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+    max-height: 2.8em; /* 2 lines * 1.4 line-height */
+  }
+  
+  .product-name-single {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  
+  /* Fix cho các button và text */
+  button, .font-bold, .font-semibold {
+    font-family: inherit;
+    font-weight: inherit;
+  }
+  
+  /* --- Chỉ áp dụng khi in --- */
+  @@media print {
+
+    /* 1) Ẩn mọi thứ mặc định */
+    body * { visibility: hidden; }
+
+    /* 2) Chỉ hiển thị vùng bạn muốn in (ví dụ .print-area) */
+    .print-area, .print-area * { visibility: visible; }
+
+    /* 3) Đặt vùng in lên đầu trang */
+    .print-area {
+      position: absolute; left: 0; top: 0; right: 0;
+      padding: 16px 24px;
+      box-shadow: none !important; border: 0 !important; background: #fff !important;
+    }
+
+    /* 4) Tối ưu kiểu chữ khi in */
+    .print-title { font-size: 18pt; font-weight: 700; margin-bottom: 8pt; }
+    .print-row   { display: flex; justify-content: space-between; margin: 4pt 0; font-size: 11pt; }
+    .print-total { font-weight: 700; font-size: 13pt; margin-top: 8pt; border-top: 1px solid #ccc; padding-top: 6pt; }
+
+    /* 5) Ẩn các nút/đường viền */
+    .no-print { display: none !important; }
+
+    /* 6) Lề trang khi in */
+    @@page { margin: 12mm; }
+  }
+</style>
+
+<div class="min-h-screen bg-gray-50 py-8 print-area" style="width: 100vw; max-width: none;">
+    <div class="w-full px-4 sm:px-6 lg:px-8" style="width: 100%; max-width: none;">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center" style="gap:2.5rem">
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
+                    Shopping Cart (@Model.ItemsCount Items)
+                </h1>
+                
+                <div class="hidden sm:flex flex-wrap items-center gap-2 sm:gap-8 text-xs sm:text-sm">
+                <button class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 whitespace-nowrap no-print">
+                    <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                    </svg>
+                    MOVE ALL TO WISH LIST
+                </button>
+                <button class="inline-flex items-center gap-2 text-gray-800 hover:text-red-600 whitespace-nowrap no-print">
+                    <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M6 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
+                        <path fill-rule="evenodd" d="M4 5a1 1 0 011-1h10a1 1 0 011 1v1H4V5zm2-2a2 2 0 00-2 2v1H3a1 1 0 100 2h1v8a2 2 0 002 2h8a2 2 0 002-2V8h1a1 1 0 100-2h-1V5a2 2 0 00-2-2H6z" clip-rule="evenodd" />
+                    </svg>
+                    REMOVE ALL
+                </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Left Column - Cart Items -->
+            <div class="flex-1">
+                @foreach (var line in Model.Lines.Where(l => !l.IsChildService))
+                {
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-4">
+                        <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-10">
+
+                            <!-- Image -->
+                            <div class="flex-shrink-0 mx-auto sm:mx-0">
+                                <img src="@line.ImageUrl" alt="@line.Name"
+                                     class="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-lg bg-gray-100" />
+                            </div>
+
+                            <!-- Details -->
+                            <div class="flex-1">
+
+                                <!-- Mobile -->
+                                <div class="flex sm:hidden gap-4">
+                                    <div class="flex-1">
+                                        <h3 class="text-base font-semibold text-gray-900 mb-2 product-name">@line.Name</h3>
+                                        <div class="text-sm text-gray-600 mb-2">
+                                            <div>@line.OptionSummary</div>
+                                            <div class="text-xs text-gray-500">SKU: @line.SKU</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end gap-2">
+                                        <div class="text-right">
+                                            <div class="text-lg font-bold text-gray-900">@line.SalePrice.ToString("C")</div>
+                                            @if (line.ListPrice > line.SalePrice)
+                                            {
+                                                <div class="text-sm text-gray-400 line-through">@line.ListPrice.ToString("C")</div>
+                                            }
+                                        </div>
+
+                                        <form asp-action="UpdateQty" method="post" class="flex flex-col items-center">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="cartId" value="@Model.CartId" />
+                                            <input type="hidden" name="itemId" value="@line.CartItemId" />
+                                            <input type="number"
+                                                   name="qty"
+                                                   value="@line.Quantity"
+                                                   min="1" max="3" step="1"
+                                                   class="w-12 h-8 px-1 py-1 border border-gray-300 rounded text-center text-sm"
+                                                   onchange="this.form.submit()" />
+                                            @if (line.PerItemLimit.HasValue)
+                                            {
+                                                <div class="text-xs text-gray-500">Limit @line.PerItemLimit</div>
+                                            }
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Desktop -->
+                                <div class="hidden sm:block">
+                                    <div class="flex flex-col lg:flex-row lg:justify-between gap-4">
+                                        <div class="flex-1">
+                                            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2 product-name">@line.Name</h3>
+                                            <div class="text-sm text-gray-600 mb-4">@line.OptionSummary</div>
+                                        </div>
+
+                                        <div class="flex items-start" style="gap:3.5rem">
+                                            <!-- Quantity -->
+                                            <form asp-action="UpdateQty" method="post" class="flex flex-col items-center">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="cartId" value="@Model.CartId" />
+                                                <input type="hidden" name="itemId" value="@line.CartItemId" />
+                                                <input type="number"
+                                                       name="qty"
+                                                       value="@line.Quantity"
+                                                       min="1" max="3" step="1"
+                                                       class="w-12 h-8 px-1 py-1 border border-gray-300 rounded text-center text-sm"
+                                                       onchange="this.form.submit()" />
+                                                @if (line.PerItemLimit.HasValue)
+                                                {
+                                                    <div class="text-xs text-gray-500 mt-1">Limit @line.PerItemLimit</div>
+                                                }
+                                            </form>
+
+                                            <!-- Price -->
+                                            <div class="flex flex-col">
+                                                <div class="text-2xl font-bold text-gray-900">@line.SalePrice.ToString("C")</div>
+                                                @if (line.ListPrice > line.SalePrice)
+                                                {
+                                                    <div class="text-sm text-gray-400 line-through">@line.ListPrice.ToString("C")</div>
+                                                    <div class="inline-block bg-orange-500 text-white text-xs px-2 py-1 rounded mt-1 w-fit">
+                                                        Save: @line.Savings.ToString("C") (@line.SavingsPercent%)
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-3 mt-4">
+                                    <div></div>
+                                    <form asp-action="Remove" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="cartId" value="@Model.CartId" />
+                                        <input type="hidden" name="itemId" value="@line.CartItemId" />
+                                        <button class="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-2 rounded-md border border-red-200 hover:border-red-300 text-sm font-medium transition-colors duration-200">REMOVE</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Right Column - Summary -->
+            <div class="w-full lg:w-80">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 lg:sticky lg:top-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-900">Summary</h2>
+                        <button class="text-blue-600 hover:underline text-sm no-print" onclick="window.print()">PRINT</button>
+                    </div>
+
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Item(@Model.ItemsCount):</span>
+                            <span class="font-semibold">@Model.Subtotal.ToString("C")</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">DiscountTotal(@Model.ItemsCount):</span>
+                            <span class="font-semibold">@Model.DiscountTotal.ToString("C")</span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Est. Shipping:</span>
+                            <div class="flex items-center gap-1">
+                                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-semibold text-green-600">
+                                    @(Model.ShippingFee == 0 ? "FREE" : Model.ShippingFee.ToString("C"))
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Promo Code -->
+                    <div class="mb-4">
+                        <button class="flex items-center gap-2 text-blue-600 hover:underline text-sm">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Apply Promo Code +
+                        </button>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="border-t border-gray-200 pt-4 mb-6">
+                        <div class="flex justify-between text-lg font-bold">
+                            <span>Est. Total:</span>
+                            <span>@Model.GrandTotal.ToString("C")</span>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Button -->
+                    @if (Model.GrandTotal > 0)
+                    {
+                        <form asp-controller="Cart" asp-action="Checkout" method="post">
+                            @Html.AntiForgeryToken()
+                            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                                <span class="hidden sm:inline">SECURE CHECKOUT</span>
+                                <span class="sm:hidden">CHECKOUT</span>
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="w-full bg-gray-400 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed" disabled>
+                            <span class="hidden sm:inline">CART IS EMPTY</span>
+                            <span class="sm:hidden">EMPTY CART</span>
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

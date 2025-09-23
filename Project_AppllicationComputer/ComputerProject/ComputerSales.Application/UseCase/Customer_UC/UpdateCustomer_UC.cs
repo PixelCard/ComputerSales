@@ -29,6 +29,8 @@ namespace ComputerSales.Application.UseCase.Customer_UC
                 entity.IMG = input.IMG;
                 entity.Name = input.Name.Trim();
                 entity.Description = input.Description;
+                entity.sdt = input.sdt;
+                entity.address = input.address;
                 entity.Date = input.Date;
 
                 updatedEntity = entity; // để sau khi update còn trả về

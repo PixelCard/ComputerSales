@@ -1,4 +1,5 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
+using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
 using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Domain.Entity;
@@ -17,18 +18,21 @@ namespace ComputerSalesProject_MVC.Controllers
         private readonly IAccountRepository _accountService;
         private readonly IRoleRepository _roleService;
         private readonly IUnitOfWorkApplication _uow;
+        private readonly IResfreshTokenRespo _refresh;
 
         //---------------------------------------Constructor--------------------------------------------------
         public AccountController(
             IJwtTokenGenerator jwt, 
             IAccountRepository accountService, 
             IRoleRepository roleService, 
-            IUnitOfWorkApplication uow)
+            IUnitOfWorkApplication uow,
+            IResfreshTokenRespo refresh)
         {
             _jwt = jwt;
             _accountService = accountService;
             _roleService = roleService;
             _uow = uow;
+            _refresh = refresh;
         }
 
         //---------------------------------------Get--------------------------------------------------
@@ -65,6 +69,7 @@ namespace ComputerSalesProject_MVC.Controllers
 
             var token = _jwt.Generate(acc);
 
+
             // Lưu JWT vào cookie (HTTP-only)
             Response.Cookies.Append("access_token", token, new CookieOptions
             {
@@ -73,6 +78,10 @@ namespace ComputerSalesProject_MVC.Controllers
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
             });
+
+
+            // Refresh token (dài hạn) -> lưu DB 
+            var rt = await _refresh.IssueAsync(acc, ct);
 
             return RedirectToAction("Index", "Home");
         }
@@ -111,6 +120,8 @@ namespace ComputerSalesProject_MVC.Controllers
             {
                 Name = req.UserName,                  
                 Description = req.Description_User,       
+                address=req.address,
+                sdt=req.phone,
                 Date = req.Date.Value
             };
 
@@ -140,6 +151,76 @@ namespace ComputerSalesProject_MVC.Controllers
                 await _uow.RollbackAsync(ct);
                 throw;
             }
+        }
+
+
+        // ====== Refresh (MVC) ======
+        // Gọi khi access token hết hạn (ví dụ Ajax POST tới /Account/Refresh)
+        [HttpPost("Refresh")]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Refresh(string? returnUrl, CancellationToken ct)
+        {
+            var refreshToken = Request.Cookies["refresh_token"];
+            if (string.IsNullOrEmpty(refreshToken))
+                return Unauthorized("Missing refresh token");
+
+            var active = await _refresh.GetActiveAsync(refreshToken, ct);
+            if (active == null)
+                return Unauthorized("Invalid/expired refresh token");
+
+            // phát access token mới từ account của refresh token
+            var newAccess = _jwt.Generate(active.Account);
+
+            Response.Cookies.Append("access_token", newAccess, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
+
+
+            // --- chọn nơi để quay lại ---
+            string? target = null;
+
+
+            // 1) ưu tiên returnUrl nếu hợp lệ (local)
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                target = returnUrl;
+
+
+            // 2) fallback: dùng Referer (trang trước đó)
+            if (target == null)
+            {
+                var referer = Request.Headers["Referer"].ToString();
+                if (Uri.TryCreate(referer, UriKind.Absolute, out var uri))
+                {
+                    var path = uri.PathAndQuery;
+                    if (Url.IsLocalUrl(path) && !path.StartsWith("/Account", StringComparison.OrdinalIgnoreCase))
+                        target = path;
+                }
+            }
+
+            // 3) cuối cùng: về Home
+            return target != null
+                ? LocalRedirect(target)
+                : RedirectToAction("Index", "Home");
+        }
+
+        // ====== Logout (MVC) ======
+        [HttpPost("Logout")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(CancellationToken ct)
+        {
+            var refreshToken = Request.Cookies["refresh_token"];
+            if (!string.IsNullOrEmpty(refreshToken))
+                await _refresh.RevokeAsync(refreshToken, ct);
+
+            Response.Cookies.Delete("access_token");
+            Response.Cookies.Delete("refresh_token");
+
+            return RedirectToAction(nameof(Login));
         }
     }
 }
