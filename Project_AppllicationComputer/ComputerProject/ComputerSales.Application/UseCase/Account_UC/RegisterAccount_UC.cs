@@ -1,18 +1,23 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.Interface.Interface_Email_Respository;
 using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Domain.Entity.EAccount;
+using ComputerSales.Application.UseCase.Customer_UC;
+using ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO;
 using ComputerSales.Domain.Entity;
+using ComputerSales.Domain.Entity.EAccount;
+using ComputerSales.Domain.Entity.ECustomer;
 using Microsoft.Extensions.Configuration;
+using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using System.Security.Cryptography;
 using System.Text;
-using ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO;
+using ComputerSales.Application.Interface.InterfaceRespository;
 
 namespace ComputerSales.Application.UseCase.Account_UC
 {
     public class RegisterAccount_UC
     {
         private readonly IAccountRepository _accounts;
+        private readonly IRespository<Customer> _customer;
         private readonly IEmailVerifyKeyRepository _keys;
         private readonly IUnitOfWorkApplication _uow;
         private readonly IEmailSender _email;
@@ -20,8 +25,9 @@ namespace ComputerSales.Application.UseCase.Account_UC
 
         public RegisterAccount_UC(
             IAccountRepository accounts, IEmailVerifyKeyRepository keys,
-            IUnitOfWorkApplication uow, IEmailSender email, IConfiguration cfg)
-        { _accounts = accounts; _keys = keys; _uow = uow; _email = email; _cfg = cfg; }
+            IUnitOfWorkApplication uow, IEmailSender email, IConfiguration cfg,
+            IRespository<Customer> customer)
+        { _accounts = accounts; _keys = keys; _uow = uow; _email = email; _cfg = cfg; _customer = customer; }
 
         public async Task Handle(RegisterRequestDTO cmd, CancellationToken ct)
         {
@@ -38,6 +44,14 @@ namespace ComputerSales.Application.UseCase.Account_UC
 
             await _accounts.AddAccount(acc, ct);
 
+            await _uow.SaveChangesAsync(ct);
+
+            var customer = Customer.create(null, cmd.UserName, cmd.Description_User, cmd.address, cmd.phone, DateTime.Now, acc.IDAccount);
+
+            await _customer.AddAsync(customer,ct);
+
+            await _uow.SaveChangesAsync(ct);
+
             // tạo verify key 60s
             var (rawKey, rec, expireAt) = CreateVerifyKey(acc.IDAccount, seconds: 60);
             acc.MarkVerifyWindow(expireAt);
@@ -46,7 +60,7 @@ namespace ComputerSales.Application.UseCase.Account_UC
             await _uow.SaveChangesAsync(ct);
 
             // gửi email
-            var link = $"{_cfg["Frontend:BaseUrl"]}/account/verify?uid={acc.IDAccount}&key={Uri.EscapeDataString(rawKey)}";
+            var link = $"{_cfg["Frontend:BaseUrl"]}/Account/Verify?uid={acc.IDAccount}&key={Uri.EscapeDataString(rawKey)}";
             var html = $@"<p>Nhấn để xác thực (hết hạn sau 60 giây): <a href=""{link}"">Xác thực email</a></p>";
             await _email.SendAsync(acc.Email, "Xác nhận email", html, ct);
 

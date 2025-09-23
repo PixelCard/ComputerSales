@@ -26,15 +26,32 @@ namespace ComputerSales.Infrastructure.Repositories.SmtpEmailSender_Respository
             var user = _cfg["Smtp:User"];
             var pass = _cfg["Smtp:Pass"];
             var from = _cfg["Smtp:From"];
-
-            using var client = new SmtpClient(host!, port)
+            try
             {
-                EnableSsl = true,
-                Credentials = new NetworkCredential(user, pass)
-            };
+                using var client = new SmtpClient(host!, port)
+                {
+                    EnableSsl = true,                  
+                    UseDefaultCredentials = false,      
+                    Credentials = new NetworkCredential(user, pass),
+                    Timeout = 15000
+                };
 
-            using var msg = new MailMessage(from!, toEmail, subject, htmlBody) { IsBodyHtml = true };
-            await client.SendMailAsync(msg, ct);
+                using var msg = new MailMessage(from!, toEmail, subject, htmlBody) { IsBodyHtml = true };
+
+                await client.SendMailAsync(msg, ct);
+            }
+            catch (SmtpException ex)
+            {
+                // Log thật chi tiết
+                Console.WriteLine($"SMTP ERROR: {ex.StatusCode} - {ex.Message}");
+                Console.WriteLine(ex.InnerException?.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw;
+            }
         }
     }
 }

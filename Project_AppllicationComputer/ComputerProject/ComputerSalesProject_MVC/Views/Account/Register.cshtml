@@ -17,6 +17,21 @@
             background-size: 200px 200px;
         }
     </style>
+
+    @section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('registerForm');
+                const btn = document.getElementById('submitBtn');
+                if (!form || !btn) return;
+
+                form.addEventListener('submit', function () {
+                    btn.disabled = true;
+                    btn.textContent = 'Processing...';
+                });
+            });
+        </script>
+    }
 </head>
 
 <body class="min-h-screen bg-purple-600 doodle-bg flex items-center justify-center relative">
@@ -70,7 +85,7 @@
     </div>
 
     <div class="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4">
-        @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "registerForm" }))
         {
             @Html.AntiForgeryToken()
 
@@ -134,7 +149,7 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="w-full bg-white border-2 border-purple-600 text-purple-600 font-bold py-3 rounded-xl mt-6 hover:bg-purple-50 transition-colors duration-200">
+                <button id="submitBtn" type="submit" class="w-full bg-white border-2 border-purple-600 text-purple-600 font-bold py-3 rounded-xl mt-6 hover:bg-purple-50 transition-colors duration-200">
                     SIGN IN
                 </button>
 
@@ -151,17 +166,9 @@
             </div>
         }
     </div>
-
-    <script>
-        // Chống submit nhiều lần
-        const form = document.getElementById('registerForm');
-        const btn = document.getElementById('submitBtn');
-        form.addEventListener('submit', () => {
-          btn.disabled = true;
-          btn.textContent = 'Processing...';
-        });
-    </script>
 </body>
 </html>
+
+
 
 
