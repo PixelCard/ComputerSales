@@ -1,19 +1,24 @@
 ﻿
 using ComputerSales.Domain.Entity;
-using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
-using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
+using ComputerSales.Application.Sercurity.JWT.Enity;
+using ComputerSales.Application.Sercurity.JWT.Interface;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
-namespace ComputerSales.Infrastructure.Sercurity.JWT.Respository
+namespace ComputerSales.Application.Sercurity.JWT.Respository
 {
     public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly JwtOptions _opt;
-        public JwtTokenGenerator(IOptions<JwtOptions> opt) => _opt = opt.Value;
+        public JwtTokenGenerator(IOptions<JwtOptions> opt)
+        {
+            _opt = opt.Value;
+        }
+
         public string Generate(Account account)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_opt.Key)); //Key
@@ -47,5 +52,6 @@ namespace ComputerSales.Infrastructure.Sercurity.JWT.Respository
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

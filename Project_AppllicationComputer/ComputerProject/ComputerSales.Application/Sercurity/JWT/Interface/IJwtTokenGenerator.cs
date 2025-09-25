@@ -1,6 +1,6 @@
 ﻿using ComputerSales.Domain.Entity;
 
-namespace ComputerSales.Infrastructure.Sercurity.JWT.Interface
+namespace ComputerSales.Application.Sercurity.JWT.Interface
 {
     public interface IJwtTokenGenerator
     {

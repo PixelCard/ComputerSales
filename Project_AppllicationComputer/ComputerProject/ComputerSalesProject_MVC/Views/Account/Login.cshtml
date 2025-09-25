@@ -72,7 +72,7 @@
                         <input type="checkbox" class="form-checkbox mr-2" />
                         Remember me
                     </label>
-                    <a href="#" class="text-white hover:underline text-sm">Forgot Password?</a>
+                    <a href="@Url.Action("ForgetPassHome","ForgetPassword")" class="text-white hover:underline text-sm">Forgot Password?</a>
                 </div>
                 <button type="submit" class="w-full bg-white text-purple-700 font-bold py-2 rounded-full shadow hover:bg-purple-100 transition">Login</button>
                 @if (ViewBag.Error != null)

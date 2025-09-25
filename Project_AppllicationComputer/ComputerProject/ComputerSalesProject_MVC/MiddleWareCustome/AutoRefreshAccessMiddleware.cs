@@ -1,6 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
-using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
-using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
+using ComputerSales.Application.Sercurity.JWT.Enity;
+using ComputerSales.Application.Sercurity.JWT.Interface;
 using Microsoft.Extensions.Options;
 
 namespace ComputerSalesProject_MVC.MiddleWareCustome

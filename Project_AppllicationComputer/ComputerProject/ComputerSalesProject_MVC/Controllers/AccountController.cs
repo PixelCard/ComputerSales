@@ -5,12 +5,11 @@ using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.EmailVerify_DTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO;
-using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
-using ComputerSalesProject_MVC.Models;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.ResendVerifyEmaiDTO;
+using ComputerSales.Application.Sercurity.JWT.Interface;
+using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 namespace ComputerSalesProject_MVC.Controllers
 {
     [Route("[controller]")]
@@ -314,9 +313,6 @@ namespace ComputerSalesProject_MVC.Controllers
 
             return RedirectToAction(nameof(Login));
         }
-
-
-
     }
 }
 

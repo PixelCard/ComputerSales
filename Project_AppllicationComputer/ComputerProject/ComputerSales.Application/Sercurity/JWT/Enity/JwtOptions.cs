@@ -1,4 +1,4 @@
-﻿namespace ComputerSales.Infrastructure.Sercurity.JWT.Enity
+﻿namespace ComputerSales.Application.Sercurity.JWT.Enity
 {
     public class JwtOptions
     {
@@ -6,6 +6,6 @@
         public string Audience { get; set; } = default!;
         public string Key { get; set; } = default!;   
         public int ExpireMinutes { get; set; } = 60;
-        public int RefreshTokenDays { get; set; } = 14;
+        public int RefreshTokenDays { get; set; } = 14; 
     }
 }

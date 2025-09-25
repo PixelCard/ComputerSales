@@ -11,6 +11,54 @@
     <title>Chờ xác thực email</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
+
+ @section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const leftEl = document.getElementById('left'); // chỗ hiển thị số giây còn lại
+        const btn = document.getElementById('resendBtn'); // nút Gửi lại
+        const msg = document.getElementById('msg'); // ô hiện thông báo lỗi
+        const exp = new Date("@expIso").getTime();// thời điểm hết hạn
+
+        //Tính thời gian giảm dần sau đó cập nhật lên UI
+        function tick() {
+            const now = Date.now();
+            const s = Math.max(0, Math.floor((exp - now) / 1000));
+            leftEl.textContent = s;
+            btn.disabled = s > 0;
+            if (s === 0) clearInterval(tmr);
+        }
+        tick();
+
+        const tmr = setInterval(tick, 1000);// chạy mỗi giây
+
+        document.getElementById('resendForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (btn.disabled) return; // phòng trường hợp chưa hết hạn
+            msg.textContent = "";
+            btn.disabled = true; btn.textContent = "Đang gửi...";
+            try {
+                const fd = new FormData(e.target); // lấy dữ liệu form
+                const r = await fetch(e.target.action, { method: 'POST', body: fd }); // gọi /Account/ResendVerify
+                const j = await r.json();
+                if (j.ok) {
+                    // reload để đếm lại theo expUtc mới
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('uid', fd.get('uid'));
+                    url.searchParams.set('expUtc', j.expUtc);
+                    window.location.href = url.toString();
+                } else {
+                    msg.textContent = j.message || "Gửi lại không thành công.";
+                }
+            } catch (err) {
+                msg.textContent = "Có lỗi kết nối. Vui lòng thử lại.";
+            } finally {
+                btn.disabled = false; btn.textContent = "Gửi lại liên kết";
+            }
+         }
+      });
+    </script>
+ }
 </head>
 <body class="min-h-screen bg-purple-600 flex items-center justify-center">
     <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center">
@@ -42,49 +90,5 @@
             &nbsp;|&nbsp; <a href="/Account/Login" class="text-purple-600 underline">Về trang đăng nhập</a>
         </div>
     </div>
-
-    <script>
-        const leftEl = document.getElementById('left'); // chỗ hiển thị số giây còn lại
-        const btn = document.getElementById('resendBtn'); // nút Gửi lại
-        const msg = document.getElementById('msg'); // ô hiện thông báo lỗi
-        const exp = new Date("@expIso").getTime();// thời điểm hết hạn 
-
-        //Tính thời gian giảm dần sau đó cập nhật lên UI
-        function tick(){
-          const now = Date.now();
-          const s = Math.max(0, Math.floor((exp - now)/1000));
-          leftEl.textContent = s;
-          btn.disabled = s > 0;
-          if(s === 0) clearInterval(tmr);
-        }
-        tick();
-
-        const tmr = setInterval(tick, 1000);// chạy mỗi giây
-
-        document.getElementById('resendForm').addEventListener('submit', async (e)=>{
-          e.preventDefault();
-          if(btn.disabled) return; // phòng trường hợp chưa hết hạn
-          msg.textContent = "";
-          btn.disabled = true; btn.textContent = "Đang gửi...";
-          try{
-            const fd = new FormData(e.target); // lấy dữ liệu form
-            const r = await fetch(e.target.action, { method: 'POST', body: fd }); // gọi /Account/ResendVerify
-            const j = await r.json();
-            if(j.ok){
-              // reload để đếm lại theo expUtc mới
-              const url = new URL(window.location.href);
-              url.searchParams.set('uid', fd.get('uid'));
-              url.searchParams.set('expUtc', j.expUtc);
-              window.location.href = url.toString();
-            }else{
-              msg.textContent = j.message || "Gửi lại không thành công.";
-            }
-          }catch(err){
-            msg.textContent = "Có lỗi kết nối. Vui lòng thử lại.";
-          }finally{
-            btn.disabled = false; btn.textContent = "Gửi lại liên kết";
-          }
-        });
-    </script>
 </body>
 </html>
