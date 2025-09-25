@@ -27,14 +27,24 @@ namespace ComputerSales.Application.UseCase.Account_UC
         public async Task Handle(ResendVerifyEmailDTO cmd, CancellationToken ct)
         {
             var acc = await _accounts.GetAccountByID(cmd.AccountId, ct) ?? throw new KeyNotFoundException();
+
             if (acc.EmailConfirmed) return;
+
             if (acc.IsLocked()) throw new InvalidOperationException("Đang bị khoá tạm.");
+
             if (acc.VerifyKeyExpiresAt.HasValue && acc.VerifyKeyExpiresAt.Value > DateTime.UtcNow)
                 throw new InvalidOperationException("Liên kết hiện tại chưa hết hạn.");
+
+            // Kiểm tra thời gian hết hạn của verify key
+            if (acc.VerifyKeyExpiresAt.HasValue && acc.VerifyKeyExpiresAt.Value > DateTime.UtcNow)
+                throw new InvalidOperationException("Liên kết xác thực email hiện tại chưa hết hạn.");
 
             // rate limit: 5 lần/ngày
             acc.BumpSendCount();
             if (acc.VerifySendCountToday > 5) throw new InvalidOperationException("Vượt giới hạn gửi lại.");
+
+            // Lấy tất cả các key của người dùng và xóa các key đã hết hạn hoặc chưa được sử dụng
+            await _keys.CleanUpExpiredKeys(cmd.AccountId, ct);
 
             var (raw, rec, expireAt) = CreateVerifyKey(acc.IDAccount, 60);
             acc.MarkVerifyWindow(expireAt);

@@ -10,6 +10,7 @@ using ComputerSales.Application.Sercurity.JWT.Interface;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ComputerSales.Application.Interface.Interface_Email_Respository;
 namespace ComputerSalesProject_MVC.Controllers
 {
     [Route("[controller]")]
@@ -20,7 +21,9 @@ namespace ComputerSalesProject_MVC.Controllers
         private readonly IAccountRepository _accountService;
         private readonly IRoleRepository _roleService;
         private readonly IUnitOfWorkApplication _uow;
+        private readonly IEmailSender emailSender;
         private readonly IResfreshTokenRespo _refresh;
+        private readonly IConfiguration _cfg;
         private readonly RegisterAccount_UC _register;
         private readonly VerifyEmail_UC _verify;
         private readonly ResendVerifyEmail_UC _resend;
@@ -31,7 +34,9 @@ namespace ComputerSalesProject_MVC.Controllers
             IUnitOfWorkApplication uow, 
             IResfreshTokenRespo refresh, 
             RegisterAccount_UC register, VerifyEmail_UC verify, 
-            ResendVerifyEmail_UC resend)
+            ResendVerifyEmail_UC resend,
+            IConfiguration _cfg,
+            IEmailSender emailSender)
         {
             _jwt = jwt;
             _accountService = accountService;
@@ -41,6 +46,8 @@ namespace ComputerSalesProject_MVC.Controllers
             _register = register;
             _verify = verify;
             _resend = resend;
+            this._cfg = _cfg;
+            this.emailSender = emailSender;
         }
 
         //---------------------------------------Constructor--------------------------------------------------
@@ -78,9 +85,27 @@ namespace ComputerSalesProject_MVC.Controllers
 
             if (acc.Role == null) acc.Role = await _roleService.GetRole(acc.IDRole, ct);
 
+
+            // Kiểm tra xem tài khoản đã xác thực email chưa
+            if (!acc.EmailConfirmed)
+            {
+                // Kiểm tra nếu tài khoản đã tạo quá 15 ngày và vẫn chưa xác thực email
+                if (acc.CreatedAt.AddDays(15) < DateTime.UtcNow)
+                {
+                    // Nếu đã hơn 15 ngày, xóa tài khoản
+                    await _accountService.DeleteAccountAsync(acc.IDAccount, ct);
+                    ModelState.AddModelError("", "Tài khoản này đã hết hạn vì không xác thực email. Vui lòng đăng ký lại.");
+                    return View(vm);
+                }
+
+                // Nếu chưa xác thực email và chưa hết hạn, yêu cầu xác thực email
+                TempData["Info"] = "Vui lòng xác thực email của bạn.";
+                return RedirectToAction("ResendVerify", new { uid = acc.IDAccount });
+            }
+
             var token = _jwt.Generate(acc);
 
-
+               
             // Lưu JWT vào cookie (HTTP-only)
             Response.Cookies.Append("access_token", token, new CookieOptions
             {
@@ -102,7 +127,12 @@ namespace ComputerSalesProject_MVC.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromForm] RegisterRequestDTO req, CancellationToken ct)
         {
-            if (!ModelState.IsValid) return View(req);
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(string.Empty, "Email sai định dạng hoặc không tồn tại email"); 
+                
+                return View(req);
+            }
 
             // Chuẩn hóa email
             var email = (req.Email ?? string.Empty).Trim().ToLowerInvariant();
@@ -117,6 +147,13 @@ namespace ComputerSalesProject_MVC.Controllers
             if (existed != null)
             {
                 ModelState.AddModelError(string.Empty, "Email đã tồn tại.");
+                return View(req);
+            }
+
+            var birthDate = req.Date;  // Giả sử `req.Date` chứa ngày sinh người dùng
+            if (birthDate == null || birthDate > DateTime.Now.AddYears(-16))
+            {
+                ModelState.AddModelError(string.Empty, "Tuổi phải lớn hơn hoặc bằng 16.");
                 return View(req);
             }
 
@@ -217,19 +254,22 @@ namespace ComputerSalesProject_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResendVerify([FromForm] int uid, CancellationToken ct)
         {
-            if (uid <= 0) return BadRequest(new { ok = false, message = "Thiếu uid." });
+            if (uid <= 0)
+                return BadRequest(new { ok = false, message = "Thiếu uid." });
 
             try
             {
-                // UC sinh key mới 60s + gửi email (áp dụng rate limit/lockout)
+                // Tạo đối tượng ResendVerifyEmailDTO với AccountId
                 var request = new ResendVerifyEmailDTO(uid);
 
+                // Gọi use case ResendVerifyEmail_UC để gửi lại email xác thực
                 await _resend.Handle(request, ct);
 
                 // Đọc lại account để lấy VerifyKeyExpiresAt vừa set trong UC
-                var acc = await _accountService.GetAccountByID(uid, ct);   
+                var acc = await _accountService.GetAccountByID(uid, ct);
                 var newExpireAtUtc = acc?.VerifyKeyExpiresAt ?? DateTime.UtcNow.AddSeconds(60);
 
+                // Trả về thông tin xác thực mới
                 return Ok(new
                 {
                     ok = true,
@@ -238,6 +278,7 @@ namespace ComputerSalesProject_MVC.Controllers
             }
             catch (Exception ex)
             {
+                // Trả về thông báo lỗi nếu có lỗi xảy ra
                 return BadRequest(new { ok = false, message = ex.Message });
             }
         }

@@ -144,7 +144,7 @@
                     </div>
                     <div>
                         <input class="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-purple-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                               type="date" id="Date" name="Date" placeholder="Password" />
+                               type="date" id="Date" name="Date" max="@DateTime.Now.ToString("yyyy-MM-dd")" required />
                     </div>
                 </div>
 
@@ -153,10 +153,10 @@
                     SIGN IN
                 </button>
 
-                @if (ViewBag.Error != null)
-                {
-                    <div class="text-red-500 text-center mt-4 text-sm">@ViewBag.Error</div>
-                }
+                <div class="text-red-500 text-center mt-4 text-sm">
+                    @Html.ValidationSummary(true, "", new { @class = "text-red-500" })
+                </div>
+
 
                 <!-- Login Link -->
                 <div class="text-center mt-6 text-gray-600">
