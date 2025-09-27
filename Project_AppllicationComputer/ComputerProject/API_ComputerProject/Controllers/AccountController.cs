@@ -62,7 +62,7 @@ namespace API_ComputerProject.Controllers
             if (string.IsNullOrWhiteSpace(body.Pass)) return BadRequest("Pass is required.");
             if (body.IDRole <= 0) return BadRequest("IDRole is invalid.");
 
-            var rs = await _update.HandleAsync(body, ct);
+            var rs = await _update.HandleAsync(id,body, ct);
             return rs is null ? NotFound() : Ok(rs);
         }
 

@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Domain.Entity.EAccount;
 using ComputerSales.Domain.Entity.ECustomer;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ComputerSales.Domain.Entity
 {
@@ -8,6 +9,8 @@ namespace ComputerSales.Domain.Entity
         public int IDAccount { get; set; }
         public string Email { get; set; }
         public string Pass { get; set; }
+
+        public DateTime CreatedAt { get; set; }
 
         public int IDRole { get; set; }
 
@@ -41,13 +44,14 @@ namespace ComputerSales.Domain.Entity
         // Factory method (nếu bạn muốn áp dụng pattern như Product.Create)
 
 
-        public static Account Create(string email, string pass, int idRole)
+        public static Account Create(string email, string pass, int idRole,DateTime CreatedAt)
         {
             return new Account
             {
                 Email = email,
                 Pass = pass,
-                IDRole = idRole
+                IDRole = idRole,
+                CreatedAt = CreatedAt
             };
         }
     }

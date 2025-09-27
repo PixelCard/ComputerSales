@@ -22,6 +22,7 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
                 e.Property(x => x.LockoutUntil).HasColumnType("datetime2");
                 e.Property(x => x.VerifySendCountToday).HasColumnType("int").HasDefaultValue(0);
                 e.Property(x => x.VerifySendCountDate).HasColumnType("date");
+                e.Property(x => x.CreatedAt).HasColumnType("datetime2");
 
             // IDAccount tự sinh: 'user_' + NEXT VALUE FOR AccountSeq
             e.Property(x => x.IDAccount)

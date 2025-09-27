@@ -10,7 +10,8 @@ namespace ComputerSales.Application.UseCaseDTO.Account_DTO
             return Account.Create(
                 input.Email,
                 input.Pass,
-                input.IDRole
+                input.IDRole,
+                input.CreateDate
             );
         }
 

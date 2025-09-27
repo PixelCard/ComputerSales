@@ -36,7 +36,7 @@ namespace ComputerSales.Application.UseCase.Account_UC
                 throw new InvalidOperationException("Email đã tồn tại.");
 
             var hash = BCrypt.Net.BCrypt.HashPassword(cmd.Password);
-            var acc = Account.Create(emailNorm, hash, cmd.RoleId ?? 1);
+            var acc = Account.Create(emailNorm, hash, cmd.RoleId ?? 1,DateTime.Now);
 
             // map Customer nếu cần…
 

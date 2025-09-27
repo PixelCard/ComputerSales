@@ -218,7 +218,7 @@ namespace ComputerSalesProject_MVC.Controllers
         [HttpGet("Verify")]
         [AllowAnonymous]
         public async Task<IActionResult> Verify([FromQuery] int uid, [FromQuery] string key, CancellationToken ct)
-        {
+        { 
             if (uid <= 0 || string.IsNullOrWhiteSpace(key))
                 return BadRequest("Thiếu tham số xác thực.");
 
