@@ -50,6 +50,41 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.ToTable("Account", (string)null);
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.EmailVerifyKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasMaxLength(88)
+                        .HasColumnType("nvarchar(88)");
+
+                    b.Property<bool>("Used")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId", "KeyHash")
+                        .IsUnique();
+
+                    b.ToTable("EmailVerifyKeys", (string)null);
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Role", b =>
                 {
                     b.Property<int>("IDRole")
@@ -243,7 +278,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PromotionId");
 
-                    b.ToTable("CartPromotions");
+                    b.ToTable("CartPromotions", (string)null);
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.Promotion", b =>
@@ -283,7 +318,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("Promotions");
+                    b.ToTable("Promotions", (string)null);
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECategory.Accessories", b =>
@@ -669,7 +704,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.HasIndex("Token")
                         .IsUnique();
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EVariant.VariantImage", b =>

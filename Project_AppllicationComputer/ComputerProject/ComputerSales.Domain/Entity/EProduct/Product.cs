@@ -1,4 +1,4 @@
-﻿using ComputerSales.Domain.Entity.ECategory;
+﻿    using ComputerSales.Domain.Entity.ECategory;
 using ComputerSales.Domain.Entity.EProvider;
 
 namespace ComputerSales.Domain.Entity.EProduct

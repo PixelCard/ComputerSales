@@ -1,4 +1,6 @@
-﻿using ComputerSales.Infrastructure.Persistence;
+﻿using ComputerSales.Application.UseCase.Product_UC;
+using ComputerSales.Application.UseCaseDTO.Product_DTO;
+using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,8 +8,7 @@ using Microsoft.EntityFrameworkCore;
 public class ProductController : Controller
 {
     private readonly AppDbContext _context;
-    public ProductController(AppDbContext context) => _context = context;
-
+    private readonly CreateProduct_UC _createUC;
     public async Task<IActionResult> Details(int id)
     {
         var now = DateTime.UtcNow;
@@ -146,6 +147,44 @@ public class ProductController : Controller
             }).ToListAsync();
 
         return View(vm);
+    }
+    public ProductController(CreateProduct_UC createUC, AppDbContext context)
+    {
+        _createUC = createUC;
+        _context = context;
+    }
+
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View(new ProductDTOInput("", 1, 0, 0, "", ""));
+
+    }
+
+
+    // POST: /Products/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(ProductDTOInput input, CancellationToken ct)
+    {
+        if (!ModelState.IsValid)
+        {
+            // luôn trả lại đúng kiểu model nếu có lỗi validate
+            return View(input);
+        }
+
+        try
+        {
+            var result = await _createUC.HandleAsync(input, ct);
+            TempData["SuccessMessage"] = $"Đã tạo sản phẩm {result.SKU} thành công!";
+            return RedirectToAction(nameof(Create)); // hoặc Index/Details
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(input);
+        }
     }
 
 

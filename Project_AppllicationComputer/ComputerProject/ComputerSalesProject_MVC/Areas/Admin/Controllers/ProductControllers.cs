@@ -1,7 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Product_Interface;
 using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCaseDTO.Product_DTO;
-using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerSales.MVC.Controllers
