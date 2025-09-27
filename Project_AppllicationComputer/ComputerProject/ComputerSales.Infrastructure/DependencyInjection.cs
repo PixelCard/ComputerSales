@@ -51,6 +51,8 @@ using Microsoft.Extensions.DependencyInjection;
 using ComputerSales.Infrastructure.Repositories.ForgetPassRespo;
 using ComputerSales.Application.Interface.Interface_ForgetPassword;
 using ComputerSales.Application.UseCase.ForgetPass_UC;
+using ComputerSales.Application.Payment.Interface;
+using ComputerSales.Application.Payment.VNPAY.Respository;
 
 
 namespace ComputerSales.Infrastructure
@@ -87,10 +89,16 @@ namespace ComputerSales.Infrastructure
             //ForgetPass
             services.AddScoped<IForgotPasswordRespo, ForgotPasswordStoreMemoryRespo>();
 
+
             // JWT generator
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.Configure<JwtOptions>(config.GetSection("Jwt"));
             services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
+
+
+            //VNPAY
+            services.AddScoped<IVnPayService, VnPayService>();
+
 
 
 

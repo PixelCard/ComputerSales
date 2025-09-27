@@ -24,6 +24,11 @@ namespace ComputerSalesProject_MVC.Controllers
         [HttpGet("ForgetPassHome")]
         public IActionResult ForgetPassHome() => View();
 
+
+
+
+        // API ->  Sau này refeactor lại code thì sẽ đưa lên Project API riêng MVC riêng ko để dùng chung 1 lượt như z
+
         [HttpPost("RequestOtp")]
         public async Task<IActionResult> RequestOtp([FromBody] ForgetResquestDTO dto, CancellationToken ct)
         {
@@ -32,6 +37,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 return BadRequest(new { success = false, message = "Email is required." });
 
             await _fpRequest.HandleAsync(email, ct);
+
             return Ok(new { success = true });
         }
 

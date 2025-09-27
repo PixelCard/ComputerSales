@@ -52,7 +52,7 @@ namespace ComputerSales.Infrastructure.Repositories.OrderCart_Respo
             var code = payment switch
             {
                 PaymentKind.COD => "COD",
-                PaymentKind.ZaloPay => "ZALOPAY",
+                PaymentKind.VNPAY => "VNPAY",
                 _ => "COD"
             };
 

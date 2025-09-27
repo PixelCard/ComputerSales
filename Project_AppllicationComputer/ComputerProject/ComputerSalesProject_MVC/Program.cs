@@ -1,6 +1,5 @@
 ﻿using ComputerSales.Application.Sercurity.JWT.Extensions;
 using ComputerSales.Infrastructure;
-using ComputerSalesProject_MVC.DependencyInjetionServices;
 using ComputerSalesProject_MVC.Extensions;
 using ComputerSalesProject_MVC.MiddleWareCustome;
 
@@ -24,10 +23,6 @@ builder.Services.AddApplicationUseCase();
 
 // AutoMapper
 builder.Services.ConfigureAutoMapper();
-
-
-// Add UseCase for MVC
-builder.Services.AddUseCaseMVC();
 
 
 

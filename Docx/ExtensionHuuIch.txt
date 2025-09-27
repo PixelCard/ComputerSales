@@ -1,0 +1,16 @@
+Host server (Free) (Nhược điểm tự lấy máy mình host 1 khi đã tắt localhost thì sẽ mất host)
+
+https://dashboard.ngrok.com/get-started/setup/windows
+
+
+
+VNPAY ( SandBox tích hợp dễ dàng chỉ cần Host Server) 
+
+https://sandbox.vnpayment.vn/apis/docs/thanh-toan-pay/pay.html
+
+
+
+
+ZaloPay ( Cần liên hệ với bên Zalo Pay để được cung cấp api key )
+
+https://docs.zalopay.vn/vi/docs/developer-tools/integration-guide/
