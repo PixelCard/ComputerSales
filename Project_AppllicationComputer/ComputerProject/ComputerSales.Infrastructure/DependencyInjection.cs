@@ -24,13 +24,14 @@ using ComputerSales.Application.UseCase.ProductOvetView_UC;
 using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCase.Role_UC;
-using ComputerSales.Application.UseCase.VariantImage_UC;
+//using ComputerSales.Application.UseCase.VariantImage_UC;
 using ComputerSales.Application.UseCase.VariantPrice_UC.variantGetPriceByVariantID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using ComputerSales.Application.Validator.AccountValidator;
 using ComputerSales.Application.Validator.CustomerValidator;
 using ComputerSales.Infrastructure.Persistence;
+using ComputerSales.Infrastructure.Repositories;
 using ComputerSales.Infrastructure.Repositories.Account_Respo;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartWrite;
@@ -78,7 +79,7 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<ICustomerRespo, CustomerRespo>();
             services.Configure<JwtOptions>(config.GetSection("Jwt"));
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
-
+            services.AddScoped<ProviderRepository>();
 
             // JWT generator
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
@@ -112,10 +113,10 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<UpdateProductVariant_UC>();
 
             //==================    VariantImage   ==================//
-            services.AddScoped<CreateVariantImage_UC>();
-            services.AddScoped<DeleteVariantImage_UC>();
-            services.AddScoped<GetVariantImageByID_UC>();
-            services.AddScoped<UpdateVariantImage_UC>();
+            //services.AddScoped<CreateVariantImage_UC>();
+            //services.AddScoped<DeleteVariantImage_UC>();
+            //services.AddScoped<GetVariantImageByID_UC>();
+            //services.AddScoped<UpdateVariantImage_UC>();
 
             //================ Provider ==================//
             services.AddScoped<CreateCategory_UC>();

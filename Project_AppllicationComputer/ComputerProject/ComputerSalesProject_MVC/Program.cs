@@ -1,13 +1,8 @@
-﻿using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
-using ComputerSales.Application.Interface.UnitOfWork;
-using ComputerSales.Infrastructure;
-using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
-using ComputerSales.Infrastructure.Repositories.UnitOfWork;
+﻿using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Sercurity.JWT.Extensions;
 using ComputerSalesProject_MVC.DependencyInjetionServices;
 using ComputerSalesProject_MVC.Extensions;
 using ComputerSalesProject_MVC.MiddleWareCustome;
-using Microsoft.Identity.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 

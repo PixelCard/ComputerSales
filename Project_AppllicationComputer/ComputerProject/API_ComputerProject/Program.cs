@@ -2,6 +2,7 @@
 using ComputerSales.Infrastructure;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using ComputerSales.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
