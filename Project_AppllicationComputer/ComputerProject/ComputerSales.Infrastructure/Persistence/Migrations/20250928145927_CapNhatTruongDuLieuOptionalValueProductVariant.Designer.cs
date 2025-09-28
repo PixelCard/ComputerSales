@@ -4,6 +4,7 @@ using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComputerSales.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250928145927_CapNhatTruongDuLieuOptionalValueProductVariant")]
+    partial class CapNhatTruongDuLieuOptionalValueProductVariant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,81 +33,24 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("('User_' + CAST(NEXT VALUE FOR [AccountSeq] AS varchar(20)))");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<int>("IDRole")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("LockoutUntil")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Pass")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("VerifyKeyExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateOnly?>("VerifySendCountDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("VerifySendCountToday")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.HasKey("IDAccount");
 
                     b.HasIndex("IDRole");
 
                     b.ToTable("Account", (string)null);
-                });
-
-            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.EmailVerifyKey", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("KeyHash")
-                        .IsRequired()
-                        .HasMaxLength(88)
-                        .HasColumnType("nvarchar(88)");
-
-                    b.Property<bool>("Used")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId", "KeyHash")
-                        .IsUnique();
-
-                    b.ToTable("EmailVerifyKeys");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Role", b =>
@@ -954,15 +900,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.EmailVerifyKey", b =>
-                {
-                    b.HasOne("ComputerSales.Domain.Entity.Account", null)
-                        .WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartItem", b =>

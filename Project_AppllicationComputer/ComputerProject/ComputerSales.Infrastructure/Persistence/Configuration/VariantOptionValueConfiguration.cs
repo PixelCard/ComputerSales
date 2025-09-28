@@ -16,6 +16,8 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
             b.Property(x => x.VariantId).IsRequired();
             b.Property(x => x.OptionalValueId).IsRequired();
 
+
+
             // FK -> ProductVariant
             b.HasOne(x => x.Variant)
              .WithMany(v => v.VariantOptionValues)

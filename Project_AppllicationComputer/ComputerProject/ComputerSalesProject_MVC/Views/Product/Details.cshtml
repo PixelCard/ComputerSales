@@ -34,18 +34,8 @@
                          class="max-h-[70vh] w-auto object-contain" alt="@Model.Title" />
                 </div>
 
-                @if (Model.Images?.Any() == true)
-                {
-                    <div class="mt-3 flex flex-wrap gap-2">
-                        @foreach (var (url, idx) in Model.Images.Select((u, i) => (u, i)))
-                        {
-                            <button class="rounded-lg border border-gray-200 bg-white hover:border-blue-500 p-1"
-                                    onclick="document.getElementById('mainImg').src='@url'">
-                                <img src="@url" class="w-20 h-14 object-cover rounded border border-gray-200" alt="thumb @idx" />
-                            </button>
-                        }
-                    </div>
-                }
+                <!-- thumbnails để JS quản lý -->
+                <div id="thumbs" class="mt-3 flex flex-wrap gap-2"></div>
             </div>
         </div>
 
@@ -82,6 +72,16 @@
                         </div>
                     </div>
                 }
+                <!-- OptionValues render tại đây -->
+                <div id="optionsWrap" class="mt-4"></div>
+
+                <div class="mt-2 text-sm text-gray-500 flex gap-2 flex-wrap">
+                    <span>Item#: @Model.SKU</span>
+                    @if (!string.IsNullOrWhiteSpace(Model.VariantSku))
+                    {
+                        <span id="variantSku">• Variant: @Model.VariantSku</span>
+                    }
+                </div>
 
 
                 <div class="mt-1 text-sm text-gray-500 flex items-center gap-3 flex-wrap">
@@ -150,7 +150,7 @@
                 <div class="flex items-baseline gap-2">
                     <div class="text-4xl font-extrabold text-gray-900 inline-flex items-baseline gap-1">
                         <svg class="w-6 h-6 mt-1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1a2 2 0 0 1 2 2v1h1a3 3 0 0 1 0 6h-3v2h3a3 3 0 1 1 0 6h-1v1a2 2 0 1 1-4 0v-1H9a3 3 0 0 1 0-6h3v-2H9a3 3 0 0 1 0-6h1V3a2 2 0 0 1 2-2Z" /></svg>
-                        @Model.Currency@Math.Truncate(Model.Price).ToString("0")
+                        @Model.Currency@Math.Truncate(Model.Price)
                         <span class="text-base align-super">
                             @{
                                 var cents = (Model.Price - Math.Truncate(Model.Price));
@@ -244,70 +244,135 @@
 </main>
 
 <script>
-    function chgQty(n){
-      const el = document.getElementById('qty');
-      let v = parseInt(el.value||'1',10)+n;
-      if(isNaN(v) || v<1) v=1;
-      el.value=v;
-    }
-
-    // ============ ADD: chọn variant -> đổi ảnh ============
+    // ============ chọn variant -> đổi ảnh + option ============
     async function selectVariant(btn){
         try{
             const id = btn.getAttribute('data-variant-id');
             if(!id) return;
 
-            // lưu lại variant đã chọn
-            const hid = document.getElementById('selectedVariantId');
-            if(hid) hid.value = id;
-
-            // gọi API lấy data variant (ảnh/giá nếu cần)
             const res = await fetch(`/product/variant-data/${id}`);
             if(!res.ok) return;
             const data = await res.json();
 
-            // đổi ảnh chính
+            // ✅ đổi ảnh chính + thumbnails (hỗ trợ object {url, descriptionImg})
             if (data?.images?.length){
-                const main = document.getElementById('mainImg');
-                if(main) main.src = data.images[0];
-
-                // render lại thumbnails
+                const first = typeof data.images[0] === 'string' ? data.images[0] : data.images[0].url;
+                document.getElementById('mainImg').src = first;
                 renderThumbs(data.images);
             }
 
-            // (OPTIONAL) nếu muốn đổi luôn Variant SKU hiển thị
-            const variantSkuSpan = [...document.querySelectorAll('span')]
-               .find(s => s.textContent?.trim().startsWith('• Variant:'));
+            // đổi Variant SKU
+            const variantSkuSpan = document.getElementById('variantSku');
             if(variantSkuSpan && data?.variantSku){
-               variantSkuSpan.textContent = `• Variant: ${data.variantSku}`;
+                variantSkuSpan.textContent = `• Variant: ${data.variantSku}`;
             }
-
-            // (OPTIONAL) nếu muốn đổi giá, có thể cập nhật ở đây từ data.price
 
             // highlight nút đang chọn
             document.querySelectorAll('[data-variant-id]')
                 .forEach(b => b.classList.remove('border-blue-600','ring-2','ring-blue-200','bg-blue-50'));
             btn.classList.add('border-blue-600','ring-2','ring-blue-200','bg-blue-50');
 
+            // ✅ render option values (đã camelCase)
+            renderOptions(data.options);
+
         }catch(e){
             console.error(e);
         }
     }
 
-    function renderThumbs(urls){
+    // ===================== Render thumbnails =====================
+    function renderThumbs(items){
         const wrap = document.getElementById('thumbs');
         if(!wrap) return;
         wrap.innerHTML = '';
-        urls.forEach((url, idx) => {
+
+        items.forEach((it, idx) => {
+            const url = (typeof it === 'string') ? it : it.url;
+            const desc = (typeof it === 'string') ? ''  : (it.descriptionImg || '');
+
             const btn = document.createElement('button');
             btn.className = 'rounded-lg border border-gray-200 bg-white hover:border-blue-500 p-1';
-            btn.onclick = () => { const main = document.getElementById('mainImg'); if(main){ main.src = url; } };
+            btn.onclick = () => {
+                const main = document.getElementById('mainImg');
+                if(main){ main.src = url; }
+            };
+
             const img = document.createElement('img');
             img.src = url;
             img.alt = 'thumb ' + idx;
             img.className = 'w-20 h-14 object-cover rounded border border-gray-200';
+
             btn.appendChild(img);
+
+            // ✅ thêm mô tả (nếu có)
+            if (desc) {
+                const cap = document.createElement('div');
+                cap.className = 'mt-1 text-[11px] leading-snug text-gray-500 w-20';
+                cap.textContent = desc;
+                btn.appendChild(cap);
+            }
+
             wrap.appendChild(btn);
         });
     }
+
+    // ===================== Render OptionValues =====================
+    function renderOptions(options) {
+        const wrap = document.getElementById("optionsWrap");
+        wrap.innerHTML = "";
+
+        if (!options || !options.length) return;
+
+        const grouped = {};
+        options.forEach(o => {
+            const key = o.optionTypeName || o.OptionTypeName;  // phòng khi data cũ
+            const val = o.value || o.Value;
+            if (!grouped[key]) grouped[key] = [];
+            if (!grouped[key].includes(val)) grouped[key].push(val);
+        });
+
+        for (const type in grouped) {
+            const div = document.createElement("div");
+            div.className = "mt-3";
+            div.innerHTML = `<div class="font-medium text-sm mb-1">${type}</div>`;
+
+            const list = document.createElement("div");
+            list.className = "flex gap-2 flex-wrap";
+
+            grouped[type].forEach(val => {
+                const btn = document.createElement("button");
+                btn.className = "px-3 py-1 border rounded-lg text-sm hover:bg-blue-50";
+                btn.innerText = val;
+
+                btn.onclick = () => {
+                    [...list.children].forEach(b => b.classList.remove("border-blue-600", "bg-blue-50"));
+                    btn.classList.add("border-blue-600", "bg-blue-50");
+                };
+
+                list.appendChild(btn);
+            });
+
+            div.appendChild(list);
+            wrap.appendChild(div);
+        }
+    }
+
+    // ===================== Auto-load variant đang được chọn khi mở trang =====================
+    document.addEventListener("DOMContentLoaded", () => {
+        const activeBtn =
+            document.querySelector('[data-variant-id].ring-2') ||
+            document.querySelector(`[data-variant-id="@Model.VariantId"]`) ||
+            document.querySelector('[data-variant-id]');
+
+        if (activeBtn) {
+            // Gọi luôn để lấy images (kèm description) & options mới nhất
+            selectVariant(activeBtn);
+        } else {
+            // Fallback: nếu không có variant button thì render từ Model.Images (chuỗi)
+            const initImages = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Images ?? new List<string>()));
+            if(initImages.length){
+                renderThumbs(initImages);
+            }
+        }
+    });
 </script>

@@ -10,5 +10,8 @@ namespace ComputerSales.Domain.Entity.EVariant
 
         public ProductVariant Variant { get; set; }
         public OptionalValue OptionalValue { get; set; }
+
+        public static VariantOptionValue create(int VariantId, int OptionalValueId)
+            => new VariantOptionValue { VariantId = VariantId, OptionalValueId = OptionalValueId };
     }
 }

@@ -35,6 +35,7 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\ProductControllers\" />
     <Folder Include="Image\" />
+    <Folder Include="JavaScript\" />
   </ItemGroup>
 
   <ItemGroup>

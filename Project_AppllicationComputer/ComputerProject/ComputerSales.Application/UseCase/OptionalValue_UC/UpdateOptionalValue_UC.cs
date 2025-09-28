@@ -30,6 +30,7 @@ namespace ComputerSales.Application.UseCase.OptionalValue_UC
             entity.SortOrder = input.SortOrder;
 
             entity.OptionTypeId = input.OptionTypeId;
+            entity.Price = input.Price;
 
             respository.Update(entity);
 

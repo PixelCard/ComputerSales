@@ -1,4 +1,4 @@
-﻿using ComputerSales.Application.Sercurity.JWT.Extensions;
+using ComputerSales.Application.Sercurity.JWT.Extensions;
 using ComputerSales.Infrastructure;
 using ComputerSalesProject_MVC.Extensions;
 using ComputerSalesProject_MVC.MiddleWareCustome;

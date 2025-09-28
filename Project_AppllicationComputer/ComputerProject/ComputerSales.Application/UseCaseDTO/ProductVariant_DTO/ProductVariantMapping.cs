@@ -10,7 +10,8 @@ namespace ComputerSales.Application.UseCaseDTO.ProductVariant_DTO
                 input.ProductId,
                 input.SKU,
                 input.Status,
-                input.Quantity
+                input.Quantity,
+                input.VariantName
             );
         }
 
@@ -20,7 +21,8 @@ namespace ComputerSales.Application.UseCaseDTO.ProductVariant_DTO
                 e.SKU, 
                 e.Status, 
                 e.Quantity,
-                e.Id
+                e.Id,
+                e.VariantName
             );
         }
     }

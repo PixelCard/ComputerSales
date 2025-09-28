@@ -1,110 +1,205 @@
-﻿<!-- Tailwind CDN (bỏ nếu dự án đã build Tailwind) -->
+﻿<!-- Tailwind CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* Reset default body margin to allow full-bleed header */
+  html, body { margin: 0; padding: 0; }
+</style>
 
-<header class="sticky top-0 z-50 bg-[#0b2f63] text-white shadow-md">
-    <!-- Container: chỉnh max-w theo ý; px-0 để sát lề -->
-    <div class="max-w-[1320px] mx-auto px-0 sm:px-3 lg:px-6">
-        <!-- GRID 3 CỘT: trái | giữa(1fr) | phải -->
-        <div class="grid grid-cols-[auto_1fr_auto] items-center h-16 gap-3">
-
-            <!-- LEFT: logo + address (sát lề trái) -->
-            <div class="flex items-center gap-3 justify-self-start min-w-0">
-                <a href="/" class="flex items-center gap-2 shrink-0">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-300 to-orange-500"></div>
-                    <span class="hidden sm:block font-extrabold text-xl tracking-tight">newegg</span>
+<header class="fixed inset-x-0 top-0 z-50 bg-[#0b2f63] text-white shadow-lg w-screen">
+    <!-- Main Header Container -->
+    <div class="w-full px-0">
+        <!-- Top Row: Logo, Search, Actions -->
+        <div class="flex items-center justify-between h-16 gap-2 sm:gap-4 px-2 md:px-3 lg:px-4 xl:px-6 2xl:px-8">
+            
+            <!-- LEFT: Logo + Location -->
+            <div class="flex items-center gap-2 sm:gap-4 min-w-0 flex-shrink-0">
+                <!-- Logo -->
+                <a href="/" class="flex items-center gap-2 hover:opacity-90 transition">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                        <span class="text-white font-bold text-sm sm:text-base">N</span>
+                    </div>
+                    <span class="hidden sm:block font-bold text-lg sm:text-xl tracking-tight text-white">Newegg</span>
                 </a>
 
-                <button class="hidden md:flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition"
-                        aria-label="Select address">
-                    <svg class="w-5 h-5 opacity-90" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <!-- Location Selector -->
+                <div class="hidden md:flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition cursor-pointer">
+                    <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" />
                     </svg>
-                    <div class="leading-none text-left">
-                        <div class="text-xs text-blue-100">Hello</div>
-                        <div class="text-sm font-semibold">Select address</div>
+                    <div class="text-left">
+                        <div class="text-xs text-orange-200">Deliver to</div>
+                        <div class="text-sm font-medium">Vietnam</div>
                     </div>
-                </button>
+                </div>
             </div>
 
-            <!-- CENTER: search (1fr) -->
-            <div class="min-w-0">
-                <div class="flex items-center gap-2 w-full rounded-full bg-white
-                    px-3 py-1.5 md:py-2 ring-[3px] ring-white/60
-                    shadow-[inset_0_0_0_2px_rgba(11,47,99,.6)]">
-                    <!-- chips -->
-                    <div id="chips" class="hidden md:flex items-center gap-2 shrink-0 pl-1">
-                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">amd ryzen</span>
-                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">hard drive</span>
-                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">cd/dvd</span>
+            <!-- CENTER: Search Bar -->
+            <div class="flex-1 max-w-4xl mx-4 sm:mx-6">
+                <div class="relative flex items-center bg-white rounded-lg shadow-sm border border-gray-200">
+                    <!-- Category Dropdown -->
+                    <div class="hidden sm:flex items-center border-r border-gray-200">
+                        <select class="px-3 py-2 text-sm text-gray-700 bg-transparent border-none outline-none cursor-pointer">
+                            <option>All Categories</option>
+                            <option>Computer Parts</option>
+                            <option>Electronics</option>
+                            <option>Gaming</option>
+                            <option>Home & Garden</option>
+                        </select>
+                        <svg class="w-4 h-4 text-gray-500 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
                     </div>
 
-                    <!-- input -->
-                    <input id="searchInput" type="text" placeholder="Search all categories"
-                           class="w-full bg-transparent text-gray-900 placeholder-gray-400 outline-none
-                        text-sm md:text-base" />
+                    <!-- Search Input -->
+                    <input id="searchInput" 
+                           type="text" 
+                           placeholder="Search for products, brands, and more..."
+                           class="flex-1 px-3 py-2 text-gray-900 placeholder-gray-500 outline-none text-sm sm:text-base" />
 
-                    <!-- nút search (ôm sát mép phải) -->
-                    <button id="btnSearch"
-                            class="shrink-0 rounded-full bg-[#cfe0ff] hover:bg-[#b9d0ff]
-                         transition p-2 md:p-2.5 ring-2 ring-white
-                         shadow-[0_0_0_2px_rgba(11,47,99,.6)]"
-                            aria-label="Search">
-                        <svg class="w-5 h-5 text-[#0b2f63]" viewBox="0 0 24 24" fill="currentColor">
+                    <!-- Search Button -->
+                    <button id="btnSearch" 
+                            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-r-lg transition-colors">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M10 2a8 8 0 1 1 5.3 14l4.4 4.4-1.4 1.4-4.4-4.4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z" />
                         </svg>
                     </button>
                 </div>
             </div>
 
-            <!-- RIGHT: actions (dính mép phải) -->
-            <div class="flex items-center justify-self-end gap-2 sm:gap-3">
-                <button class="p-2 rounded-full hover:bg-white/10 transition" aria-label="Notifications">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" />
-                    </svg>
-                </button>
-
-                <button class="hidden sm:flex items-center gap-1 px-2 py-1 rounded hover:bg-white/10 transition" aria-label="Region">
+            <!-- RIGHT: Actions -->
+            <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                <!-- Language/Region -->
+                <button class="hidden sm:flex items-center gap-1 px-2 py-1 rounded hover:bg-white/10 transition">
                     <span class="text-lg">🇺🇸</span>
+                    <span class="hidden lg:block text-sm">EN</span>
                 </button>
 
+                <!-- Account -->
                 <a href="/account/login" class="hidden lg:flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" /></svg>
-                    <div class="leading-none text-left">
-                        <div class="text-xs text-blue-100">Welcome</div>
-                        <div class="text-sm font-semibold">Sign In / Register</div>
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" />
+                    </svg>
+                    <div class="text-left">
+                        <div class="text-xs text-orange-200">Hello, Sign in</div>
+                        <div class="text-sm font-medium">Account & Lists</div>
                     </div>
                 </a>
 
+                <!-- Orders -->
                 <a href="/orders" class="hidden xl:flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18H5a2 2 0 0 1-2-2V5h2v11h2v2Zm14-9-7-7v4H9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h5v4l7-7Z" /></svg>
-                    <div class="leading-none text-left">
-                        <div class="text-xs text-blue-100">Returns</div>
-                        <div class="text-sm font-semibold">& Orders</div>
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 18H5a2 2 0 0 1-2-2V5h2v11h2v2Zm14-9-7-7v4H9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h5v4l7-7Z" />
+                    </svg>
+                    <div class="text-left">
+                        <div class="text-xs text-orange-200">Returns</div>
+                        <div class="text-sm font-medium">& Orders</div>
                     </div>
                 </a>
 
-                <a href="/cart" class="relative p-2 rounded-full hover:bg-white/10 transition" aria-label="Cart">
-                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+                <!-- Cart -->
+                <a href="/cart" class="relative flex items-center gap-1 px-2 py-1 rounded hover:bg-white/10 transition">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 .001 4.001A2 2 0 0 0 17 18ZM6 6h14l-1.5 8.5H8.3L7 4H3V2h4l.7 4Z" />
                     </svg>
-                    <span class="absolute -right-1 -top-1 text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-red-500 text-white font-bold">3</span>
+                    <span class="hidden sm:block text-sm font-medium">Cart</span>
+                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full flex items-center justify-center font-bold">3</span>
                 </a>
             </div>
+        </div>
 
+        <!-- Bottom Row: Navigation Menu (Desktop) -->
+        <div class="hidden lg:flex items-center justify-between py-2 border-t border-blue-800">
+            <!-- Left Navigation -->
+            <div class="flex items-center gap-6">
+                <button class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+                    </svg>
+                    <span class="font-medium">All Categories</span>
+                </button>
+                
+                <a href="/deals" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Today's Deals</a>
+                <a href="/customer-service" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Customer Service</a>
+                <a href="/registry" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Registry</a>
+                <a href="/gift-cards" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Gift Cards</a>
+                <a href="/sell" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Sell</a>
+            </div>
+
+            <!-- Right Navigation -->
+            <div class="flex items-center gap-4">
+                <a href="/business" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Business</a>
+                <a href="/healthcare" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Healthcare</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <div class="lg:hidden border-t border-blue-800">
+        <div class="w-full px-0">
+            <div class="flex items-center justify-between py-2 px-2 md:px-3 lg:px-4 xl:px-6 2xl:px-8">
+                <button class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+                    </svg>
+                    <span class="font-medium">All</span>
+                </button>
+                
+                <div class="flex items-center gap-4">
+                    <a href="/deals" class="px-3 py-2 rounded hover:bg-white/10 transition text-sm">Deals</a>
+                    <a href="/customer-service" class="px-3 py-2 rounded hover:bg-white/10 transition text-sm">Support</a>
+                </div>
+            </div>
         </div>
     </div>
 </header>
 
+<!-- spacer to offset fixed header height -->
+<div class="h-20 lg:h-24"></div>
+
 <script>
-    const chips = document.getElementById('chips');
+    // Search functionality
     const input = document.getElementById('searchInput');
     const btn = document.getElementById('btnSearch');
 
-    input?.addEventListener('input', () => chips && (chips.style.display = input.value ? 'none' : ''));
+    // Search on button click
     btn?.addEventListener('click', () => {
-      const q = input.value.trim();
-      if (!q) { input.focus(); return; }
-      window.location.href = `/search?q=${encodeURIComponent(q)}`;
+        const q = input.value.trim();
+        if (!q) { 
+            input.focus(); 
+            return; 
+        }
+        window.location.href = `/search?q=${encodeURIComponent(q)}`;
     });
+
+    // Search on Enter key
+    input?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const q = input.value.trim();
+            if (q) {
+                window.location.href = `/search?q=${encodeURIComponent(q)}`;
+            }
+        }
+    });
+
+    // Mobile menu toggle (if needed)
+    const mobileMenuBtn = document.querySelector('[data-mobile-menu]');
+    const mobileMenu = document.querySelector('[data-mobile-menu-content]');
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+
+    // Cart count update (if needed)
+    function updateCartCount(count) {
+        const cartBadge = document.querySelector('.cart-badge');
+        if (cartBadge) {
+            cartBadge.textContent = count;
+            cartBadge.style.display = count > 0 ? 'flex' : 'none';
+        }
+    }
+
+    // Make functions globally available
+    window.updateCartCount = updateCartCount;
 </script>

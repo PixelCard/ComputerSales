@@ -10,9 +10,7 @@ using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EProvider;
 using ComputerSales.Domain.Entity.ERefreshToken;
 using ComputerSales.Domain.Entity.EVariant;
-using ComputerSales.Infrastructure.Persistence.Configuration;
 using Microsoft.EntityFrameworkCore;
-using System.Security.AccessControl;
 
 namespace ComputerSales.Infrastructure.Persistence
 {
