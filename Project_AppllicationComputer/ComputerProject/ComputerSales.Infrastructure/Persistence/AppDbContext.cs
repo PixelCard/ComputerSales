@@ -40,6 +40,8 @@ namespace ComputerSales.Infrastructure.Persistence
         public DbSet<VariantOptionValue> variantOptionValues => Set<VariantOptionValue>();
         public DbSet<VariantPrice> variantPrices => Set<VariantPrice>();
         public DbSet<Accessories> accessories => Set<Accessories>();
+
+        public DbSet<EmailVerifyKey> EmailVerifyKeys => Set<EmailVerifyKey>();
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder b)

@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-
-namespace ComputerSalesProject_MVC.Models
+﻿namespace ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO
 {
-    public class RegisterViewModel
+    public class RegisterRequestDTO
     {
         public string UserName { get; set; } = default!;
         public string Email { get; set; } = default!;

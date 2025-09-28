@@ -17,22 +17,25 @@ namespace ComputerSales.Application.UseCase.Account_UC
             _uow = uow;
         }
 
-        public async Task<AccountOutputDTO?> HandleAsync(UpdateAccountDTO input, CancellationToken ct = default)
+        public async Task<AccountOutputDTO?> HandleAsync(int Id,UpdateAccountDTO input, CancellationToken ct = default)
         {
-            var entity = await _repo.GetAccountByID(input.IDRole, ct);
+            var entity = await _repo.GetAccountByID(Id, ct);
             if (entity is null) return null;
 
             // nếu dùng concurrency
             // if (!string.IsNullOrWhiteSpace(input.RowVersionBase64))
             //     entity.RowVersion = Convert.FromBase64String(input.RowVersionBase64);
 
-            entity.Email = input.Email.Trim();  
-            
+            entity.Email = input.Email.Trim();
+
 
             await _repo.UpdateAccount(entity, ct);
+
             await _uow.SaveChangesAsync(ct);
 
-            return entity.ToResult();
+            var entity_SauKhiSua = await _repo.GetAccountByID(Id, ct);
+
+            return entity_SauKhiSua.ToResult();
         }
 
     }

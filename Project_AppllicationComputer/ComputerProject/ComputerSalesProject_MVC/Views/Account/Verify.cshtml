@@ -1,0 +1,46 @@
+﻿@{
+    Layout = null;
+    var success = TempData["SuccessMessage"] as string;
+    var error = TempData["ErrorMessage"] as string;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Đang xác thực email…</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-purple-600 flex items-center justify-center">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center">
+        <div class="w-12 h-12 mx-auto border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+        <h1 class="mt-6 text-xl font-bold text-purple-700">Đang xác thực email…</h1>
+        <p class="mt-2 text-gray-600">Vui lòng chờ trong giây lát.</p>
+
+        @if (!string.IsNullOrEmpty(success))
+        {
+            <div class="mt-4 text-green-700 bg-green-50 border border-green-200 rounded-xl px-3 py-2">@success</div>
+            <a href="/Account/VerifySuccess"
+               class="inline-block mt-5 px-4 py-2 rounded-xl border-2 border-purple-600 text-purple-600 font-semibold hover:bg-purple-50">
+                Tiếp tục
+            </a>
+        }
+        else if (!string.IsNullOrEmpty(error))
+        {
+            <div class="mt-4 text-red-700 bg-red-50 border border-red-200 rounded-xl px-3 py-2">@error</div>
+            <a href="/Account/Login"
+               class="inline-block mt-5 px-4 py-2 rounded-xl border-2 border-purple-600 text-purple-600 font-semibold hover:bg-purple-50">
+                Về trang đăng nhập
+            </a>
+        }
+        else
+        {
+            <p class="mt-4 text-sm text-gray-500">Nếu không tự chuyển, vui lòng quay lại.</p>
+            <a href="/Account/Login"
+               class="inline-block mt-5 px-4 py-2 rounded-xl border-2 border-purple-600 text-purple-600 font-semibold hover:bg-purple-50">
+                Về trang đăng nhập
+            </a>
+        }
+    </div>
+</body>
+</html>

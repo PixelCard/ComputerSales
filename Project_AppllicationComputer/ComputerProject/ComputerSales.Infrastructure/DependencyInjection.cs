@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.Interface.Cart_Interface;
+using ComputerSales.Application.Interface.Interface_Email_Respository;
 using ComputerSales.Application.Interface.Interface_OrderFromCart;
 using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
 using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
@@ -36,21 +37,28 @@ using ComputerSales.Infrastructure.Repositories.Account_Respo;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartWrite;
 using ComputerSales.Infrastructure.Repositories.Customer_Respo;
+using ComputerSales.Infrastructure.Repositories.EmailVerifyKeyRepository;
 using ComputerSales.Infrastructure.Repositories.OrderCart_Respo;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
 using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
 using ComputerSales.Infrastructure.Repositories.Respository_ImplementationInterface;
 using ComputerSales.Infrastructure.Repositories.Role_Respo;
+using ComputerSales.Infrastructure.Repositories.SmtpEmailSender_Respository;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Infrastructure.Repositories.VariantPrice_Respo;
-using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
-using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
-using ComputerSales.Infrastructure.Sercurity.JWT.Respository;
+using ComputerSales.Application.Sercurity.JWT.Enity;
+using ComputerSales.Application.Sercurity.JWT.Interface;
+using ComputerSales.Application.Sercurity.JWT.Respository;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ComputerSales.Infrastructure.Repositories.ForgetPassRespo;
+using ComputerSales.Application.Interface.Interface_ForgetPassword;
+using ComputerSales.Application.UseCase.ForgetPass_UC;
+using ComputerSales.Application.Payment.Interface;
+using ComputerSales.Application.Payment.VNPAY.Respository;
 
 
 namespace ComputerSales.Infrastructure
@@ -64,6 +72,9 @@ namespace ComputerSales.Infrastructure
                config.GetConnectionString("Quy"),
                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
             ));
+
+            services.AddMemoryCache();
+
             services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
             services.AddScoped<IProductRespository, ProductRespository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
@@ -75,14 +86,27 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IOrderFromCart, OrderFromCartRespository>();
             services.AddScoped<ICartWriteRepository, CartWriteRepository>();
             services.AddScoped<IVariantPriceRespo, VariantPriceRespo>();
-            services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
             services.AddScoped<ICustomerRespo, CustomerRespo>();
-            services.Configure<JwtOptions>(config.GetSection("Jwt"));
+            services.AddScoped<IEmailVerifyKeyRepository, EmailVerifyKeyRepository>();
+            services.AddScoped<IEmailSender, SmtpEmailSenderRespo>();
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
             services.AddScoped<ProviderRepository>();
 
+            //ForgetPass
+            services.AddScoped<IForgotPasswordRespo, ForgotPasswordStoreMemoryRespo>();
+
+
             // JWT generator
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.Configure<JwtOptions>(config.GetSection("Jwt"));
+            services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
+
+
+            //VNPAY
+            services.AddScoped<IVnPayService, VnPayService>();
+
+
+
 
             return services;
         }
@@ -176,8 +200,11 @@ namespace ComputerSales.Infrastructure
 
             //================= Account ==============//
             services.AddScoped<CreateCustomer_UC>();
-           services.AddScoped<DeleteCustomer_UC>();
-           services.AddScoped<getCustomerByID>();
+            services.AddScoped<DeleteCustomer_UC>();
+            services.AddScoped<getCustomerByID>();
+            services.AddScoped<RegisterAccount_UC>();
+            services.AddScoped<VerifyEmail_UC>();
+            services.AddScoped<ResendVerifyEmail_UC>();
 
 
             //================= Cart ==============//
@@ -202,10 +229,10 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<variantGetPriceByVariantID_UC>();
 
 
-          
-
-            
-
+            //================= Forget Pass ==============//
+            services.AddScoped<ForgotResetPassword_UC>();
+            services.AddScoped<ForgotVerifyOtp_UC>();
+            services.AddScoped<ForgotRequestOtp_UC>();
 
             return services;
         }

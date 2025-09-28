@@ -12,93 +12,79 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="min-h-screen relative bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-800">
-    <!-- Decorative background -->
-    <div class="absolute inset-0 -z-10 overflow-hidden">
-        <div class="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-indigo-600/30 blur-3xl"></div>
-        <div class="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
+<body class="min-h-screen flex items-center justify-center relative">
+    <!-- Background image + overlay + stars -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+        <!-- Background mountain image -->
+        <img src="https://images.unsplash.com/photo-1522124624696-7ea32eb9592c?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bW91bnRhaW4lMjBzdGFyc3xlbnwwfHwwfHx8MA%3D%3D"
+             alt="mountain background"
+             class="w-full h-full object-cover absolute inset-0" />
+        <!-- Overlay tím -->
+        <div class="absolute inset-0 bg-gradient-to-b from-purple-900 via-purple-700 to-blue-400 opacity-80"></div>
+        <!-- Stars SVG -->
+        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1440 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g>
+                <circle cx="100" cy="100" r="1.5" fill="white" opacity="0.8" />
+                <circle cx="400" cy="200" r="1" fill="white" opacity="0.7" />
+                <circle cx="800" cy="150" r="1.2" fill="white" opacity="0.8" />
+                <circle cx="1200" cy="80" r="1.4" fill="white" opacity="0.7" />
+                <circle cx="600" cy="50" r="1.1" fill="white" opacity="0.8" />
+                <circle cx="300" cy="300" r="1.3" fill="white" opacity="0.7" />
+                <circle cx="1000" cy="250" r="1.2" fill="white" opacity="0.8" />
+                <circle cx="1300" cy="180" r="1.1" fill="white" opacity="0.7" />
+                <circle cx="200" cy="500" r="1.2" fill="white" opacity="0.8" />
+                <circle cx="900" cy="400" r="1.3" fill="white" opacity="0.7" />
+            </g>
+        </svg>
     </div>
 
-    <div class="min-h-screen flex items-center justify-center px-4">
-        <div class="w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <!-- Left: Branding/hero -->
-            <div class="hidden lg:block text-slate-100">
-                <div class="space-y-6">
-                    <div class="inline-flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6 text-white"><path d="M12 3l9 4.5v9L12 21 3 16.5v-9L12 3zm0 2.06L5 8v8l7 3.06L19 16V8l-7-2.94z"/></svg>
-                        </div>
-                        <span class="text-xl font-semibold tracking-wide">ComputerSales</span>
+
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen w-full">
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="bg-white/10 backdrop-blur-md rounded-xl shadow-lg p-8 w-full max-w-md border border-white/20">
+                <h2 class="text-3xl font-bold text-white text-center mb-8">Login</h2>
+                <div class="mb-4">
+                    <label class="block text-white mb-2" for="email">Email</label>
+                    <div class="flex items-center bg-white/20 rounded-lg px-3">
+                        <input class="w-full bg-transparent outline-none py-2 text-white placeholder-white"
+                               type="text" id="email" name="email" placeholder="Email" required />
+                        <span class="ml-2 text-white">
+                            <!-- icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        </span>
                     </div>
-                    <h1 class="text-4xl font-extrabold leading-tight">Welcome back</h1>
-                    <p class="text-slate-300 max-w-md">Sign in to manage your orders, track devices, and continue your shopping securely.</p>
-                    <ul class="text-slate-300/90 space-y-2">
-                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Secure authentication</li>
-                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Fast checkout experience</li>
-                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Personalized recommendations</li>
-                    </ul>
                 </div>
-            </div>
-
-            <!-- Right: Auth card -->
-            <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 shadow-2xl p-6 sm:p-8">
-                <div class="mb-6 text-center lg:text-left">
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Sign in</h2>
-                    <p class="text-slate-200/80 mt-1">Use your account email and password</p>
+                <div class="mb-4">
+                    <label class="block text-white mb-2" for="pass">Password</label>
+                    <div class="flex items-center bg-white/20 rounded-lg px-3">
+                        <input class="w-full bg-transparent outline-none py-2 text-white placeholder-white"
+                               type="password" id="pass" name="pass" placeholder="Password" required />
+                        <span class="ml-2 text-white">
+                            <!-- icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2V7a2 2 0 10-4 0v2c0 1.104.896 2 2 2zm6 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-6m12 0a2 2 0 00-2-2H8a2 2 0 00-2 2m12 0V7a6 6 0 10-12 0v6" /></svg>
+                        </span>
+                    </div>
                 </div>
-
-                @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+                <div class="flex items-center justify-between mb-6">
+                    <label class="flex items-center text-white pr-4">
+                        <input type="checkbox" class="form-checkbox mr-2" />
+                        Remember me
+                    </label>
+                    <a href="@Url.Action("ForgetPassHome","ForgetPassword")" class="text-white hover:underline text-sm">Forgot Password?</a>
+                </div>
+                <button type="submit" class="w-full bg-white text-purple-700 font-bold py-2 rounded-full shadow hover:bg-purple-100 transition">Login</button>
+                @if (ViewBag.Error != null)
                 {
-                    @Html.AntiForgeryToken()
-                    <div class="space-y-5">
-                        <div>
-                            <label class="block text-slate-200 mb-2" for="email">Email</label>
-                            <div class="relative">
-                                <input class="w-full rounded-xl bg-white/15 text-white placeholder-slate-200/70 border border-white/20 outline-none py-3 pl-10 pr-3 focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
-                                       type="text" id="email" name="email" placeholder="you@example.com" required />
-                                <span class="absolute inset-y-0 left-3 flex items-center text-slate-200/80">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H8m8-4H8m8 8H8M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-slate-200 mb-2" for="pass">Password</label>
-                            <div class="relative">
-                                <input class="w-full rounded-xl bg-white/15 text-white placeholder-slate-200/70 border border-white/20 outline-none py-3 pl-10 pr-3 focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
-                                       type="password" id="pass" name="pass" placeholder="••••••••" required />
-                                <span class="absolute inset-y-0 left-3 flex items-center text-slate-200/80">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2V7a2 2 0 10-4 0v2c0 1.104.896 2 2 2zm6 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-6m12 0a2 2 0 00-2-2H8a2 2 0 00-2 2m12 0V7a6 6 0 10-12 0v6" /></svg>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center text-slate-200">
-                                <input type="checkbox" class="h-4 w-4 rounded border-white/30 bg-transparent mr-2" />
-                                Remember me
-                            </label>
-                            <a href="#" class="text-slate-100 hover:text-white text-sm">Forgot password?</a>
-                        </div>
-
-                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 rounded-xl shadow-lg shadow-indigo-900/30 transition">
-                            <span>Sign in</span>
-                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                        </button>
-
-                        @if (ViewBag.Error != null)
-                        {
-                            <div class="text-red-300 text-center">@ViewBag.Error</div>
-                        }
-                    </div>
+                    <div class="text-red-400 text-center mt-4">@ViewBag.Error</div>
                 }
-
-                <div class="text-center mt-6 text-slate-200">
+                <div class="text-center mt-6 text-white">
                     Don't have an account?
-                    <a href="@Url.Action("Register", "Account")" class="font-semibold underline hover:text-white">Create one</a>
+                    <a href="@Url.Action("Register", "Account")" class="font-bold underline hover:text-purple-200">Register</a>
                 </div>
             </div>
-        </div>
+        }
     </div>
 </body>
 </html>

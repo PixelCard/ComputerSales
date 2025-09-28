@@ -1,14 +1,16 @@
-﻿using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
+﻿using ComputerSales.Application.Sercurity.JWT.Enity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace ComputerSales.Infrastructure.Sercurity.JWT.Extensions
+namespace ComputerSales.Application.Sercurity.JWT.Extensions
 {
     public static class JwtServiceCollectionExtensions
     {
+
+        //Cấu hình cho ACCESS token
         public static IServiceCollection AddJwtAuth(
         this IServiceCollection services,
         IConfiguration config,

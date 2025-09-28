@@ -1,4 +1,5 @@
 ﻿using ComputerSales.Application.Interface.Interface_OrderFromCart;
+using ComputerSales.Application.Payment.Interface;
 using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
 using ComputerSales.Application.UseCase.Customer_UC;
@@ -17,6 +18,8 @@ namespace ComputerSalesProject_MVC.Controllers
 
         private readonly GetAccount_UC getAccount_UC;
 
+        private readonly IVnPayService _vnPayService;
+
         private readonly IOrderFromCart _addOrder;
 
         private readonly GetCartPageQueryHandler getCartPageQueryHandler;
@@ -25,12 +28,14 @@ namespace ComputerSalesProject_MVC.Controllers
             getCustomerByUserID getCustomerByUserID, 
             GetCartPageQueryHandler getCartPageQueryHandler, 
             GetAccount_UC getAccount_UC,
-            IOrderFromCart _addOrder)
+            IOrderFromCart _addOrder,
+            IVnPayService _vnPayService)
         {
             this.getCustomerByUserID = getCustomerByUserID;
             this.getCartPageQueryHandler = getCartPageQueryHandler;
             this.getAccount_UC= getAccount_UC;
             this._addOrder = _addOrder;
+            this._vnPayService= _vnPayService;
         }
 
         public async Task<IActionResult> OrderHome(CancellationToken ct)
@@ -132,5 +137,14 @@ namespace ComputerSalesProject_MVC.Controllers
 
         [HttpGet]
         public IActionResult Success(int id) => View(model: id);
+
+
+        [HttpGet]
+        public IActionResult PaymentCallbackVnpay()
+        {
+            var response = _vnPayService.PaymentExecute(Request.Query);
+
+            return Json(response);
+        }
     }
 }
