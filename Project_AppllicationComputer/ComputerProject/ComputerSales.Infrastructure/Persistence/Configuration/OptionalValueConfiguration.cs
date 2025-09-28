@@ -26,6 +26,8 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
              .HasDefaultValue(0)
              .IsRequired();
 
+            b.Property(x => x.Price).IsRequired();
+
             // Đảm bảo 1 OptionType không có 2 value trùng tên
             b.HasIndex(x => new { x.OptionTypeId, x.Value })
              .IsUnique();

@@ -3,5 +3,6 @@
     public sealed record OptionalValueInput(         
         int OptionTypeId,
         string Value ,
-        int SortOrder );
+        int SortOrder,
+        decimal Price);
 }

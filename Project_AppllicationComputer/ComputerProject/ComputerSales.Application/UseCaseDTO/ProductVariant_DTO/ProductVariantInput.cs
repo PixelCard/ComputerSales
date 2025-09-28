@@ -6,5 +6,6 @@ namespace ComputerSales.Application.UseCaseDTO.ProductVariant_DTO
      long ProductId,
      string SKU ,
      VariantStatus Status ,
-     int Quantity );
+     int Quantity,
+     string VariantName);
 }
