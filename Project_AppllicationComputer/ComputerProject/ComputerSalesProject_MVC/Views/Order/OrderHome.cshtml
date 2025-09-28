@@ -208,7 +208,7 @@
         const pay = document.querySelector('input[name="orderCheckoutInput.Payment"]:checked')?.value;
         if (pay === 'VNPAY') {
           // đổi action, giữ nguyên POST + AntiForgery
-          form.action = '@Url.Action("CreatePaymentUrl","Payment")';
+           form.action = '@Url.Action("CreatePaymentUrlVnpay", "Payment")';
           // Nếu bạn muốn redirect thẳng (CreatePaymentUrl -> Redirect tới VNPAY) thì KHÔNG preventDefault
           // Vẫn submit bình thường để server xử lý & Redirect
         } else {
