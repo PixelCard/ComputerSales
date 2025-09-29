@@ -10,16 +10,34 @@ namespace ComputerSales.Infrastructure.Repositories.Respository_ImplementationIn
     {
         private readonly AppDbContext _db;
         private readonly DbSet<TEntity> _set;
-        private readonly PropertyInfo? _keyProp; //property khóa chính (primary key) của entity TEntity
+        private readonly PropertyInfo? _keyProp; //property khóa chính (primary key) của entity TEntity 
+        private readonly bool _isCompositeKey;
+
+
 
         public EfRepository(AppDbContext db)
         {
             _db = db;
             _set = _db.Set<TEntity>();
-            _keyProp = FindKeyPropertyFromEfModel(db)  // lấy từ EF metadata
-            ?? throw new InvalidOperationException(
-                $"Primary key for entity {typeof(TEntity).Name} not found. " +
-                $"Ensure it has a key (HasKey or [Key])."); 
+            //_keyProp = FindKeyPropertyFromEfModel(db)  // lấy từ EF metadata
+            //?? throw new InvalidOperationException(
+            //    $"Primary key for entity {typeof(TEntity).Name} not found. " +
+            //    $"Ensure it has a key (HasKey or [Key])."); 
+
+            (_keyProp, _isCompositeKey) = GetKeyInfo(db);
+        }
+
+        private (PropertyInfo _keyProp, bool _isCompositeKey) GetKeyInfo(AppDbContext db)
+        {
+            var et = db.Model.FindEntityType(typeof(TEntity));
+            var pk = et?.FindPrimaryKey();
+            if (pk == null) return (null, false);
+            if (pk.Properties.Count == 1)
+            {
+                var name = pk.Properties[0].Name;
+                return (typeof(TEntity).GetProperty(name), false);
+            }
+            return (null, true); // composite key
         }
 
         public async Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default)
@@ -33,6 +51,7 @@ namespace ComputerSales.Infrastructure.Repositories.Respository_ImplementationIn
 
         public async Task<TEntity?> GetByIdAsync(object id, CancellationToken ct = default)
         {
+            GuardForSingleKey(nameof(GetByIdAsync));
             if (_keyProp is null) return null; 
 
             //Đoạn code tạo Lambda Expresion dựa trên _keyProp (ID)
@@ -109,6 +128,7 @@ namespace ComputerSales.Infrastructure.Repositories.Respository_ImplementationIn
 
         public async Task DeleteByIdAsync(object id, CancellationToken ct = default)
         {
+            GuardForSingleKey(nameof(DeleteByIdAsync));
             var entity = await GetByIdAsync(id, ct);
             if (entity == null) return;   // hoặc throw tuỳ bạn
             _set.Remove(entity);
@@ -133,6 +153,23 @@ namespace ComputerSales.Infrastructure.Repositories.Respository_ImplementationIn
             return typeof(TEntity).GetProperty(keyName)
                    ?? throw new InvalidOperationException(
                        $"Key property '{keyName}' not found on {typeof(TEntity).Name}.");
+        }
+
+        public Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
+             => _set.AsNoTracking().FirstOrDefaultAsync(predicate, ct);
+
+        public async Task<int> DeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
+        {
+            var items = await _set.Where(predicate).ToListAsync(ct);
+            _set.RemoveRange(items);
+            return await _db.SaveChangesAsync(ct);
+        }
+
+        private void GuardForSingleKey(string api)
+        {
+            if (_isCompositeKey || _keyProp is null)
+                throw new NotSupportedException(
+                    $"{typeof(TEntity).Name} uses a composite key; use {nameof(GetOneAsync)} / {nameof(ListAsync)} / {nameof(DeleteAsync)} with predicate instead of {api}.");
         }
     }
 }

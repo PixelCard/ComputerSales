@@ -58,6 +58,8 @@ namespace ComputerSalesProject_MVC.Controllers
         [AllowAnonymous]
         public IActionResult Login() => View();
 
+
+
         [AllowAnonymous]
         [HttpGet("Register")]
         public IActionResult Register() => View(); 
@@ -128,6 +130,7 @@ namespace ComputerSalesProject_MVC.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
 
 
         [ValidateAntiForgeryToken]
@@ -201,6 +204,8 @@ namespace ComputerSalesProject_MVC.Controllers
             }
         }
 
+
+
         // =================== PENDING VERIFY (đếm ngược) ===================
         [HttpGet("PendingVerify")]
         [AllowAnonymous]
@@ -219,6 +224,8 @@ namespace ComputerSalesProject_MVC.Controllers
 
             return View(vm); // Views/Account/PendingVerify.cshtml
         }
+
+
 
         // =================== VERIFY (link trong email) ===================
         // Ví dụ link: /Account/Verify?uid=123&key=Base64UrlRawKey
@@ -251,9 +258,13 @@ namespace ComputerSalesProject_MVC.Controllers
             }
         }
 
+
+
         [HttpGet("VerifySuccess")]
         [AllowAnonymous]
         public IActionResult VerifySuccess() => View(); // Views/Account/VerifySuccess.cshtml
+
+
 
         // =================== RESEND VERIFY (nút trên PendingVerify) ===================
         [HttpPost("ResendVerify")]
