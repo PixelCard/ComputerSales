@@ -54,7 +54,15 @@ namespace ComputerSales.Application.UseCase.Account_UC
             await _accounts.UpdateAccount(acc, ct);
             await _uow.SaveChangesAsync(ct);
 
+            //Production(Public)
+
+            //var link2 = $"{_cfg["ngrok:BaseUrl"]}/account/verify?uid={acc.IDAccount}&key={Uri.EscapeDataString(raw)}";
+            
+
+            //Local(LocalHost)
             var link = $"{_cfg["Frontend:BaseUrl"]}/account/verify?uid={acc.IDAccount}&key={Uri.EscapeDataString(raw)}";
+
+
             var html = $@"<p>Liên kết mới (hết hạn 60 giây): <a href=""{link}"">Xác thực email</a></p>";
             await _email.SendAsync(acc.Email, "Gửi lại xác thực email", html, ct);
 

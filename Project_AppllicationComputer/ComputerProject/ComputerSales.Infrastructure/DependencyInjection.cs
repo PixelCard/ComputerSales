@@ -59,6 +59,8 @@ using ComputerSales.Application.Interface.Interface_ForgetPassword;
 using ComputerSales.Application.UseCase.ForgetPass_UC;
 using ComputerSales.Application.Payment.Interface;
 using ComputerSales.Application.Payment.VNPAY.Respository;
+using ComputerSales.Application.Interface.InterfaceVNPAYMENT;
+using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
 
 
 namespace ComputerSales.Infrastructure
@@ -104,6 +106,8 @@ namespace ComputerSales.Infrastructure
 
             //VNPAY
             services.AddScoped<IVnPayService, VnPayService>();
+
+            services.AddScoped<IVnPaySessionService, VnPaySessionServiceRespo>();
 
 
 

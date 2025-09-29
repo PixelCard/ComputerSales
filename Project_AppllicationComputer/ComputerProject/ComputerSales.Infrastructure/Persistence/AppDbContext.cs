@@ -6,6 +6,7 @@ using ComputerSales.Domain.Entity.ECategory;
 using ComputerSales.Domain.Entity.ECustomer;
 using ComputerSales.Domain.Entity.EOptional;
 using ComputerSales.Domain.Entity.EPayment;
+using ComputerSales.Domain.Entity.EPaymentVNPAYTransaction;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EProvider;
 using ComputerSales.Domain.Entity.ERefreshToken;
@@ -17,6 +18,10 @@ namespace ComputerSales.Infrastructure.Persistence
     public class AppDbContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
+
+        public DbSet<VNPAYPaymentSession> vNPAYPaymentSessions { get; set; }
+
+        public DbSet<VNPAYPaymentTransaction> vNPAYPaymentTransactions { get; set; }
 
         public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
         public DbSet<Promotion> Promotions { get; set; }

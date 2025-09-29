@@ -4,6 +4,7 @@ using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComputerSales.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250929113600_CreateVNPAYPaymentTables")]
+    partial class CreateVNPAYPaymentTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -527,12 +530,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SeqId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeqId"));
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -541,20 +538,10 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("varchar(20)")
                         .HasDefaultValue("Pending");
 
-                    b.Property<string>("TxnRef")
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TxnRef")
-                        .IsUnique()
-                        .HasDatabaseName("UX_VNPAYSession_TxnRef")
-                        .HasFilter("[TxnRef] IS NOT NULL");
 
                     b.HasIndex("UserId", "CreatedAt")
                         .HasDatabaseName("IX_VNPAYSession_UserId_CreatedAt");
