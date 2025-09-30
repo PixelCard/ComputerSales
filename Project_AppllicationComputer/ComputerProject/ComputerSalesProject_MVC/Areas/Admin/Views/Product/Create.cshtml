@@ -1,87 +1,32 @@
-﻿@using Microsoft.AspNetCore.Mvc.Rendering
-@model ComputerSales.Application.UseCaseDTO.Product_DTO.ProductDTOInput
-@{
-    ViewData["Title"] = "Create Product";
-    // ViewBag.Providers phải là IEnumerable<SelectListItem>
-}
+﻿@model ComputerSales.Application.UseCaseDTO.Product_DTO.ProductDTOInput
 
-<script src="https://cdn.tailwindcss.com"></script>
-
-<main class="max-w-[960px] mx-auto px-4 py-8">
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Create product</h1>
-        <p class="text-sm text-gray-500">Nhập thông tin cơ bản của sản phẩm. ID sẽ tự sinh sau khi lưu.</p>
+<form asp-action="Create" method="post">
+    <div>
+        <label>SKU</label>
+        <input asp-for="SKU" class="form-control" />
+        <span asp-validation-for="SKU" class="text-danger"></span>
     </div>
+    <div>
+        <label>Slug</label>
+        <input asp-for="Slug" class="form-control" />
+        <span asp-validation-for="Slug" class="text-danger"></span>
+    </div>
+    <div>
+        <label>Mô tả ngắn</label>
+        <textarea asp-for="ShortDescription" class="form-control"></textarea>
+        <span asp-validation-for="ShortDescription" class="text-danger"></span>
+    </div>
+    <select asp-for="Status" asp-items="ViewBag.StatusList" class="form-select">
+        <option value="">-- Chọn Trạng thái --</option>
+    </select>
 
-    <form asp-area="Admin" asp-controller="Product" asp-action="Create" method="post" class="bg-white rounded-2xl shadow p-6 space-y-6">
-        @Html.AntiForgeryToken()
+    <select asp-for="AccessoriesID" asp-items="ViewBag.AccessoriesList" class="form-select">
+        <option value="">-- Chọn Accessories --</option>
+    </select>
 
-        <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm"></div>
+    <select asp-for="ProviderID" asp-items="ViewBag.ProviderList" class="form-select">
+        <option value="">-- Chọn Provider --</option>
+    </select>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- ShortDescription -->
-            <div class="col-span-1 md:col-span-2">
-                <label asp-for="ShortDescription" class="block text-sm font-medium text-gray-700">Short description</label>
-                <input asp-for="ShortDescription" class="mt-1 w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="Ví dụ: Tai nghe MSI DS501…" />
-                <span asp-validation-for="ShortDescription" class="text-red-600 text-sm"></span>
-            </div>
-
-            <!-- Slug -->
-            <div>
-                <label asp-for="Slug" class="block text-sm font-medium text-gray-700">Slug</label>
-                <input asp-for="Slug" class="mt-1 w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="tai-nghe-msi-ds501" />
-                <span asp-validation-for="Slug" class="text-red-600 text-sm"></span>
-            </div>
-
-            <!-- SKU -->
-            <div>
-                <label asp-for="SKU" class="block text-sm font-medium text-gray-700">SKU</label>
-                <input asp-for="SKU" class="mt-1 w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="SKU-00123" />
-                <span asp-validation-for="SKU" class="text-red-600 text-sm"></span>
-            </div>
-
-            <!-- Status -->
-            <div>
-                <label asp-for="Status" class="block text-sm font-medium text-gray-700">Status</label>
-                <select asp-for="Status" class="mt-1 w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                </select>
-                <span asp-validation-for="Status" class="text-red-600 text-sm"></span>
-            </div>
-
-            <!-- AccessoriesID -->
-            <div>
-                <label asp-for="AccessoriesID" class="block text-sm font-medium text-gray-700">Accessories ID</label>
-                <input asp-for="AccessoriesID" type="number" class="mt-1 w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="0" />
-                <span asp-validation-for="AccessoriesID" class="text-red-600 text-sm"></span>
-            </div>
-
-            <!-- ProviderID (dropdown) -->
-            <div class="md:col-span-2">
-                <label asp-for="ProviderID" class="block text-sm font-medium text-gray-700">Provider</label>
-                <select asp-for="ProviderID"
-                        asp-items="@(ViewBag.Providers as IEnumerable<SelectListItem>)"
-                        class="mt-1 w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                    <option value="0">-- chọn nhà cung cấp --</option>
-                </select>
-                <span asp-validation-for="ProviderID" class="text-red-600 text-sm"></span>
-            </div>
-
-        </div>
-
-        <div class="flex items-center gap-3 pt-2">
-            <button type="submit" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">
-                Save
-            </button>
-            <a asp-area="Admin" asp-controller="Product" asp-action="Index"
-               class="inline-flex items-center px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
-                Cancel
-            </a>
-        </div>
-    </form>
-</main>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    <button type="submit" class="btn btn-primary">Tạo</button>
+</form>
