@@ -9,12 +9,12 @@
     <!-- Main Header Container -->
     <div class="w-full px-0">
         <!-- Top Row: Logo, Search, Actions -->
-        <div class="flex items-center justify-between h-16 gap-2 sm:gap-4 px-2 md:px-3 lg:px-4 xl:px-6 2xl:px-8">
+        <div class="flex items-center justify-between h-16 gap-2 sm:gap-4 px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-18">
             
             <!-- LEFT: Logo + Location -->
-            <div class="flex items-center gap-2 sm:gap-4 min-w-0 flex-shrink-0">
+            <div class="flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0">
                 <!-- Logo -->
-                <a href="/" class="flex items-center gap-2 hover:opacity-90 transition">
+                <a href="/" class="flex items-center gap-1 hover:opacity-90 transition">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
                         <span class="text-white font-bold text-sm sm:text-base">N</span>
                     </div>
@@ -22,7 +22,7 @@
                 </a>
 
                 <!-- Location Selector -->
-                <div class="hidden md:flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition cursor-pointer">
+                <div class="hidden md:flex items-center gap-1 px-1 py-1 rounded hover:bg-white/10 transition cursor-pointer">
                     <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" />
                     </svg>
@@ -34,7 +34,7 @@
             </div>
 
             <!-- CENTER: Search Bar -->
-            <div class="flex-1 max-w-4xl mx-4 sm:mx-6">
+            <div class="flex-1 max-w-4xl mx-6 sm:mx-8">
                 <div class="relative flex items-center bg-white rounded-lg shadow-sm border border-gray-200">
                     <!-- Category Dropdown -->
                     <div class="hidden sm:flex items-center border-r border-gray-200">
@@ -67,15 +67,15 @@
             </div>
 
             <!-- RIGHT: Actions -->
-            <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
                 <!-- Language/Region -->
-                <button class="hidden sm:flex items-center gap-1 px-2 py-1 rounded hover:bg-white/10 transition">
+                <button class="hidden sm:flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 transition">
                     <span class="text-lg">🇺🇸</span>
                     <span class="hidden lg:block text-sm">EN</span>
                 </button>
 
                 <!-- Account -->
-                <a href="/account/login" class="hidden lg:flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition">
+                <a href="/account/login" class="hidden lg:flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" />
                     </svg>
@@ -86,7 +86,7 @@
                 </a>
 
                 <!-- Orders -->
-                <a href="/orders" class="hidden xl:flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 transition">
+                <a href="/orders" class="hidden xl:flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M7 18H5a2 2 0 0 1-2-2V5h2v11h2v2Zm14-9-7-7v4H9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h5v4l7-7Z" />
                     </svg>
@@ -97,7 +97,7 @@
                 </a>
 
                 <!-- Cart -->
-                <a href="/cart" class="relative flex items-center gap-1 px-2 py-1 rounded hover:bg-white/10 transition">
+                <a href="/cart" class="relative flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 transition">
                     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 .001 4.001A2 2 0 0 0 17 18ZM6 6h14l-1.5 8.5H8.3L7 4H3V2h4l.7 4Z" />
                     </svg>
@@ -108,7 +108,7 @@
         </div>
 
         <!-- Bottom Row: Navigation Menu (Desktop) -->
-        <div class="hidden lg:flex items-center justify-between py-2 border-t border-blue-800">
+        <div class="hidden lg:flex items-center justify-between py-2 border-t border-blue-800 px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-18">
             <!-- Left Navigation -->
             <div class="flex items-center gap-6">
                 <button class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
@@ -126,7 +126,7 @@
             </div>
 
             <!-- Right Navigation -->
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
                 <a href="/business" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Business</a>
                 <a href="/healthcare" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Healthcare</a>
             </div>
@@ -136,7 +136,7 @@
     <!-- Mobile Menu Button -->
     <div class="lg:hidden border-t border-blue-800">
         <div class="w-full px-0">
-            <div class="flex items-center justify-between py-2 px-2 md:px-3 lg:px-4 xl:px-6 2xl:px-8">
+            <div class="flex items-center justify-between py-2 px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-18">
                 <button class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
