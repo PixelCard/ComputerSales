@@ -1,6 +1,67 @@
 ﻿@model int
 @{
+    ViewData["Title"] = "Order Success";
+    var txnRef = TempData["TxnRef"] as string; // nếu bạn set ở callback
 }
-<h2>Đặt hàng thành công</h2>
-<p>Mã đơn: <strong>@Model</strong></p>
-<a href="/">Về trang chủ</a>
+<style>
+    /* Page layout */
+    html, body { height:100%; }
+    body { margin:0; background: linear-gradient(135deg,#f5f7fa 0%, #c3cfe2 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    .page { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+
+    /* Card */
+    .card { width:100%; max-width:760px; background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.08); overflow:hidden; }
+    .card-body { padding:24px; }
+    @@media (min-width:640px){ .card-body{ padding:32px; } }
+
+    /* Header banner */
+    .banner { display:flex; align-items:center; gap:12px; background:#dcfce7; color:#166534; border-bottom:1px solid #bbf7d0; padding:14px 20px; }
+    .banner svg { color:#16a34a; }
+
+    /* Typography */
+    .title { font-size:22px; font-weight:700; color:#111827; margin:8px 0 4px; }
+    .subtitle { color:#6b7280; }
+
+    /* Buttons */
+    .actions { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:18px; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:10px; text-decoration:none; font-weight:600; transition:all .2s ease; }
+    .btn-primary { background:#14b8a6; color:#fff; }
+    .btn-primary:hover { background:#0d9488; }
+    .btn-ghost { color:#111827; border:1px solid #e5e7eb; background:#fff; }
+    .btn-ghost:hover { background:#f9fafb; }
+
+    .note { margin-top:14px; color:#6b7280; }
+</style>
+
+<div class="page">
+  <div class="card">
+    <div class="banner">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.8 20.4A9 9 0 1020.4 7.8 9 9 0 007.8 20.4z" />
+      </svg>
+      <strong>Đặt hàng thành công</strong>
+    </div>
+
+    <div class="card-body">
+      <div style="text-align:center">
+        <h1 class="title">Cảm ơn bạn! Đơn hàng đã được ghi nhận 🎉</h1>
+        <p class="subtitle">Chúng tôi sẽ sớm liên hệ để xác nhận và giao hàng.</p>
+
+        <div style="margin:16px 0 20px">
+          <div><strong>Mã đơn hàng:</strong> #@Model</div>
+          @if (!string.IsNullOrWhiteSpace(txnRef))
+          {
+            <div class="subtitle" style="margin-top:6px"><small>Mã thanh toán (TxnRef): @txnRef</small></div>
+          }
+        </div>
+
+        <div class="actions">
+          <a class="btn btn-primary" asp-controller="Account" asp-action="OrderDetails" asp-route-id="@Model">Xem chi tiết đơn</a>
+          <a class="btn btn-ghost" asp-controller="Home" asp-action="Index">Tiếp tục mua sắm</a>
+        </div>
+
+        <p class="note"><small>Nếu cần hỗ trợ, vui lòng liên hệ CSKH với mã đơn #@Model.</small></p>
+      </div>
+    </div>
+  </div>
+</div>

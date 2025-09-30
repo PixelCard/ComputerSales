@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using ComputerSales.Application.UseCase.VariantPrice_UC.variantGetPriceByVariantID;
 using ComputerSales.Application.UseCaseDTO.VariantPrice_DTO;
 using ComputerSales.Domain.Entity.EProduct;
+using ComputerSales.Domain.Entity.EPaymentVNPAYTransaction;
 
 namespace ComputerSales.Infrastructure.Repositories.OrderCart_Respo
 {
@@ -142,6 +143,45 @@ namespace ComputerSales.Infrastructure.Repositories.OrderCart_Respo
             await cartReadRespository.ClearAsync(userId, ct);
 
             return order.OrderID;
+        }
+
+        public async Task MarkPaidAsync(int orderId, PaymentKind payment, string transactionId, string? responseCode, CancellationToken ct)
+        {
+            // map enum -> code trong bảng PaymentMethods
+            var code = payment switch
+            {
+                PaymentKind.VNPAY => "VNPAY",
+                PaymentKind.COD => "COD",
+                _ => "COD"
+            };
+
+            var paymentId = await _db.PaymentMethods
+                .Where(x => x.Code == code && x.IsActive)
+                .Select(x => (int?)x.PaymentID)
+                .FirstOrDefaultAsync(ct)
+                ?? throw new InvalidOperationException($"Payment method '{code}' is not available.");
+
+            var order = await _db.Orders.FirstOrDefaultAsync(x => x.OrderID == orderId, ct)
+                        ?? throw new InvalidOperationException($"Order #{orderId} not found");
+
+            // Idempotent: nếu đã gắn VNPAY và trạng thái >= Chờ xác nhận thì bỏ qua
+            if (order.PaymentID == paymentId && order.OrderStatus >= OrderStatus.ChoXacNhan)
+                return;
+
+            order.PaymentID = paymentId;
+            order.OrderStatus = OrderStatus.ChoXacNhan; // hoặc DaThanhToan tùy enum của bạn
+
+            //lưu log giao dịch
+            _db.Set<VNPAYPaymentTransaction>().Add(new VNPAYPaymentTransaction
+            {
+                OrderId = orderId,
+                Gateway = code,
+                TransactionId = transactionId,
+                ResponseCode = responseCode ?? string.Empty,
+                CreatedAt = DateTime.UtcNow
+            });
+
+            await _db.SaveChangesAsync(ct);
         }
     }
 }

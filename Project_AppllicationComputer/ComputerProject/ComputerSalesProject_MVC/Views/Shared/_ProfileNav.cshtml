@@ -1,0 +1,55 @@
+@using System.Security.Claims
+@{
+    var action = (ViewContext.RouteData.Values["action"]?.ToString() ?? "");
+    string Active(string a) => string.Equals(action, a, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    var email = User.FindFirst(ClaimTypes.Email)?.Value ?? (User.Identity?.Name ?? "Account");
+    var badgeText = string.IsNullOrWhiteSpace(email) ? "A" : email.Trim()[0].ToString().ToUpper();
+    bool inAccountGroup = action.Equals("AccountInfo", StringComparison.OrdinalIgnoreCase)
+                          || action.Equals("ChangePassword", StringComparison.OrdinalIgnoreCase);
+    var accBtnClass = inAccountGroup
+        ? "bg-orange-500 text-white hover:bg-orange-600"
+        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200";
+}
+<div class="rounded-xl shadow-lg">
+    <div class="flex items-center gap-2 p-3">
+        <div class="w-9 h-9 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">@badgeText</div>
+        <div class="font-semibold">@email</div>
+    </div>
+    <div class="h-px bg-slate-200 mx-4 mb-2"></div>
+    <div class="text-xs tracking-widest text-slate-500 font-bold px-4 py-2">SETTINGS</div>
+
+    <button id="accToggle" type="button" class="w-full flex items-center justify-between px-4 py-3 font-semibold @accBtnClass">
+        <span>Tài khoản</span>
+        <span id="accChev" class="transition-transform">⌄</span>
+    </button>
+    <div id="accGroup" class="@(inAccountGroup?"block":"hidden")">
+        <a class="block px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 @(Active("AccountInfo")=="active"?"bg-slate-100":"")" href="/Profile/AccountInfo">Chi tiết tài khoản</a>
+        <a class="block px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 @(Active("ChangePassword")=="active"?"bg-slate-100":"")" href="/ForgetPassword/ForgetPassHome">Đổi mật khẩu</a>
+    </div>
+
+    <a class="block px-4 py-3 font-semibold hover:bg-slate-50 @(Active("CustomerInfo")=="active"?"bg-orange-500 text-white":"text-slate-600")" href="/Profile/CustomerInfo">Thông tin khách hàng</a>
+    <a class="block px-4 py-3 font-semibold hover:bg-slate-50 @(Active("OrdersInfo")=="active"?"bg-orange-500 text-white":"text-slate-600")" href="/Profile/OrdersInfo">Đơn hàng của tôi</a>
+    <form method="post" action="/Account/Logout" class="m-0">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="block w-full text-left px-4 py-3 font-semibold text-slate-600 hover:bg-slate-50">Đăng xuất</button>
+    </form>
+</div>
+
+<script>
+    (function(){
+        const btn = document.getElementById('accToggle');
+        const grp = document.getElementById('accGroup');
+        const chev = document.getElementById('accChev');
+        if(!btn || !grp) return;
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            const hidden = grp.classList.contains('hidden');
+            if(hidden){ grp.classList.remove('hidden'); chev.style.transform = 'rotate(180deg)'; }
+            else{ grp.classList.add('hidden'); chev.style.transform = 'rotate(0deg)'; }
+        });
+        // init state
+        if(grp.classList.contains('block')){ chev.style.transform = 'rotate(180deg)'; }
+    })();
+</script>
+
+

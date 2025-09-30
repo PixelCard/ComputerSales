@@ -4,6 +4,7 @@ using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComputerSales.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250929122847_ThemThongTinVeTxtRefGuaDenVNPAY")]
+    partial class ThemThongTinVeTxtRefGuaDenVNPAY
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -542,6 +545,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasDefaultValue("Pending");
 
                     b.Property<string>("TxnRef")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .IsUnicode(false)
                         .HasColumnType("varchar(20)");
@@ -553,8 +557,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TxnRef")
                         .IsUnique()
-                        .HasDatabaseName("UX_VNPAYSession_TxnRef")
-                        .HasFilter("[TxnRef] IS NOT NULL");
+                        .HasDatabaseName("UX_VNPAYSession_TxnRef");
 
                     b.HasIndex("UserId", "CreatedAt")
                         .HasDatabaseName("IX_VNPAYSession_UserId_CreatedAt");

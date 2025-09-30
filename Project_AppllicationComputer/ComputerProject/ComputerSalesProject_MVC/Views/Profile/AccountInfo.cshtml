@@ -1,0 +1,31 @@
+@model ComputerSalesProject_MVC.Models.AccountInfoViewModel
+@{
+    ViewData["Title"] = "Tài khoản - Thông tin đăng nhập";
+}
+<div class="py-4">
+    <div class="md:flex md:gap-6">
+        <div class="md:w-1/4">
+            @await Html.PartialAsync("~/Views/Shared/_ProfileNav.cshtml")
+        </div>
+        <div class="md:w-3/4">
+            <h4 class="mb-3 font-bold text-slate-800">Account details</h4>
+            <div class="rounded-xl shadow-lg bg-white">
+                <div class="p-4 md:p-6">
+                    <div class="text-xs tracking-widest text-slate-500 font-bold mb-3">PROFILE DETAILS</div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <div class="text-slate-500 text-sm mb-1">Email address</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">@Model.Email</div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <div class="text-slate-500 text-sm mb-1">Password</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">@Model.MaskedPassword</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -58,6 +58,8 @@ namespace ComputerSalesProject_MVC.Controllers
         [AllowAnonymous]
         public IActionResult Login() => View();
 
+
+
         [AllowAnonymous]
         [HttpGet("Register")]
         public IActionResult Register() => View(); 
@@ -87,20 +89,27 @@ namespace ComputerSalesProject_MVC.Controllers
 
 
             // Kiểm tra xem tài khoản đã xác thực email chưa
+            // Chưa xác thực email
             if (!acc.EmailConfirmed)
             {
-                // Kiểm tra nếu tài khoản đã tạo quá 15 ngày và vẫn chưa xác thực email
+                // Hết hạn 15 ngày
                 if (acc.CreatedAt.AddDays(15) < DateTime.UtcNow)
                 {
-                    // Nếu đã hơn 15 ngày, xóa tài khoản
                     await _accountService.DeleteAccountAsync(acc.IDAccount, ct);
-                    ModelState.AddModelError("", "Tài khoản này đã hết hạn vì không xác thực email. Vui lòng đăng ký lại.");
+                    ModelState.AddModelError("", "Tài khoản đã hết hạn vì chưa xác thực email. Vui lòng đăng ký lại.");
                     return View(vm);
                 }
 
-                // Nếu chưa xác thực email và chưa hết hạn, yêu cầu xác thực email
-                TempData["Info"] = "Vui lòng xác thực email của bạn.";
-                return RedirectToAction("ResendVerify", new { uid = acc.IDAccount });
+                // ✅ GỬI LẠI EMAIL Ở ĐÂY 
+                await _resend.Handle(new ResendVerifyEmailDTO(acc.IDAccount), ct);
+
+                // Lấy hạn mới (nếu UC có cập nhật)
+                var fresh = await _accountService.GetAccountByID(acc.IDAccount, ct);
+                TempData["Info"] = "Tài khoản chưa xác thực. Chúng tôi vừa gửi lại email xác thực.";
+                TempData["ExpUtc"] = fresh?.VerifyKeyExpiresAt?.ToString("o");
+
+                // Điều hướng sang trang thông báo
+                return RedirectToAction("PendingVerify", new { uid = acc.IDAccount });
             }
 
             var token = _jwt.Generate(acc);
@@ -121,6 +130,7 @@ namespace ComputerSalesProject_MVC.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
 
 
         [ValidateAntiForgeryToken]
@@ -194,6 +204,8 @@ namespace ComputerSalesProject_MVC.Controllers
             }
         }
 
+
+
         // =================== PENDING VERIFY (đếm ngược) ===================
         [HttpGet("PendingVerify")]
         [AllowAnonymous]
@@ -212,6 +224,8 @@ namespace ComputerSalesProject_MVC.Controllers
 
             return View(vm); // Views/Account/PendingVerify.cshtml
         }
+
+
 
         // =================== VERIFY (link trong email) ===================
         // Ví dụ link: /Account/Verify?uid=123&key=Base64UrlRawKey
@@ -244,9 +258,13 @@ namespace ComputerSalesProject_MVC.Controllers
             }
         }
 
+
+
         [HttpGet("VerifySuccess")]
         [AllowAnonymous]
         public IActionResult VerifySuccess() => View(); // Views/Account/VerifySuccess.cshtml
+
+
 
         // =================== RESEND VERIFY (nút trên PendingVerify) ===================
         [HttpPost("ResendVerify")]

@@ -36,13 +36,13 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 
-app.UseMiddleware<AutoRefreshAccessMiddleware>();
+app.UseRouting();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseRouting();
+app.UseMiddleware<AutoRefreshAccessMiddleware>();
 
 
 //dùng cho logo
