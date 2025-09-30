@@ -26,6 +26,9 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
             b.Property(x => x.Quantity)
              .IsRequired();
 
+
+            b.Property(x => x.VariantName).IsRequired().HasMaxLength(1000);
+
             // 1-N: Product -> ProductVariants
             b.HasOne(x => x.Product)
              .WithMany(p => p.ProductVariants)

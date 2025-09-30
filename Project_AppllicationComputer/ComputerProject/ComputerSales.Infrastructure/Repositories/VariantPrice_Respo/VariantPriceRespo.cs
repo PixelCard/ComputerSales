@@ -1,5 +1,4 @@
 ﻿using ComputerSales.Application.Interface.Interface_VariantPriceRespo;
-using ComputerSales.Application.UseCaseDTO.VariantPrice_DTO;
 using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;

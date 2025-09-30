@@ -1,9 +1,8 @@
 ﻿using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
+using ComputerSales.Application.Sercurity.JWT.Enity;
 using ComputerSales.Domain.Entity;
 using ComputerSales.Domain.Entity.ERefreshToken;
 using ComputerSales.Infrastructure.Persistence;
-using ComputerSales.Infrastructure.Repositories.UnitOfWork;
-using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;

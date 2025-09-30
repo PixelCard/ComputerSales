@@ -31,6 +31,8 @@ namespace ComputerSales.Application.UseCase.ProductVariant_UC
 
             entity.Status = input.Status;
 
+            entity.VariantName = input.VariantName;
+
             _repo.Update(entity);
 
             await _unitOfWorkApplication.SaveChangesAsync(ct);

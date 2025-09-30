@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.Interface.Cart_Interface;
+using ComputerSales.Application.Interface.Interface_Email_Respository;
 using ComputerSales.Application.Interface.Interface_OrderFromCart;
 using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
 using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
@@ -14,37 +15,52 @@ using ComputerSales.Application.UseCase.Cart_UC.Commands.AddCart;
 using ComputerSales.Application.UseCase.Cart_UC.Commands.RemoveItem;
 using ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity;
 using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
+using ComputerSales.Application.UseCase.Category_UC;
 using ComputerSales.Application.UseCase.Customer_UC;
+using ComputerSales.Application.UseCase.OptionalType_UC;
+using ComputerSales.Application.UseCase.OptionalValue_UC;
 using ComputerSales.Application.UseCase.Order_UC;
 using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCase.ProductOvetView_UC;
 using ComputerSales.Application.UseCase.ProductProtection_UC;
+using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCase.Role_UC;
+//using ComputerSales.Application.UseCase.VariantImage_UC;
 using ComputerSales.Application.UseCase.VariantPrice_UC.variantGetPriceByVariantID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using ComputerSales.Application.Validator.AccountValidator;
 using ComputerSales.Application.Validator.CustomerValidator;
 using ComputerSales.Infrastructure.Persistence;
+using ComputerSales.Infrastructure.Repositories;
 using ComputerSales.Infrastructure.Repositories.Account_Respo;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartWrite;
 using ComputerSales.Infrastructure.Repositories.Customer_Respo;
+using ComputerSales.Infrastructure.Repositories.EmailVerifyKeyRepository;
 using ComputerSales.Infrastructure.Repositories.OrderCart_Respo;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
 using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
 using ComputerSales.Infrastructure.Repositories.Respository_ImplementationInterface;
 using ComputerSales.Infrastructure.Repositories.Role_Respo;
+using ComputerSales.Infrastructure.Repositories.SmtpEmailSender_Respository;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Infrastructure.Repositories.VariantPrice_Respo;
-using ComputerSales.Infrastructure.Sercurity.JWT.Enity;
-using ComputerSales.Infrastructure.Sercurity.JWT.Interface;
-using ComputerSales.Infrastructure.Sercurity.JWT.Respository;
+using ComputerSales.Application.Sercurity.JWT.Enity;
+using ComputerSales.Application.Sercurity.JWT.Interface;
+using ComputerSales.Application.Sercurity.JWT.Respository;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ComputerSales.Infrastructure.Repositories.ForgetPassRespo;
+using ComputerSales.Application.Interface.Interface_ForgetPassword;
+using ComputerSales.Application.UseCase.ForgetPass_UC;
+using ComputerSales.Application.Payment.Interface;
+using ComputerSales.Application.Payment.VNPAY.Respository;
+using ComputerSales.Application.Interface.InterfaceVNPAYMENT;
+using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
 
 
 namespace ComputerSales.Infrastructure
@@ -58,6 +74,9 @@ namespace ComputerSales.Infrastructure
                config.GetConnectionString("Quy"),
                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
             ));
+
+            services.AddMemoryCache();
+
             services.AddScoped<IUnitOfWorkApplication, UnitOfWork_Infa>();
             services.AddScoped<IProductRespository, ProductRespository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
@@ -69,20 +88,38 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<IOrderFromCart, OrderFromCartRespository>();
             services.AddScoped<ICartWriteRepository, CartWriteRepository>();
             services.AddScoped<IVariantPriceRespo, VariantPriceRespo>();
-            services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
             services.AddScoped<ICustomerRespo, CustomerRespo>();
-            services.Configure<JwtOptions>(config.GetSection("Jwt"));
+            services.AddScoped<IEmailVerifyKeyRepository, EmailVerifyKeyRepository>();
+            services.AddScoped<IEmailSender, SmtpEmailSenderRespo>();
             services.AddScoped(typeof(IRespository<>), typeof(EfRepository<>)); //Depedency Injection cho các class sử dụng 
+            services.AddScoped<ProviderRepository>();
+
+            //ForgetPass
+            services.AddScoped<IForgotPasswordRespo, ForgotPasswordStoreMemoryRespo>();
 
 
             // JWT generator
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.Configure<JwtOptions>(config.GetSection("Jwt"));
+            services.AddScoped<IResfreshTokenRespo, RefreshTokenRespo>();
+
+
+            //VNPAY
+            services.AddScoped<IVnPayService, VnPayService>();
+
+            services.AddScoped<IVnPaySessionService, VnPaySessionServiceRespo>();
+
+
+
 
             return services;
         }
 
         public static IServiceCollection AddApplicationUseCase(this IServiceCollection services)
         {
+
+            //=======================================================================================================================
+
             /********************Product**************************/
            services.AddScoped<CreateProduct_UC>();
            services.AddScoped<GetProduct_UC>();
@@ -90,8 +127,53 @@ namespace ComputerSales.Infrastructure
            services.AddScoped<DeleteProduct_UC>();
             /*****************************************************/
 
+            /********************Product OverView **************************/
+            services.AddScoped<CreateProductOverView_UC>();
+            services.AddScoped<DeleteProductOverView_UC>();
+            services.AddScoped<GetByIdProductOverView_UC>();
+            services.AddScoped<UpdateProductOverView_UC>();
+            /*****************************************************/
+
+            //================= Product Varient    ===============//
+            services.AddScoped<CreateProductVariant_UC>();
+            services.AddScoped<DeleteProductVariant_UC>();
+            services.AddScoped<GetByIdProductVariant_UC>();
+            services.AddScoped<UpdateProductVariant_UC>();
+
+            //==================    VariantImage   ==================//
+            //services.AddScoped<CreateVariantImage_UC>();
+            //services.AddScoped<DeleteVariantImage_UC>();
+            //services.AddScoped<GetVariantImageByID_UC>();
+            //services.AddScoped<UpdateVariantImage_UC>();
+
+            //================ Provider ==================//
+            services.AddScoped<CreateCategory_UC>();
+            services.AddScoped<DeleteCategory_UC>();
+            services.AddScoped<UpdateCategory_UC>();
+            services.AddScoped<GetByIdCategory_UC>();
+
+            //========================      OptionType      =====================//
+            services.AddScoped<CreateOptionalType_UC>();
+            services.AddScoped<DeleteOptionalType_UC>();
+            services.AddScoped<GetByIdOptionalType_UC>();
+            services.AddScoped<UpdateOptionalType_UC>();
+
+            //========================      OptionValue      =====================//
+            services.AddScoped<CreateOptionalValue_UC>();
+            services.AddScoped<DeleteOptionalValue_UC>();
+            services.AddScoped<GetByIdOptionalValue_UC>();
+            services.AddScoped<UpdateOptionalValue_UC>();
+
+
+            //
+
+            //=====================================================================================================
+
+
+
+
             //==============    Role    ================//
-           services.AddScoped<CreateRole_UC>();
+            services.AddScoped<CreateRole_UC>();
            services.AddScoped<GetRole_UC>();
            services.AddScoped<UpdateRole_UC>();
            services.AddScoped<DeleteRole_UC>();
@@ -103,12 +185,7 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<GetAccountByEmail_UC>();
            services.AddScoped<DeleteAccount_UC>();
 
-            /********************Product Over View**************************/
-           services.AddScoped<CreateProductOverView_UC>();
-           services.AddScoped<DeleteProductOverView_UC>();
-           services.AddScoped<GetByIdProductOverView_UC>();
-           services.AddScoped<UpdateProductOverView_UC>();
-            /*****************************************************/
+        
 
             /********************Product Protection**************************/
            services.AddScoped<CreateProductProtection_UC>();
@@ -127,8 +204,11 @@ namespace ComputerSales.Infrastructure
 
             //================= Account ==============//
             services.AddScoped<CreateCustomer_UC>();
-           services.AddScoped<DeleteCustomer_UC>();
-           services.AddScoped<getCustomerByID>();
+            services.AddScoped<DeleteCustomer_UC>();
+            services.AddScoped<getCustomerByID>();
+            services.AddScoped<RegisterAccount_UC>();
+            services.AddScoped<VerifyEmail_UC>();
+            services.AddScoped<ResendVerifyEmail_UC>();
 
 
             //================= Cart ==============//
@@ -151,6 +231,12 @@ namespace ComputerSales.Infrastructure
 
             //================= Variant Price ==============//
             services.AddScoped<variantGetPriceByVariantID_UC>();
+
+
+            //================= Forget Pass ==============//
+            services.AddScoped<ForgotResetPassword_UC>();
+            services.AddScoped<ForgotVerifyOtp_UC>();
+            services.AddScoped<ForgotRequestOtp_UC>();
 
             return services;
         }

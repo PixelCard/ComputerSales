@@ -1,13 +1,7 @@
-﻿using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
-using ComputerSales.Application.Interface.UnitOfWork;
+using ComputerSales.Application.Sercurity.JWT.Extensions;
 using ComputerSales.Infrastructure;
-using ComputerSales.Infrastructure.Repositories.RefreshToken_Respo;
-using ComputerSales.Infrastructure.Repositories.UnitOfWork;
-using ComputerSales.Infrastructure.Sercurity.JWT.Extensions;
-using ComputerSalesProject_MVC.DependencyInjetionServices;
 using ComputerSalesProject_MVC.Extensions;
 using ComputerSalesProject_MVC.MiddleWareCustome;
-using Microsoft.Identity.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,10 +25,6 @@ builder.Services.AddApplicationUseCase();
 builder.Services.ConfigureAutoMapper();
 
 
-// Add UseCase for MVC
-builder.Services.AddUseCaseMVC();
-
-
 
 // ====================================================
 // Middleware pipeline
@@ -46,13 +36,13 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 
-app.UseMiddleware<AutoRefreshAccessMiddleware>();
+app.UseRouting();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseRouting();
+app.UseMiddleware<AutoRefreshAccessMiddleware>();
 
 
 //dùng cho logo
@@ -68,6 +58,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+
+app.MapControllers();
 
 
 app.Run();

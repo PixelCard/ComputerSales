@@ -30,24 +30,81 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("('User_' + CAST(NEXT VALUE FOR [AccountSeq] AS varchar(20)))");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<bool>("EmailConfirmed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("IDRole")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("LockoutUntil")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Pass")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime?>("VerifyKeyExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly?>("VerifySendCountDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("VerifySendCountToday")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.HasKey("IDAccount");
 
                     b.HasIndex("IDRole");
 
                     b.ToTable("Account", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.EmailVerifyKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasMaxLength(88)
+                        .HasColumnType("nvarchar(88)");
+
+                    b.Property<bool>("Used")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId", "KeyHash")
+                        .IsUnique();
+
+                    b.ToTable("EmailVerifyKeys");
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.Role", b =>
@@ -386,6 +443,9 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Property<int>("OptionTypeId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("SortOrder")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -447,6 +507,115 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                             IsActive = true,
                             Name = "ZaloPay"
                         });
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EPaymentVNPAYTransaction.VNPAYPaymentSession", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeqId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SeqId"));
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<string>("TxnRef")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TxnRef")
+                        .IsUnique()
+                        .HasDatabaseName("UX_VNPAYSession_TxnRef")
+                        .HasFilter("[TxnRef] IS NOT NULL");
+
+                    b.HasIndex("UserId", "CreatedAt")
+                        .HasDatabaseName("IX_VNPAYSession_UserId_CreatedAt");
+
+                    b.ToTable("VNPAYPaymentSessions", (string)null);
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EPaymentVNPAYTransaction.VNPAYPaymentTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("Gateway")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(32)")
+                        .HasDefaultValue("VNPAY");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResponseCode")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("IX_VNPAYTrans_OrderId");
+
+                    b.HasIndex("SessionId")
+                        .HasDatabaseName("IX_VNPAYTrans_SessionId");
+
+                    b.ToTable("VNPAYPaymentTransactions", (string)null);
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.Product", b =>
@@ -615,6 +784,11 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("VariantName")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
@@ -777,9 +951,6 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
 
-                    b.Property<int?>("CustomerID")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("DiscountTotal")
                         .HasColumnType("decimal(18,2)");
 
@@ -819,17 +990,11 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.HasKey("OrderID");
 
-                    b.HasIndex("CustomerID");
-
                     b.HasIndex("IDCustomer");
 
                     b.HasIndex("PaymentID");
 
-                    b.ToTable("Order", null, t =>
-                    {
-                            t.Property("CustomerID")
-                                .HasColumnName("CustomerID");
-                    });
+                    b.ToTable("Order", (string)null);
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.OrderDetail", b =>
@@ -901,6 +1066,15 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.EmailVerifyKey", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.ECart.CartItem", b =>
                 {
                     b.HasOne("ComputerSales.Domain.Entity.ECart.Cart", "Cart")
@@ -957,6 +1131,15 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("OptionType");
+                });
+
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EPaymentVNPAYTransaction.VNPAYPaymentTransaction", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.EPaymentVNPAYTransaction.VNPAYPaymentSession", null)
+                        .WithMany()
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.Product", b =>
@@ -1084,12 +1267,8 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.E_Order.Order", b =>
                 {
-                    b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("CustomerID");
-
                     b.HasOne("ComputerSales.Domain.Entity.ECustomer.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("IDCustomer")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()

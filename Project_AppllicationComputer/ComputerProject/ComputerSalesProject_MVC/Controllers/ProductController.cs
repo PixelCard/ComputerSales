@@ -1,4 +1,6 @@
-﻿using ComputerSales.Infrastructure.Persistence;
+﻿using ComputerSales.Application.UseCase.Product_UC;
+using ComputerSales.Application.UseCaseDTO.Product_DTO;
+using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,55 +8,55 @@ using Microsoft.EntityFrameworkCore;
 public class ProductController : Controller
 {
     private readonly AppDbContext _context;
-    public ProductController(AppDbContext context) => _context = context;
-
-    public async Task<IActionResult> Details(int id)
+    private readonly CreateProduct_UC _createUC;
+    public async Task<IActionResult>
+    Details(int id)
     {
         var now = DateTime.UtcNow;
 
         var product = await _context.Products
-            .AsNoTracking()
-            .Where(p => p.ProductID == id)
-            .Select(p => new
+        .AsNoTracking()
+        .Where(p => p.ProductID == id)
+        .Select(p => new
+        {
+            p.ProductID,
+            p.SKU,
+            p.Slug,
+            p.ShortDescription,
+            p.Status,
+            p.IsDeleted,
+            p.AccessoriesID,
+            p.ProviderID,
+
+            Variants = p.ProductVariants.Select(v => new
             {
-                p.ProductID,
-                p.SKU,
-                p.Slug,
-                p.ShortDescription,
-                p.Status,
-                p.IsDeleted,
-                p.AccessoriesID,
-                p.ProviderID,
-
-                Variants = p.ProductVariants.Select(v => new
+                v.Id,
+                v.SKU,
+                v.Quantity,
+                v.Status,
+                Prices = v.VariantPrices
+        .Where(vp => (vp.ValidFrom == null || vp.ValidFrom <= now) &&
+        (vp.ValidTo == null || vp.ValidTo >= now))
+        .OrderByDescending(vp => vp.ValidFrom)
+        .ToList(),
+                Images = v.VariantImages
+        .OrderBy(vi => vi.SortOrder)
+        .Select(vi => vi.Url)
+        .ToList(),
+                Options = v.VariantOptionValues.Select(vo => new
                 {
-                    v.Id,
-                    v.SKU,
-                    v.Quantity,
-                    v.Status,
-                    Prices = v.VariantPrices
-                        .Where(vp => (vp.ValidFrom == null || vp.ValidFrom <= now) &&
-                                     (vp.ValidTo == null || vp.ValidTo >= now))
-                        .OrderByDescending(vp => vp.ValidFrom)
-                        .ToList(),
-                    Images = v.VariantImages
-                        .OrderBy(vi => vi.SortOrder)
-                        .Select(vi => vi.Url)
-                        .ToList(),
-                    Options = v.VariantOptionValues.Select(vo => new
-                    {
-                        OptionTypeName = vo.OptionalValue.OptionType.Name,
-                        Value = vo.OptionalValue.Value
-                    }).ToList()
-
+                    OptionTypeName = vo.OptionalValue.OptionType.Name,
+                    Value = vo.OptionalValue.Value
                 }).ToList()
-            })
-            .FirstOrDefaultAsync();
+
+            }).ToList()
+        })
+        .FirstOrDefaultAsync();
         // ---- chọn variant mặc định (lấy variant có status = 1 hoặc số lượng > 0)
         var selectedVariant = product.Variants
-            .OrderByDescending(v => v.Status)
-            .ThenByDescending(v => v.Quantity)
-            .FirstOrDefault();
+        .OrderByDescending(v => v.Status)
+        .ThenByDescending(v => v.Quantity)
+        .FirstOrDefault();
 
         if (selectedVariant == null) return NotFound();
 
@@ -75,11 +77,11 @@ public class ProductController : Controller
             Quantity = selectedVariant.Quantity,
             Currency = selectedVariant.Prices.FirstOrDefault()?.Currency ?? "$",
             Price = (selectedVariant.Prices.FirstOrDefault()?.DiscountPrice > 0
-                        ? selectedVariant.Prices.First().DiscountPrice!
-                        : selectedVariant.Prices.FirstOrDefault()?.Price) ?? 0m,
+        ? selectedVariant.Prices.First().DiscountPrice!
+        : selectedVariant.Prices.FirstOrDefault()?.Price) ?? 0m,
             OldPrice = (selectedVariant.Prices.FirstOrDefault()?.DiscountPrice > 0
-                        ? selectedVariant.Prices.FirstOrDefault()?.Price
-                        : null),
+        ? selectedVariant.Prices.FirstOrDefault()?.Price
+        : null),
             CurrentPriceRaw = selectedVariant.Prices.Select(p => new PriceRowVM
             {
                 Id = p.Id,
@@ -105,18 +107,18 @@ public class ProductController : Controller
 
         // ---- Option Groups (từ toàn bộ variants)
         vm.OptionGroups = product.Variants
-            .SelectMany(v => v.Options)
-            .GroupBy(o => o.OptionTypeName)
-            .Select(g => new OptionGroupVM
+        .SelectMany(v => v.Options)
+        .GroupBy(o => o.OptionTypeName)
+        .Select(g => new OptionGroupVM
+        {
+            Name = g.Key,
+            Items = g.Select(o => new OptionItemVM
             {
-                Name = g.Key,
-                Items = g.Select(o => new OptionItemVM
-                {
-                    Label = o.Value,
-                    Selected = selectedVariant.Options.Any(sel => sel.OptionTypeName == g.Key && sel.Value == o.Value),
-                    Disabled = false
-                }).DistinctBy(x => x.Label).ToList()
-            }).ToList();
+                Label = o.Value,
+                Selected = selectedVariant.Options.Any(sel => sel.OptionTypeName == g.Key && sel.Value == o.Value),
+                Disabled = false
+            }).DistinctBy(x => x.Label).ToList()
+        }).ToList();
 
         // ---- Variants summary
         vm.Variants = product.Variants.Select(v => new VariantSummaryVM
@@ -125,28 +127,112 @@ public class ProductController : Controller
             SKU = v.SKU,
             Quantity = v.Quantity,
             DisplayPrice = (v.Prices.FirstOrDefault()?.DiscountPrice > 0
-                                ? v.Prices.First().DiscountPrice
-                                : v.Prices.FirstOrDefault()?.Price)
+        ? v.Prices.First().DiscountPrice
+        : v.Prices.FirstOrDefault()?.Price)
         }).ToList();
 
         // ---- Overview blocks
         vm.OverviewBlocks = await _context.productOverviews
-            .AsNoTracking()
-            .Where(o => o.ProductId == vm.ProductId)
-            .OrderBy(o => o.DisplayOrder)
-            .Select(o => new OverviewBlockVM
-            {
-                ProductOverviewId = o.ProductOverviewId,
-                BlockType = (OverviewBlockType)o.BlockType,
-                TextContent = o.TextContent,
-                ImageUrl = o.ImageUrl,
-                Caption = o.Caption,
-                DisplayOrder = o.DisplayOrder,
-                CreateDate = o.CreateDate
-            }).ToListAsync();
+        .AsNoTracking()
+        .Where(o => o.ProductId == vm.ProductId)
+        .OrderBy(o => o.DisplayOrder)
+        .Select(o => new OverviewBlockVM
+        {
+            ProductOverviewId = o.ProductOverviewId,
+            BlockType = (OverviewBlockType)o.BlockType,
+            TextContent = o.TextContent,
+            ImageUrl = o.ImageUrl,
+            Caption = o.Caption,
+            DisplayOrder = o.DisplayOrder,
+            CreateDate = o.CreateDate
+        }).ToListAsync();
 
         return View(vm);
     }
+    public ProductController(CreateProduct_UC createUC, AppDbContext context)
+    {
+        _createUC = createUC;
+        _context = context;
+    }
+
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View(new ProductDTOInput("", 1, 0, 0, "", ""));
+
+    }
+
+
+    // POST: /Products/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult>
+        Create(ProductDTOInput input, CancellationToken ct)
+    {
+        if (!ModelState.IsValid)
+        {
+            // luôn trả lại đúng kiểu model nếu có lỗi validate
+            return View(input);
+        }
+
+        try
+        {
+            var result = await _createUC.HandleAsync(input, ct);
+            TempData["SuccessMessage"] = $"Đã tạo sản phẩm {result.SKU} thành công!";
+            return RedirectToAction(nameof(Create)); // hoặc Index/Details
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(input);
+        }
+    }
+    [HttpGet("/product/variant-data/{id}")]
+    public async Task<IActionResult>
+        VariantData(int id)
+    {
+        var now = DateTime.UtcNow;
+
+        var variant = await _context.productVariants
+        .AsNoTracking()
+        .Where(v => v.Id == id)
+        .Select(v => new
+        {
+            VariantId = v.Id,
+            variantSku = v.SKU,
+            quantity = v.Quantity,
+            price = (v.VariantPrices
+        .Where(p => (p.ValidFrom == null || p.ValidFrom <= now) &&
+        (p.ValidTo == null || p.ValidTo >= now))
+        .OrderByDescending(p => p.ValidFrom)
+        .Select(p => p.DiscountPrice > 0 ? (decimal?)p.DiscountPrice : (decimal?)p.Price)
+        .FirstOrDefault()) ?? 0m,
+            oldPrice = (v.VariantPrices
+        .Where(p => (p.ValidFrom == null || p.ValidFrom <= now) &&
+        (p.ValidTo == null || p.ValidTo >= now))
+        .OrderByDescending(p => p.ValidFrom)
+        .Select(p => p.DiscountPrice > 0 ? (decimal?)p.Price : null)
+        .FirstOrDefault()),
+            images = v.VariantImages
+        .OrderBy(i => i.SortOrder)
+        .Select(i => i.Url)
+        .ToList(),
+            options = v.VariantOptionValues
+        .Select(vo => new {
+            OptionTypeName = vo.OptionalValue.OptionType.Name,
+            Value = vo.OptionalValue.Value
+        }).ToList()
+        })
+        .FirstOrDefaultAsync();
+
+        if (variant == null) return NotFound();
+
+        return Json(variant);
+    }
+
+
+
 
 
 

@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ComputerSalesProject_MVC.Areas.Admin.Models;
+﻿namespace ComputerSalesProject_MVC.Areas.Admin.Models;
 
 public interface ILookupService
 {

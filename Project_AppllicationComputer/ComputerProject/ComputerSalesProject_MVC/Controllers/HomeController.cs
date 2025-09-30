@@ -26,7 +26,7 @@ namespace ComputerSalesProject_MVC.Controllers
         {
             var now = DateTime.UtcNow;
             // Lấy danh sách cho lưới dưới (Featured/Popular/…)
-            var featured = await _context.Products
+             var featured = await _context.Products
                 .AsNoTracking()
                 .OrderByDescending(p => p.ProductID)
                 .Take(12)

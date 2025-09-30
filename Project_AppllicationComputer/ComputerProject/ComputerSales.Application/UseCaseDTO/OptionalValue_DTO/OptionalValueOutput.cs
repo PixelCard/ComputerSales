@@ -4,5 +4,6 @@
          int Id,
          int OptionTypeId,
          string Value,
-         int SortOrder );
+         int SortOrder,
+         decimal Price);
 }

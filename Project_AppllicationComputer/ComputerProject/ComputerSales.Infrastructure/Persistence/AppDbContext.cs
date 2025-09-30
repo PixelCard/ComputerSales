@@ -6,19 +6,22 @@ using ComputerSales.Domain.Entity.ECategory;
 using ComputerSales.Domain.Entity.ECustomer;
 using ComputerSales.Domain.Entity.EOptional;
 using ComputerSales.Domain.Entity.EPayment;
+using ComputerSales.Domain.Entity.EPaymentVNPAYTransaction;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EProvider;
 using ComputerSales.Domain.Entity.ERefreshToken;
 using ComputerSales.Domain.Entity.EVariant;
-using ComputerSales.Infrastructure.Persistence.Configuration;
 using Microsoft.EntityFrameworkCore;
-using System.Security.AccessControl;
 
 namespace ComputerSales.Infrastructure.Persistence
 {
     public class AppDbContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
+
+        public DbSet<VNPAYPaymentSession> vNPAYPaymentSessions { get; set; }
+
+        public DbSet<VNPAYPaymentTransaction> vNPAYPaymentTransactions { get; set; }
 
         public DbSet<PaymentMethod> PaymentMethods => Set<PaymentMethod>();
         public DbSet<Promotion> Promotions { get; set; }
@@ -42,6 +45,8 @@ namespace ComputerSales.Infrastructure.Persistence
         public DbSet<VariantOptionValue> variantOptionValues => Set<VariantOptionValue>();
         public DbSet<VariantPrice> variantPrices => Set<VariantPrice>();
         public DbSet<Accessories> accessories => Set<Accessories>();
+
+        public DbSet<EmailVerifyKey> EmailVerifyKeys => Set<EmailVerifyKey>();
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder b)

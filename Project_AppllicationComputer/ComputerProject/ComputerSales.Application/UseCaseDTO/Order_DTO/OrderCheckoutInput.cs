@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCaseDTO.Order_DTO
 {
-    public enum PaymentKind { COD = 0, ZaloPay = 1 }
+    public enum PaymentKind { COD = 0, VNPAY = 1 }
     public sealed class OrderCheckoutInput
     {
         [Required, StringLength(150)]
