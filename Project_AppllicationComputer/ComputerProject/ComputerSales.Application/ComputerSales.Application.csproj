@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="UseCaseDTO\NewFolder\" />
     <Folder Include="UseCaseDTO\Product_DTO\" />
-    <Folder Include="UseCase\Product_UC\" />
   </ItemGroup>
 
   <ItemGroup>

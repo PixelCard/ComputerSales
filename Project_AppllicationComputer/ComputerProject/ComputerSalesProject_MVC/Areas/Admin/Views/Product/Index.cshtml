@@ -1,324 +1,52 @@
-﻿@* Areas/Admin/Views/Product/Index.cshtml *@
-@using ComputerSalesProject_MVC.Areas.Admin.Controllers;
-@using ComputerSales.Domain.Entity.EProduct
-<style>
-    /* ------- Palette (indigo + slate) ------- */
-    :root {
-        --brand-50: #eef2ff;
-        --brand-600: #4f46e5;
-        --brand-700: #4338ca;
-        --fg: #0f172a;
-        --muted: #64748b;
-        --border: #e2e8f0;
-        --bg-soft: #f8fafc;
-        --success-bg: #dcfce7;
-        --success-fg: #166534;
-        --success-bd: #86efac;
-        --secondary-bg: #f1f5f9;
-        --secondary-fg: #334155;
-        --secondary-bd: #cbd5e1;
-    }
-
-    /* Bảng */
-    .table thead th {
-        background: var(--bg-soft) !important;
-        color: var(--muted) !important;
-        text-transform: uppercase;
-        letter-spacing: .04em;
-        font-weight: 700;
-    }
-
-    .table tbody tr:hover {
-        background: var(--brand-50) !important;
-    }
-
-    .table-striped > tbody > tr:nth-of-type(odd) > * {
-        --bs-table-accent-bg: #fbfdff;
-    }
-
-    /* Badge trạng thái */
-    .badge {
-        border-radius: 9999px;
-    }
-
-        .badge.bg-success {
-            background: var(--success-bg) !important;
-            color: var(--success-fg) !important;
-            border: 1px solid var(--success-bd) !important;
-        }
-
-        .badge.bg-secondary {
-            background: var(--secondary-bg) !important;
-            color: var(--secondary-fg) !important;
-            border: 1px solid var(--secondary-bd) !important;
-        }
-    /* Badge số biến thể (đang dùng bg-light) – chỉ áp trong bảng sản phẩm */
-    #productsTable .badge.bg-light {
-        background: var(--bg-soft) !important;
-        color: var(--muted) !important;
-        border: 1px solid var(--border) !important;
-    }
-
-    /* Ô filter / input */
-    .input-group-text.bg-light {
-        background: var(--bg-soft) !important;
-        color: var(--muted) !important;
-        border-color: var(--border) !important;
-    }
-
-    .form-control, .form-select {
-        border-color: var(--border) !important;
-    }
-
-    /* Nút */
-    .btn-primary {
-        background: var(--brand-600);
-        border-color: var(--brand-600);
-    }
-
-        .btn-primary:hover {
-            background: var(--brand-700);
-            border-color: var(--brand-700);
-        }
-
-    .btn-outline-primary {
-        color: var(--brand-600);
-        border-color: var(--brand-600);
-    }
-
-        .btn-outline-primary:hover {
-            background: var(--brand-50);
-            color: var(--brand-700);
-            border-color: var(--brand-700);
-        }
-
-    .btn-outline-secondary {
-        color: var(--muted);
-        border-color: var(--border);
-    }
-
-        .btn-outline-secondary:hover {
-            background: var(--bg-soft);
-            color: var(--fg);
-        }
-
-    /* Link Copy SKU */
-    .copy-btn {
-        color: var(--brand-600) !important;
-    }
-
-        .copy-btn:hover {
-            color: var(--brand-700) !important;
-            text-decoration: underline;
-        }
-
-    /* Highlight kết quả tìm kiếm */
-    mark {
-        background: #fde68a;
-    }
-</style>
+﻿@using ComputerSales.Application.UseCaseDTO.Account_DTO
+@model IEnumerable<AccountOutputDTO>
 
 @{
-    ViewData["Title"] = "Danh sách sản phẩm";
+    ViewData["Title"] = "Tài khoản";
 }
-<script src="https://cdn.tailwindcss.com"></script>
 
-<div class="container-fluid py-3 px-2 sm:px-4">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <div class="d-flex align-items-center gap-3">
-            <h4 class="mb-0 text-slate-800 font-semibold">@ViewData["Title"]</h4>
-            <span class="badge rounded-pill bg-light text-secondary border px-3 py-1"><span class="text-slate-500">Tổng</span> <span class="font-medium">@Model.TotalItems</span></span>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="densityToggle" checked>
-                <label class="form-check-label small text-secondary" for="densityToggle">Chế độ gọn</label>
-            </div>
-            <a class="btn btn-primary inline-flex items-center gap-1 !bg-indigo-600 hover:!bg-indigo-700 focus:!ring-2 focus:!ring-indigo-400"
-               asp-area="Admin"
-               asp-controller="Product"
-               asp-action="Create">
-                <span class="hidden sm:inline">+ Tạo sản phẩm</span><span class="sm:hidden">+</span>
-            </a>
-        </div>
-    </div>
-
-    <form method="get" class="card mb-3 border-0 shadow-sm bg-white/80 backdrop-blur rounded-3">
-        <div class="card-body">
-            <div class="row g-2 align-items-center">
-                <div class="col-12 col-md-6 col-lg-5">
-                    <div class="input-group">
-                        <span class="input-group-text bg-light">Tìm</span>
-                        <input name="q" value="@Model.Query" class="form-control"
-                               placeholder="Tìm theo SKU / Slug / mô tả ngắn..." />
-                        <button type="submit" class="btn btn-outline-secondary hover:!bg-slate-50">Lọc</button>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3 col-lg-2">
-                    <div class="input-group">
-                        <span class="input-group-text bg-light">Hiển thị</span>
-                        <select name="pageSize" class="form-select" onchange="this.form.submit()">
-                            @{
-                                int[] sizes = new[] { 10, 20, 50, 100 };
-                            }
-                            @foreach (var s in sizes)
-                            {
-                                <option value="@s" selected="@(Model.PageSize == s)">@s</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3 col-lg-2">
-                    <a href="@Url.Action("Index", "Product", new { area = "Admin" })" class="btn btn-light w-100 hover:!bg-slate-50">Xóa lọc</a>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    <div class="card shadow-sm bg-white/80 backdrop-blur rounded-3 ring-1 ring-slate-100">
-        <div class="table-responsive">
-            <table class="table table-hover table-striped table-sm align-middle mb-0">
-                <caption class="visually-hidden">Danh sách sản phẩm và các thuộc tính</caption>
-                <thead class="table-light sticky-top" style="top: 0; z-index: 5;">
-                    <tr>
-                        <th class="text-secondary fw-semibold text-slate-600 uppercase tracking-wide text-xs" style="width: 100px;">ProductID</th>
-                        <th class="text-secondary fw-semibold text-slate-600 uppercase tracking-wide text-xs" style="width: 160px;">SKU</th>
-                        <th class="text-secondary fw-semibold text-slate-600 uppercase tracking-wide text-xs" style="width: 260px;">Slug</th>
-                        <th class="text-secondary fw-semibold text-slate-600 uppercase tracking-wide text-xs">Mô tả ngắn</th>
-                        <th class="text-secondary fw-semibold text-center text-slate-600 uppercase tracking-wide text-xs" style="width: 120px;">Biến thể</th>
-                        <th class="text-secondary fw-semibold text-center text-slate-600 uppercase tracking-wide text-xs" style="width: 140px;">Trạng thái</th>
-                        <th class="text-secondary fw-semibold text-slate-600 uppercase tracking-wide text-xs" style="width: 200px;">Provider</th>
-                        <th class="text-secondary fw-semibold text-slate-600 uppercase tracking-wide text-xs" style="width: 200px;">Accessories</th>
-                        <th class="text-secondary fw-semibold text-end text-slate-600 uppercase tracking-wide text-xs" style="width: 120px;">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @if (Model.Items.Count == 0)
-                    {
-                        <tr><td colspan="9" class="text-center text-muted py-4 text-slate-500">Không có sản phẩm nào.</td></tr>
-                    }
-                    else
-                    {
-                        foreach (var p in Model.Items)
-                        {
-                            <tr class="hover:bg-slate-50/60">
-                                <td class="text-slate-700">@p.ProductID</td>
-                                <td class="text-truncate text-slate-700" style="max-width: 180px;" title="@p.SKU">
-                                    <span class="js-highlight">@p.SKU</span>
-                                    <button type="button" class="btn btn-link btn-sm text-decoration-none ms-1 copy-btn !px-1 !py-0" data-copy="@p.SKU" title="Sao chép SKU">Copy</button>
-                                </td>
-                                <td class="text-truncate text-slate-700" style="max-width: 260px;" title="@p.Slug"><span class="js-highlight">@p.Slug</span></td>
-                                <td class="text-truncate text-slate-700" style="max-width: 420px;" title="@p.ShortDescription"><span class="js-highlight">@p.ShortDescription</span></td>
-                                <td class="text-center"><span class="badge bg-light text-secondary border !px-3">@p.VariantsCount</span></td>
-                                <td class="text-center">
-                                    <span class="badge @(p.Status == ProductStatus.Active ? "bg-success" : "bg-secondary") !px-3">
-                                        @p.Status
-                                    </span>
-                                </td>
-                                <td class="text-truncate text-slate-700" style="max-width: 200px;" title="@p.ProviderName">@p.ProviderName</td>
-                                <td class="text-truncate text-slate-700" style="max-width: 200px;" title="@p.AccessoriesName">@p.AccessoriesName</td>
-                                <td class="text-end">
-                                    <div class="btn-group whitespace-nowrap">
-                                        <a class="btn btn-sm btn-outline-secondary !px-2"
-                                           asp-area="Admin"
-                                           asp-controller="Product"
-                                           asp-action="Detail"
-                                           asp-route-id="@p.ProductID">Chi tiết</a>
-
-                                          @*  //Chuyển tới trang Product *@
-                                        <a class="btn btn-sm btn-outline-primartVariany !px-2"
-                                           asp-area="Admin"
-                                           asp-controller="Product"
-                                           asp-action="CreateVariant"
-                                           asp-route-productId="@p.ProductID">+ Variant</a>
-
-                                    @*     <a class="btn btn-sm btn-outline-warning !px-2"
-                                           asp-area="Admin"
-                                           asp-controller="Product"
-                                           asp-action="Create"
-                                           asp-route-id="@p.ProductID">Sửa</a> *@
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        @if (Model.TotalPages > 1)
-        {
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <nav aria-label="Phân trang sản phẩm">
-                    <ul class="pagination mb-0">
-                        @{
-                            string q = Model.Query ?? "";
-                            int curr = Model.Page;
-                            int last = Model.TotalPages;
-                            string BuildUrl(int page) =>
-                            Url.Action("Index", "Product",
-                            new { area = "Admin", q, page, pageSize = Model.PageSize }) ?? "#";
-                        }
-
-                        <li class="page-item @(curr <= 1 ? "disabled" : "")"><a class="page-link hover:!bg-slate-50" href="@BuildUrl(curr - 1)" aria-label="Trang trước">«</a></li>
-                        @for (int i = Math.Max(1, curr - 2); i <= Math.Min(last, curr + 2); i++)
-                        {
-                            <li class="page-item @(i == curr ? "active" : "")"><a class="page-link hover:!bg-slate-50" href="@BuildUrl(i)">@i</a></li>
-                        }
-                        <li class="page-item @(curr >= last ? "disabled" : "")"><a class="page-link hover:!bg-slate-50" href="@BuildUrl(curr + 1)" aria-label="Trang sau">»</a></li>
-                    </ul>
-                </nav>
-                <div class="small text-muted">Tổng: @Model.TotalItems • Trang @Model.Page/@Model.TotalPages</div>
-            </div>
-        }
-    </div>
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-semibold">Danh sách tài khoản</h1>
+    <a class="px-4 py-2 rounded-xl bg-blue-600 text-white" asp-action="Create">Tạo mới</a>
 </div>
 
-@* Optional: init tooltips if Bootstrap JS is available *@
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl) })
-
-        // Copy to clipboard for SKU
-        document.querySelectorAll('.copy-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var text = btn.getAttribute('data-copy');
-                navigator.clipboard.writeText(text).then(function () {
-                    btn.textContent = 'Đã sao chép';
-                    setTimeout(function () { btn.textContent = 'Copy'; }, 1200);
-                });
-            });
-        });
-
-        // Density toggle
-        var densityToggle = document.getElementById('densityToggle');
-        var table = document.querySelector('table.table');
-        function applyDensity() {
-            if (!table) return;
-            if (densityToggle && densityToggle.checked) {
-                table.classList.add('table-sm');
-            } else {
-                table.classList.remove('table-sm');
+<div class="overflow-x-auto bg-white rounded-2xl shadow">
+    <table class="min-w-full text-sm">
+        <thead>
+            <tr class="border-b bg-gray-50">
+                <th class="text-left p-3">ID</th>
+                <th class="text-left p-3">Email</th>
+                <th class="text-left p-3">Role ID</th>
+                <th class="text-left p-3">Tên role</th>
+                <th class="text-right p-3">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var x in Model)
+                {
+                    <tr class="border-b">
+                        <td class="p-3">@x.IDAccount</td>
+                        <td class="p-3">@x.Email</td>
+                        <td class="p-3">@x.IDRole</td>
+                        <td class="p-3">@x.TenRole</td>
+                        <td class="p-3 text-right whitespace-nowrap">
+                            <a class="text-blue-600 hover:underline" asp-action="Details" asp-route-id="@x.IDAccount">Xem</a>
+                            <span class="mx-2">|</span>
+                            <a class="hover:underline" asp-action="Edit" asp-route-id="@x.IDAccount">Sửa</a>
+                            <span class="mx-2">|</span>
+                            <a class="text-red-600 hover:underline" asp-action="Delete" asp-route-id="@x.IDAccount">Xóa</a>
+                        </td>
+                    </tr>
+                }
             }
-        }
-        if (densityToggle) {
-            densityToggle.addEventListener('change', applyDensity);
-            applyDensity();
-        }
-
-        // Highlight search query in .js-highlight spans
-        var params = new URLSearchParams(window.location.search);
-        var q = (params.get('q') || '').trim();
-        if (q.length > 0) {
-            var safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            var regex = new RegExp('(' + safe + ')', 'gi');
-            document.querySelectorAll('.js-highlight').forEach(function (el) {
-                var text = el.textContent || '';
-                if (!text) return;
-                el.innerHTML = text.replace(regex, '<mark>$1</mark>');
-            });
-        }
-    });
-}</script>
-
+            else
+            {
+                <tr>
+                    <td class="p-4 text-center text-gray-500" colspan="5">Chưa có tài khoản.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -25,7 +25,7 @@ using ComputerSales.Application.UseCase.ProductOvetView_UC;
 using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCase.Role_UC;
-//using ComputerSales.Application.UseCase.VariantImage_UC;
+using ComputerSales.Application.UseCase.VariantImage_UC;
 using ComputerSales.Application.UseCase.VariantPrice_UC.variantGetPriceByVariantID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
@@ -61,6 +61,9 @@ using ComputerSales.Application.Payment.Interface;
 using ComputerSales.Application.Payment.VNPAY.Respository;
 using ComputerSales.Application.Interface.InterfaceVNPAYMENT;
 using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
+using ComputerSales.Application.UseCase.VariantPrice_UC;
+using ComputerSales.Application.UseCase.VariantOptionValue_UC;
+using ComputerSales.Application.UseCase.ProductOptionalType_UC;
 
 
 namespace ComputerSales.Infrastructure
@@ -141,10 +144,10 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<UpdateProductVariant_UC>();
 
             //==================    VariantImage   ==================//
-            //services.AddScoped<CreateVariantImage_UC>();
-            //services.AddScoped<DeleteVariantImage_UC>();
-            //services.AddScoped<GetVariantImageByID_UC>();
-            //services.AddScoped<UpdateVariantImage_UC>();
+            services.AddScoped<CreateVariantImage_UC>();
+            services.AddScoped<DeleteVariantImage_UC>();
+            services.AddScoped<getVariantImageById_UC>();
+            services.AddScoped<UpdateVariantImage_UC>();
 
             //================ Provider ==================//
             services.AddScoped<CreateCategory_UC>();
@@ -179,8 +182,8 @@ namespace ComputerSales.Infrastructure
            services.AddScoped<DeleteRole_UC>();
 
             //==============    Accounts    ===============//
-           //services.AddScoped<CreateAccount_UC>();
-           services.AddScoped<UpdateAccount_UC>();
+            services.AddScoped<CreateAccount_UC>();
+            services.AddScoped<UpdateAccount_UC>();
            services.AddScoped<GetAccount_UC>();
             services.AddScoped<GetAccountByEmail_UC>();
            services.AddScoped<DeleteAccount_UC>();
@@ -231,6 +234,24 @@ namespace ComputerSales.Infrastructure
 
             //================= Variant Price ==============//
             services.AddScoped<variantGetPriceByVariantID_UC>();
+
+            services.AddScoped<CreateVariantPrice_UC>();
+            services.AddScoped<UpdateVariantPrice_UC>();
+            services.AddScoped<DeleteVariantPrice_UC>();
+            services.AddScoped<GetByIdVariantPrice_UC>();
+
+
+            //================= Variant Option Value =================//
+            services.AddScoped<CreateVariantOptionValue_UC>();
+            services.AddScoped<UpdateVariantOptionValue_UC>();
+            services.AddScoped<GetByIdVariantOptionValue_UC>();
+            services.AddScoped<DeleteVariantOptionValue_UC>();
+
+            //============== ProductOptionType  ==============
+            services.AddScoped<CreateProductOptionalType_UC>();
+            services.AddScoped<DeleteProductOptionalType_UC>();
+            services.AddScoped<GetByIdProductOptionalType_UC>();
+            services.AddScoped<UpdateProductOptionalType_UC>();
 
 
             //================= Forget Pass ==============//

@@ -1,4 +1,5 @@
 ﻿using ComputerSales.Domain.Entity.EProduct;
+using System.Runtime.InteropServices;
 
 namespace ComputerSales.Domain.Entity.EVariant
 {
@@ -20,5 +21,25 @@ namespace ComputerSales.Domain.Entity.EVariant
         public DateTime? ValidTo { get; set; }
 
         public ProductVariant Variant { get; set; }
+        public static VariantPrice Create(
+         int VariantId,
+         string Currency,
+         decimal Price,
+         decimal DiscountPrice,
+         PriceStatus Status,
+         DateTime? ValidFrom,
+         DateTime? ValidTo )
+        {
+            return new VariantPrice()
+            {
+                VariantId = VariantId,
+                Currency = Currency,
+                Price = Price,
+                DiscountPrice = DiscountPrice,
+                Status = Status,
+                ValidFrom = ValidFrom,
+                ValidTo = ValidTo
+            };
+        }   
     }
 }

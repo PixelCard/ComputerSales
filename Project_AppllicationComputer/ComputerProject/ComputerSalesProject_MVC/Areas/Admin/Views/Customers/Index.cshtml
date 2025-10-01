@@ -1,0 +1,74 @@
+﻿@using ComputerSales.Application.UseCaseDTO.Customer_DTO
+@model IEnumerable<CustomerOutputDTO>
+
+@{
+    ViewData["Title"] = "Danh sách khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-semibold">Khách hàng</h1>
+    <a class="px-4 py-2 rounded-xl bg-blue-600 text-white" asp-action="Create">Tạo mới</a>
+</div>
+
+<div class="overflow-x-auto bg-white rounded-2xl shadow">
+    <table class="min-w-full text-sm">
+        <thead>
+            <tr class="border-b bg-gray-50">
+                <th class="text-left p-3">ID</th>
+                <th class="text-left p-3">Ảnh</th>
+                <th class="text-left p-3">Tên</th>
+                <th class="text-left p-3">Mô tả</th>
+                <th class="text-left p-3">SĐT</th>
+                <th class="text-left p-3">Địa chỉ</th>
+                <th class="text-left p-3">Ngày</th>
+                <th class="text-left p-3">IDAccount</th>
+                <th class="text-right p-3">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var x in Model)
+                {
+                    <tr class="border-b">
+                        <td class="p-3">@x.IDCustomer</td>
+                        <td class="p-3">
+                            @if (!string.IsNullOrWhiteSpace(x.IMG))
+                            {
+                                <img src="@x.IMG" alt="IMG" class="w-10 h-10 object-cover rounded-lg border" />
+                            }
+                            else
+                            {
+                                <div class="w-10 h-10 rounded-lg border flex items-center justify-center text-xs text-gray-500">N/A</div>
+                            }
+                        </td>
+                        <td class="p-3 font-medium">@x.Name</td>
+                        <td class="p-3 max-w-[320px]">
+                            <div class="line-clamp-2">@x.Description</div>
+                        </td>
+                        <td class="p-3">@x.sdt</td>
+                        <td class="p-3 max-w-[260px]">
+                            <div class="line-clamp-2">@x.address</div>
+                        </td>
+                        <td class="p-3">@x.Date.ToString("dd/MM/yyyy")</td>
+                        <td class="p-3">@x.IDAccount</td>
+                        <td class="p-3 text-right whitespace-nowrap">
+                            <a class="text-blue-600 hover:underline" asp-action="Details" asp-route-id="@x.IDCustomer">Xem</a>
+                            <span class="mx-2">|</span>
+                            <a class="hover:underline" asp-action="Edit" asp-route-id="@x.IDCustomer">Sửa</a>
+                            <span class="mx-2">|</span>
+                            <a class="text-red-600 hover:underline" asp-action="Delete" asp-route-id="@x.IDCustomer">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="p-4 text-center text-gray-500" colspan="9">Chưa có khách hàng nào.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
