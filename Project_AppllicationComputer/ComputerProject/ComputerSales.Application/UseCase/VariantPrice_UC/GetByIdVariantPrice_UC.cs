@@ -18,7 +18,7 @@ namespace ComputerSales.Application.UseCase.VariantPrice_UC
             this.unitOfWorkApplication = unitOfWorkApplication;
         }
 
-        public async Task<VariantPriceOutputDTO?> HandleAsync(Guid id, CancellationToken ct)
+        public async Task<VariantPriceOutputDTO?> HandleAsync(int id, CancellationToken ct)
         {
             VariantPrice entity = await respository.GetByIdAsync(id);
 

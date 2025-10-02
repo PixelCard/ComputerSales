@@ -43,39 +43,46 @@ namespace API_ComputerProject.Controllers
 
         // GET: api/variantprices/{id}
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+        public async Task<IActionResult> GetById(int id, CancellationToken ct)
         {
             var rs = await _get.HandleAsync(id, ct);
             return rs is null ? NotFound() : Ok(rs);
         }
 
         // PUT: api/variantprices/{id}
-        [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] VariantPriceInputDTO body, CancellationToken ct)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] VariantPriceInputDTO body, CancellationToken ct)
         {
-            if (body == null) return BadRequest("Body is null.");
-            if (body.Price <= 0) return BadRequest("Price must be greater than zero.");
+            if (body == null)
+                return BadRequest("Body is null.");
 
-            // Gán Id từ route vào DTO
-            var updateDto = new VariantPriceInputDTO(
-                      body.VariantId,
-                      body.Currency,
-                      body.Price,
-                      body.DiscountPrice,
-                      body.Status,
-                      body.ValidFrom,
-                      body.ValidTo
-             );
+            if (body.Price <= 0)
+                return BadRequest("Price must be greater than zero.");
 
+            // Gọi UseCase với id từ route + dữ liệu từ body
+            var rs = await _update.HandleAsync(
+                id, // id của VariantPrice
+                new VariantPriceInputDTO(
+                    body.VariantId,
+                    body.Currency,
+                    body.Price,
+                    body.DiscountPrice,
+                    body.Status,
+                    body.ValidFrom,
+                    body.ValidTo
+                ),
+                ct);
 
-            var rs = await _update.HandleAsync(updateDto, ct);
-            return rs is null ? NotFound() : Ok(rs);
+            if (rs == null)
+                return NotFound();
+
+            return Ok(rs);
         }
 
 
         // DELETE: api/variantprices/{id}
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
             var rs = await _delete.HandleAsync(id, ct);
             return rs is null ? NotFound() : Ok(rs);

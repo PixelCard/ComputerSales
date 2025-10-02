@@ -1,5 +1,4 @@
 ﻿using ComputerSales.Domain.Entity.EProduct;
-using System.Runtime.InteropServices;
 
 namespace ComputerSales.Domain.Entity.EVariant
 {

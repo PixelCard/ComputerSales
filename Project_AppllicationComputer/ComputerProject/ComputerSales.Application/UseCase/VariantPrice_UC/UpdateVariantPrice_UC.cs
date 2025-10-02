@@ -18,29 +18,26 @@ namespace ComputerSales.Application.UseCase.VariantPrice_UC
             this.unitOfWorkApplication = unitOfWorkApplication;
         }
 
-        public async Task<VariantPriceOutputDTO?> HandleAsync(VariantPriceInputDTO input, CancellationToken ct)
+        public async Task<VariantPriceOutputDTO?> HandleAsync(int id, VariantPriceInputDTO input, CancellationToken ct)
         {
-            VariantPrice entity = await respository.GetByIdAsync(input.VariantId);
+            // tìm VariantPrice theo Id (PK)
+            VariantPrice entity = await respository.GetByIdAsync(id);
+            if (entity == null) return null;
 
-            if (entity == null)
-            {
-                return null;
-            }
-
-            // Gán lại các giá trị cần update
+            // update field
             entity.Price = input.Price;
             entity.DiscountPrice = input.DiscountPrice;
             entity.Currency = input.Currency;
             entity.Status = input.Status;
             entity.ValidFrom = input.ValidFrom;
             entity.ValidTo = input.ValidTo;
-            entity.VariantId = input.VariantId;
+            entity.VariantId = input.VariantId; // nếu bạn cho phép đổi Variant
 
             respository.Update(entity);
-
             await unitOfWorkApplication.SaveChangesAsync(ct);
 
             return entity.ToResult();
         }
+
     }
 }

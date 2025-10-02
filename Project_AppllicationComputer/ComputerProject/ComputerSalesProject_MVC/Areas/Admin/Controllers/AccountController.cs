@@ -9,6 +9,8 @@ using ComputerSales.Application.UseCaseDTO.Account_DTO.GetAccountByID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.UpdateAccount;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.DeleteAccount;
 using ComputerSalesProject_MVC.Areas.Admin.Models.AccountVM;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
@@ -68,34 +70,70 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         {
             var dto = await _get.HandleAsync(new getAccountByID(id), ct);
             if (dto is null) return NotFound();
-            return View(dto); // @model AccountOutputDTO
+
+            // Lấy Customer theo AccountId
+            var customer = await _db.Customers
+                .AsNoTracking()
+                .Where(c => c.IDAccount == id)
+                .Select(c => new CustomerOutputDTO(
+                    c.CustomerID,
+                    c.IMG,
+                    c.Name,
+                    c.Description,
+                    c.sdt,
+                    c.address,
+                    c.Date,
+                    c.IDAccount
+                ))
+                .FirstOrDefaultAsync(ct);
+
+            ViewBag.Customer = customer;   // để View hiển thị
+            return View(dto);              // @model AccountOutputDTO
         }
 
         // ==================== CREATE ====================
 
-        // GET: Admin/Accounts/Create
         [HttpGet]
-        public IActionResult Create() => View(new AccountCreateVM());
+        public IActionResult Create()
+        {
+            ViewBag.Roles = new SelectList(_db.Roles.AsNoTracking().OrderBy(r => r.TenRole)
+                                 .Select(r => new { r.IDRole, r.TenRole }), "IDRole", "TenRole");
+            return View(new AccountCreateVM { CreateDate = DateTime.Today });
+        }
 
-        // POST: Admin/Accounts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AccountCreateVM vm, CancellationToken ct)
         {
-            if (!ModelState.IsValid) return View(vm);
-
-            var input = new AccountDTOInput(vm.Email, vm.Pass, vm.IDRole, vm.CreateDate);
-            var created = await _create.HandleAsync(input, ct);         // UC trả AccountOutputDTO?
-
-            if (created is null)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, "Tạo tài khoản thất bại.");
+                ViewBag.Roles = new SelectList(_db.Roles.AsNoTracking(), "IDRole", "TenRole", vm.IDRole);
                 return View(vm);
             }
 
-            TempData["Success"] = "Đã tạo tài khoản.";
-            return RedirectToAction(nameof(Details), new { id = created.IDAccount });
+            try
+            {
+                var input = new AccountDTOInput(vm.Email, vm.Pass, vm.IDRole, vm.CreateDate);
+                var created = await _create.HandleAsync(input, ct);
+
+                if (created is null)
+                {
+                    ModelState.AddModelError(string.Empty, "Tạo tài khoản thất bại.");
+                    ViewBag.Roles = new SelectList(_db.Roles.AsNoTracking(), "IDRole", "TenRole", vm.IDRole);
+                    return View(vm);
+                }
+
+                TempData["Success"] = "Đã tạo tài khoản.";
+                return RedirectToAction(nameof(Details), new { id = created.IDAccount });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                ViewBag.Roles = new SelectList(_db.Roles.AsNoTracking(), "IDRole", "TenRole", vm.IDRole);
+                return View(vm);
+            }
         }
+
 
         // ==================== EDIT / UPDATE ====================
 
@@ -154,7 +192,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         }
 
         // POST: Admin/Accounts/Delete/5
-        [HttpPost("{id:int}")]
+        [HttpPost("{id:int}")]  
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)

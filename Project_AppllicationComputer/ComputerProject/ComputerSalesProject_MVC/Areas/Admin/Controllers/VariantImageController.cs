@@ -75,13 +75,13 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             if (rs == null) return BadRequest();
 
             TempData["Success"] = "Thêm ảnh biến thể thành công.";
-            return RedirectToAction("Index", new { variantId = input.VariantId });
+            return RedirectToAction("IndexVariantImage", new { variantId = input.VariantId });
         }
 
 
         // Update
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Update(int id, CancellationToken ct)
+        public async Task<IActionResult> UpdateVariantImage(int id, CancellationToken ct)
         {
             var rs = await _get.HandleAsync(id, ct);
             if (rs == null) return NotFound();
@@ -91,7 +91,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 
         [HttpPost("{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, VariantImageOutputDTO input, CancellationToken ct)
+        public async Task<IActionResult> UpdateVariantImage(int id, VariantImageOutputDTO input, CancellationToken ct)
         {
             if (id != input.Id) return BadRequest("ID không khớp.");
 
@@ -99,12 +99,12 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             if (rs == null) return NotFound();
 
             TempData["Success"] = "Cập nhật ảnh biến thể thành công.";
-            return RedirectToAction("Index", new { variantId = input.VariantId });
+            return RedirectToAction("IndexVariantImage", new { variantId = input.VariantId });
         }
 
         // Delete
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        public async Task<IActionResult> DeleteVariantImage(int id, CancellationToken ct)
         {
             var rs = await _get.HandleAsync(id, ct);
             if (rs == null) return NotFound();
@@ -120,7 +120,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             if (!ok) return NotFound();
 
             TempData["Success"] = "Xóa ảnh biến thể thành công.";
-            return RedirectToAction("Index"); // có thể cần variantId nếu muốn quay về danh sách
+            return RedirectToAction("IndexVariantImage"); // có thể cần variantId nếu muốn quay về danh sách
         }
     }
 }

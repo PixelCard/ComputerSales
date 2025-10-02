@@ -25,10 +25,17 @@
                     <div class="bg-gradient-to-r from-green-100 to-emerald-100 px-4 py-2 rounded-lg">
                         <span class="text-green-800 font-semibold">@(Model.Items?.Count() ?? 0) sản phẩm</span>
                     </div>
+                    <a asp-area="Admin"
+                       asp-controller="Product"
+                       asp-action="Create"
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm font-semibold rounded-lg hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg">
+                        <i class="fas fa-plus-circle mr-2"></i>Tạo sản phẩm
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+  
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Filter Section -->

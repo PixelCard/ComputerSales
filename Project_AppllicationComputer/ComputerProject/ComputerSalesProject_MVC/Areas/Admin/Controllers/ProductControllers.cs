@@ -111,7 +111,6 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             return View(); // @model ProductDTOInput
         }
 
-        // POST /Admin/Product/Create (tạo qua form)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductDTOInput input, CancellationToken ct)
@@ -124,14 +123,16 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 
             try
             {
-                // Gọi thẳng UseCase, không chỉnh DTO/UC
                 ProductOutputDTOcs output = await _createUC.HandleAsync(input, ct);
 
                 TempData["Success"] = "Tạo sản phẩm thành công.";
-                // sau khi _createUC.HandleAsync(...) trả về output.ProductID
-                return RedirectToAction(nameof(CreateVariant), new { productId = output.ProductID });
 
-                return View(output);
+                // 🔥 Chuyển sang trang Index của ProductVariant kèm productId
+                return RedirectToAction(
+                    actionName: "Index",
+                    controllerName: "ProductVariant",
+                    routeValues: new { area = "Admin", productId = output.ProductID }
+                );
             }
             catch (ValidationException ex)
             {
@@ -145,6 +146,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             await LoadLookupsAsync(ct);
             return View(input);
         }
+
         [HttpGet]
         public async Task<IActionResult> CreateVariant(long productId, CancellationToken ct)
         {

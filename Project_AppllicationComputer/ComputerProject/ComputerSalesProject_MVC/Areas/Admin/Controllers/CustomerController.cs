@@ -5,6 +5,7 @@ using ComputerSales.Infrastructure.Persistence; // AppDbContext
 using ComputerSales.Application.UseCase.Customer_UC;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO.getCustomerByID;
+using ComputerSalesProject_MVC.Areas.Admin.Models.CustomerVM;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
@@ -140,5 +141,51 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             TempData["Success"] = "Đã xóa khách hàng.";
             return RedirectToAction(nameof(Index));
         }
+        // GET: Admin/Customers/Edit/5
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> EditCustomer(int id, CancellationToken ct)
+        {
+            var c = await _db.Customers.AsNoTracking().FirstOrDefaultAsync(x => x.CustomerID == id, ct);
+            if (c is null) return NotFound();
+
+            var vm = new CustomerEditVM
+            {
+                IDCustomer = c.CustomerID,
+                IDAccount = c.IDAccount,
+                IMG = c.IMG,
+                Name = c.Name,
+                Description = c.Description,
+                sdt = c.sdt,
+                address = c.address,
+                Date = c.Date
+            };
+            return View(vm);
+        }
+
+        // POST: Admin/Customers/Edit/5
+        [HttpPost("{id:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCustomer(int id, CustomerEditVM vm, CancellationToken ct)
+        {
+            if (!ModelState.IsValid) return View(vm);
+
+            var entity = await _db.Customers.FirstOrDefaultAsync(x => x.CustomerID == id, ct);
+            if (entity is null) return NotFound();
+
+            // chỉ cập nhật field cho phép
+            entity.IMG = vm.IMG;
+            entity.Name = vm.Name;
+            entity.Description = vm.Description;
+            entity.sdt = vm.sdt;
+            entity.address = vm.address;
+            entity.Date = vm.Date;
+
+            await _db.SaveChangesAsync(ct);
+
+            TempData["Success"] = "Đã lưu thông tin khách hàng.";
+            // quay về trang chi tiết account kèm customer này
+            return RedirectToAction("Details", "Accounts", new { area = "Admin", id = entity.IDAccount });
+        }
+
     }
 }

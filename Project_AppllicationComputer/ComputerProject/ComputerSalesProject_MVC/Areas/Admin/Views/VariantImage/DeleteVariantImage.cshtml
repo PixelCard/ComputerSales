@@ -1,0 +1,32 @@
+﻿@model ComputerSales.Application.UseCaseDTO.VariantImage.VariantImageOutputDTO
+@{
+    ViewData["Title"] = "Xóa ảnh biến thể";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-xl mx-auto py-10">
+    <h2 class="text-2xl font-bold text-red-600 mb-6">⚠️ Xác nhận xóa ảnh biến thể</h2>
+
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <p><strong>ID:</strong> @Model.Id</p>
+        <p><strong>VariantId:</strong> @Model.VariantId</p>
+        <p><strong>URL:</strong> <a href="@Model.Url" target="_blank" class="text-blue-600">@Model.Url</a></p>
+        <p><strong>Mô tả:</strong> @Model.DescriptionImg</p>
+        <p><strong>Thứ tự:</strong> @Model.SortOrder</p>
+    </div>
+
+    <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post"
+          onsubmit="return confirm('Bạn có chắc chắn muốn xóa? Nhấn OK để tiếp tục.');">
+        <input type="hidden" asp-for="VariantId" />
+
+        <div class="flex space-x-4">
+            <button type="submit"
+                    class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                    onclick="return confirm('⚠️ Đây là xác nhận cuối cùng, bạn chắc chắn muốn xóa ảnh này?');">
+                🗑 Xóa
+            </button>
+            <a asp-action="IndexVariantImage" asp-route-variantId="@Model.VariantId"
+               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">⬅ Quay lại</a>
+        </div>
+    </form>
+</div>

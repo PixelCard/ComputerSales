@@ -1,0 +1,37 @@
+﻿@model ComputerSales.Application.UseCaseDTO.VariantImage.VariantImageOutputDTO
+@{
+    ViewData["Title"] = "Cập nhật ảnh biến thể";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-lg mx-auto py-8">
+    <h2 class="text-xl font-bold text-purple-600 mb-6">Cập nhật ảnh cho biến thể</h2>
+
+    <form asp-action="UpdateVariantImage" asp-route-id="@Model.Id" method="post">
+        <div class="mb-4">
+            <label asp-for="Url" class="block font-medium text-gray-700">Đường dẫn ảnh</label>
+            <input asp-for="Url" class="mt-1 block w-full border rounded px-3 py-2" />
+            <span asp-validation-for="Url" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="DescriptionImg" class="block font-medium text-gray-700">Mô tả ảnh</label>
+            <input asp-for="DescriptionImg" class="mt-1 block w-full border rounded px-3 py-2" />
+            <span asp-validation-for="DescriptionImg" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="SortOrder" class="block font-medium text-gray-700">Thứ tự hiển thị</label>
+            <input asp-for="SortOrder" type="number" class="mt-1 block w-full border rounded px-3 py-2" />
+            <span asp-validation-for="SortOrder" class="text-red-500"></span>
+        </div>
+
+        <input type="hidden" asp-for="VariantId" />
+
+        <div class="flex space-x-3">
+            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg">💾 Lưu</button>
+            <a asp-action="IndexVariantImage" asp-route-variantId="@Model.VariantId"
+               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">⬅ Quay lại</a>
+        </div>
+    </form>
+</div>

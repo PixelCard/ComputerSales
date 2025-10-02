@@ -42,29 +42,37 @@ public class VariantOptionController : Controller
 
     // Tạo mới OptionType cho Product (sau đó Variant sẽ dùng được)
     [HttpGet]
-    public IActionResult CreateOptionType(long productId)
+    public IActionResult CreateOptionType(long productId, long variantId)
     {
         ViewBag.ProductId = productId;
-        return View(new OptionalTypeInput("", "")); // Code, Name
+        ViewBag.VariantId = variantId;
+        return View(new OptionalTypeInput("", ""));
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateOptionType(OptionalTypeInput input, long productId, CancellationToken ct)
+    public async Task<IActionResult> CreateOptionType(OptionalTypeInput input, long productId, long variantId, CancellationToken ct)
     {
         if (!ModelState.IsValid)
             return View(input);
 
-        // Tạo OptionType mới
+        // ✅ Đếm số OptionType đã có trong DB
+        var count = await _db.optionTypes.CountAsync(ct);
+
+        // ✅ Sinh code tự động (Code_01, Code_02,...)
+        var autoCode = $"OPT_{(count + 1).ToString("D2")}";
+
         var newType = new OptionType
         {
-            Code = input.Code,
+            Code = autoCode,     // ❌ không lấy từ input.Code
             Name = input.Name
         };
+
         _db.optionTypes.Add(newType);
         await _db.SaveChangesAsync(ct);
 
-        // Gắn OptionType với Product
+        // Gắn với Product
         _db.productOptionTypes.Add(new ProductOptionType
         {
             ProductId = productId,
@@ -72,9 +80,11 @@ public class VariantOptionController : Controller
         });
         await _db.SaveChangesAsync(ct);
 
-        TempData["Success"] = "Thêm OptionType thành công!";
-        return RedirectToAction("Index", new { variantId = Request.Query["variantId"] });
+        TempData["Success"] = $"Thêm OptionType thành công! (Code = {autoCode})";
+        return RedirectToAction("Index", new { variantId = variantId });
     }
+
+
 
     // Thêm OptionValue cho OptionType
     [HttpGet]

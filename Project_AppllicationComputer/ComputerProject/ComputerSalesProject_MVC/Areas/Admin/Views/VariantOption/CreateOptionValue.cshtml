@@ -4,38 +4,260 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<div class="max-w-lg mx-auto py-8">
-    <h2 class="text-xl font-bold text-purple-600 mb-6">Thêm OptionValue mới</h2>
+<div class="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-fuchsia-50">
+    <!-- Header Section -->
+    <div class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-gradient-to-r from-rose-500 to-pink-600 rounded-xl shadow-lg">
+                        <i class="fas fa-plus-square text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Thêm OptionValue mới</h1>
+                        <p class="text-gray-600 mt-1">Tạo giá trị tùy chọn cho OptionType</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a asp-action="Index" asp-route-variantId="Request.Query["variantId"]"
+                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white text-sm font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg">
+                        <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <form asp-action="CreateOptionValue" method="post">
-        <!-- Hidden giữ OptionTypeId -->
-        <input type="hidden" asp-for="OptionTypeId" value="@ViewBag.OptionTypeId" />
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Form Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <!-- Card Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-rose-500 to-pink-600">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <i class="fas fa-edit mr-3"></i>
+                    Thông tin OptionValue
+                </h2>
+            </div>
 
-        <div class="mb-4">
-            <label asp-for="Value" class="block font-medium text-gray-700"></label>
-            <input asp-for="Value" class="mt-1 block w-full border rounded px-3 py-2" />
-            <span asp-validation-for="Value" class="text-red-500"></span>
+            <!-- Form Content -->
+            <div class="p-8">
+                <form asp-action="CreateOptionValue" method="post" class="space-y-6">
+                    <!-- Hidden giữ OptionTypeId -->
+                    <input type="hidden" asp-for="OptionTypeId" value="@ViewBag.OptionTypeId" />
+
+                    <!-- Value Field -->
+                    <div class="group">
+                        <label asp-for="Value" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-tag text-rose-500 mr-2"></i>Giá trị
+                        </label>
+                        <div class="relative">
+                            <input asp-for="Value"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-300 text-gray-700 placeholder-gray-400 group-hover:border-rose-300"
+                                placeholder="Nhập giá trị cho OptionValue..." />
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <i class="fas fa-quote-right text-gray-400"></i>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Value" class="text-red-500 text-sm mt-1 block"></span>
+                    </div>
+
+                    <!-- Sort Order Field -->
+                    <div class="group">
+                        <label asp-for="SortOrder" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-sort-numeric-up text-pink-500 mr-2"></i>Thứ tự sắp xếp
+                        </label>
+                        <div class="relative">
+                            <input asp-for="SortOrder" type="number"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 text-gray-700 placeholder-gray-400 group-hover:border-pink-300"
+                                placeholder="Nhập thứ tự sắp xếp (VD: 1, 2, 3...)" />
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <i class="fas fa-sort text-gray-400"></i>
+                            </div>
+                        </div>
+                        <span asp-validation-for="SortOrder" class="text-red-500 text-sm mt-1 block"></span>
+                        <p class="text-sm text-gray-500 mt-1">Số thứ tự để sắp xếp hiển thị (số nhỏ hơn sẽ hiển thị
+                            trước)</p>
+                    </div>
+
+                    <!-- Price Field -->
+                    <div class="group">
+                        <label asp-for="Price" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-dollar-sign text-fuchsia-500 mr-2"></i>Giá tiền
+                        </label>
+                        <div class="relative">
+                            <input asp-for="Price" type="number" step="0.01"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition-all duration-300 text-gray-700 placeholder-gray-400 group-hover:border-fuchsia-300"
+                                placeholder="Nhập giá tiền (VD: 100000.00)" />
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <span class="text-gray-400 font-semibold">VNĐ</span>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Price" class="text-red-500 text-sm mt-1 block"></span>
+                        <p class="text-sm text-gray-500 mt-1">Giá bổ sung khi chọn tùy chọn này (có thể để 0 nếu không
+                            tính phí)</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                        <button type="submit"
+                            class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold rounded-xl hover:from-rose-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-save mr-3"></i>Lưu OptionValue
+                        </button>
+
+                        <a asp-action="Index" asp-route-variantId="Request.Query["variantId"]"
+                            class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-semibold rounded-xl hover:from-gray-600 hover:to-gray-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-times mr-3"></i>Hủy bỏ
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div class="mb-4">
-            <label asp-for="SortOrder" class="block font-medium text-gray-700"></label>
-            <input asp-for="SortOrder" class="mt-1 block w-full border rounded px-3 py-2" />
-            <span asp-validation-for="SortOrder" class="text-red-500"></span>
+        <!-- Info Card -->
+        <div class="mt-8 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-amber-600"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-amber-900 mb-2">Gợi ý sử dụng</h3>
+                    <ul class="text-amber-800 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Giá trị nên
+                            ngắn gọn và dễ hiểu (VD: "Đỏ", "Xanh", "16GB", "32GB")</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Thứ tự sắp
+                            xếp giúp hiển thị theo ý muốn (1, 2, 3...)</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Giá tiền có
+                            thể để 0 nếu không tính phí bổ sung</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Ví dụ: Màu
+                            sắc (giá = 0), RAM (giá > 0 cho nâng cấp)</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-4">
-            <label asp-for="Price" class="block font-medium text-gray-700"></label>
-            <input asp-for="Price" class="mt-1 block w-full border rounded px-3 py-2" />
-            <span asp-validation-for="Price" class="text-red-500"></span>
+        <!-- Preview Card -->
+        <div class="mt-8 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-6 border border-indigo-200">
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-eye text-indigo-600"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-indigo-900 mb-2">Xem trước</h3>
+                    <div class="bg-white rounded-lg p-4 border border-indigo-200">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700 font-medium" id="preview-value">Giá trị sẽ hiển thị ở đây</span>
+                            <span class="text-green-600 font-bold" id="preview-price">+ 0 VNĐ</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">Thứ tự: <span id="preview-order">1</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="flex space-x-3">
-            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg">💾 Lưu</button>
-
-            <!-- Link quay về Index với đúng variantId -->
-            <a asp-action="Index"
-               asp-route-variantId="Request.Query["variantId"]"
-               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">⬅ Hủy</a>
-        </div>
-    </form>
+    </div>
 </div>
+
+<!-- Custom JavaScript for enhanced form interactions -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Real-time preview update
+        const valueInput = document.querySelector('input[name="Value"]');
+        const priceInput = document.querySelector('input[name="Price"]');
+        const sortOrderInput = document.querySelector('input[name="SortOrder"]');
+
+        const previewValue = document.getElementById('preview-value');
+        const previewPrice = document.getElementById('preview-price');
+        const previewOrder = document.getElementById('preview-order');
+
+        function updatePreview() {
+            const value = valueInput.value || 'Giá trị sẽ hiển thị ở đây';
+            const price = parseFloat(priceInput.value) || 0;
+            const order = sortOrderInput.value || '1';
+
+            previewValue.textContent = value;
+            previewPrice.textContent = price > 0 ? `+ ${price.toLocaleString('vi-VN')} VNĐ` : '+ 0 VNĐ';
+            previewOrder.textContent = order;
+        }
+
+        valueInput.addEventListener('input', updatePreview);
+        priceInput.addEventListener('input', updatePreview);
+        sortOrderInput.addEventListener('input', updatePreview);
+
+        // Add floating label effect
+        const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function () {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function () {
+                if (this.value === '') {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+        });
+
+        // Form validation enhancement
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Đang lưu...';
+            submitBtn.disabled = true;
+        });
+
+        // Add ripple effect to buttons
+        const buttons = document.querySelectorAll('button, a');
+        buttons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    });
+
+    // Add custom CSS for enhanced effects
+    const style = document.createElement('style');
+    style.textContent = `
+    .group:hover input {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+    
+    keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    .focused input {
+        transform: translateY(-2px);
+    }
+`;
+    document.head.appendChild(style);
+</script>

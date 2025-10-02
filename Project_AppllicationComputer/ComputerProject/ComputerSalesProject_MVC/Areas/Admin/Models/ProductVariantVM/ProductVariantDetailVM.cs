@@ -9,6 +9,8 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Models.NewFolder
         public string SKU { get; set; }
         public string VariantName { get; set; }
         public int Quantity { get; set; }
+        public bool HasPrice { get; set; }
+
         public VariantStatus Status { get; set; }
     }
 }

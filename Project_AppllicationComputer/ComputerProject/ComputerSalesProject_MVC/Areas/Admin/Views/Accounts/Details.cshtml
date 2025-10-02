@@ -1,168 +1,279 @@
-﻿@using ComputerSales.Application.UseCaseDTO.Account_DTO
-@model AccountOutputDTO
+﻿@model ComputerSales.Application.UseCaseDTO.Account_DTO.AccountOutputDTO
+@using ComputerSales.Application.UseCaseDTO.Customer_DTO
+
 @{
     ViewData["Title"] = "Chi tiết tài khoản";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var cust = ViewBag.Customer as CustomerOutputDTO; // có thể null
 }
 
-<div class="relative min-h-screen w-full overflow-hidden">
-    <!-- Animated Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900"></div>
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=" 60" height="60" viewBox="0 0 60 60"
-        xmlns="http://www.w3.org/2000/svg" %3E%3Cg fill="none" fill-rule="evenodd" %3E%3Cg fill="%239C92AC"
-        fill-opacity="0.1" %3E%3Ccircle cx="30" cy="30" r="2" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Chi tiết tài khoản</h1>
+                    <p class="text-gray-600">Thông tin chi tiết về tài khoản và khách hàng liên kết</p>
+                </div>
+                <a asp-action="Index" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Quay lại danh sách
+                </a>
+            </div>
+        </div>
 
-    <!-- Floating Orbs -->
-    <div
-        class="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse">
-    </div>
-    <div
-        class="absolute top-40 right-10 w-72 h-72 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000">
-    </div>
-    <div
-        class="absolute -bottom-8 left-20 w-72 h-72 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500">
-    </div>
-
-    <div class="relative z-10 py-8 px-4 w-full">
-        <div class="w-full px-4 py-4">
-            <!-- Header Section -->
-            <div class="relative mb-8">
-                <div
-                    class="relative p-8 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-3xl opacity-75">
-                    </div>
-                    <div
-                        class="absolute inset-[1px] bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 rounded-3xl">
-                    </div>
-
-                    <div class="relative z-10 text-center">
-                        <div
-                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-2xl mb-6 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                            <i class="fa-solid fa-user text-white text-3xl"></i>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- ACCOUNT BLOCK -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Account Header -->
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                    <div class="flex items-center">
+                        <div class="bg-white/20 rounded-lg p-2 mr-3">
+                            <i class="fas fa-user-circle text-white text-xl"></i>
                         </div>
-                        <h1
-                            class="text-4xl font-black bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-4">
-                            Chi tiết tài khoản
-                        </h1>
-                        <p class="text-white/80 text-lg font-medium">Thông tin chi tiết về tài khoản người dùng</p>
+                        <div>
+                            <h2 class="text-xl font-semibold text-white">Thông tin tài khoản</h2>
+                            <p class="text-blue-100 text-sm">Chi tiết đăng nhập và phân quyền</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Content -->
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-id-badge text-blue-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <dt class="text-sm font-medium text-gray-500">ID Tài khoản</dt>
+                                <dd class="text-lg font-semibold text-gray-900">#@Model.IDAccount</dd>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-envelope text-green-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <dt class="text-sm font-medium text-gray-500">Email đăng nhập</dt>
+                                <dd class="text-lg font-semibold text-gray-900">@Model.Email</dd>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-key text-purple-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <dt class="text-sm font-medium text-gray-500">ID Vai trò</dt>
+                                <dd class="text-lg font-semibold text-gray-900">#@Model.IDRole</dd>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-user-tag text-orange-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <dt class="text-sm font-medium text-gray-500">Tên vai trò</dt>
+                                <dd class="text-lg font-semibold text-gray-900">@Model.TenRole</dd>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Note -->
+                    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mr-2 mt-1"></i>
+                            <div>
+                                <h4 class="text-sm font-semibold text-blue-800 mb-1">Ghi chú về tài khoản</h4>
+                                <p class="text-sm text-blue-700">
+                                    Tài khoản này được sử dụng để đăng nhập vào hệ thống. 
+                                    Vai trò quyết định các quyền truy cập và chức năng có thể sử dụng.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Details Card -->
-            <div class="relative">
-                <div
-                    class="relative bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-3xl opacity-75">
+            <!-- CUSTOMER BLOCK -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Customer Header -->
+                <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-white/20 rounded-lg p-2 mr-3">
+                                <i class="fas fa-users text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold text-white">Thông tin khách hàng</h2>
+                                <p class="text-emerald-100 text-sm">Chi tiết cá nhân và liên hệ</p>
+                            </div>
+                        </div>
+                        @if (cust == null)
+                        {
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="Create" 
+                               class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-semibold">
+                                <i class="fas fa-plus mr-1"></i>
+                                Tạo Customer
+                            </a>
+                        }
                     </div>
-                    <div
-                        class="absolute inset-[1px] bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 rounded-3xl">
-                    </div>
+                </div>
 
-                    <div class="relative z-10 p-8">
-                        <!-- Account Information -->
-                        <div class="mb-8">
-                            <h3 class="text-2xl font-bold text-white mb-8 flex items-center">
-                                <i class="fa-solid fa-info-circle mr-4 text-cyan-400 text-2xl"></i>
-                                Thông tin tài khoản
-                            </h3>
+                <!-- Customer Content -->
+                <div class="p-6">
+                    @if (cust == null)
+                    {
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user-plus text-gray-400 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Chưa có thông tin khách hàng</h3>
+                            <p class="text-gray-600 mb-6">Tài khoản này chưa được liên kết với thông tin khách hàng nào.</p>
+                            
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="Create" 
+                               class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-semibold">
+                                <i class="fas fa-plus mr-2"></i>
+                                Tạo thông tin khách hàng
+                            </a>
+                        </div>
+                        
+                        <!-- Customer Note when empty -->
+                        <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-amber-500 mr-2 mt-1"></i>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-amber-800 mb-1">Lưu ý về khách hàng</h4>
+                                    <p class="text-sm text-amber-700">
+                                        Để hoàn thiện hồ sơ, cần tạo thông tin khách hàng bao gồm: 
+                                        họ tên, số điện thoại, địa chỉ và các thông tin cá nhân khác.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Avatar -->
+                            <div class="md:col-span-1">
+                                @if (!string.IsNullOrWhiteSpace(cust.IMG))
+                                {
+                                    <div class="relative">
+                                        <img src="@cust.IMG" alt="Avatar" 
+                                             class="w-full aspect-square object-cover rounded-xl border-4 border-emerald-100" />
+                                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-sm"></i>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="w-full aspect-square bg-gray-100 rounded-xl border-4 border-gray-200 flex flex-col items-center justify-center">
+                                        <i class="fas fa-user text-gray-400 text-4xl mb-2"></i>
+                                        <span class="text-gray-500 text-sm">Chưa có ảnh</span>
+                                    </div>
+                                }
+                            </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <!-- ID Account -->
-                                <div
-                                    class="group p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-cyan-400/30 hover:shadow-2xl hover:shadow-cyan-500/25 transition-all duration-300">
-                                    <div class="flex items-center mb-4">
-                                        <div
-                                            class="w-14 h-14 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            <i class="fa-solid fa-hashtag text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-cyan-300">ID Tài khoản</p>
-                                            <p class="text-3xl font-black text-white">@Model.IDAccount</p>
-                                        </div>
+                            <!-- Customer Details -->
+                            <div class="md:col-span-2 space-y-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-id-card text-emerald-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">ID Khách hàng</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">#@cust.IDCustomer</dd>
                                     </div>
                                 </div>
 
-                                <!-- Email -->
-                                <div
-                                    class="group p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-purple-400/30 hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300">
-                                    <div class="flex items-center mb-4">
-                                        <div
-                                            class="w-14 h-14 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            <i class="fa-solid fa-envelope text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-purple-300">Email</p>
-                                            <p class="text-lg font-bold text-white break-all">@Model.Email</p>
-                                        </div>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-user text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Họ và tên</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.Name</dd>
                                     </div>
                                 </div>
 
-                                <!-- Role ID -->
-                                <div
-                                    class="group p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-indigo-400/30 hover:shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300">
-                                    <div class="flex items-center mb-4">
-                                        <div
-                                            class="w-14 h-14 bg-gradient-to-r from-indigo-400 to-blue-500 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            <i class="fa-solid fa-key text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-indigo-300">Role ID</p>
-                                            <p class="text-3xl font-black text-white">@Model.IDRole</p>
-                                        </div>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-phone text-purple-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Số điện thoại</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.sdt</dd>
                                     </div>
                                 </div>
 
-                                <!-- Role Name -->
-                                <div
-                                    class="group p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-pink-400/30 hover:shadow-2xl hover:shadow-pink-500/25 transition-all duration-300">
-                                    <div class="flex items-center mb-4">
-                                        <div
-                                            class="w-14 h-14 bg-gradient-to-r from-pink-400 to-rose-500 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            <i class="fa-solid fa-user-tag text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-pink-300">Tên vai trò</p>
-                                            <p class="text-lg font-bold text-white">@Model.TenRole</p>
-                                        </div>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-map-marker-alt text-orange-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Địa chỉ</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.address</dd>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-calendar text-pink-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Ngày tạo</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.Date.ToString("dd/MM/yyyy")</dd>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        @if (!string.IsNullOrWhiteSpace(cust.Description))
+                        {
+                            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-2">
+                                    <i class="fas fa-sticky-note text-gray-600 mr-2"></i>
+                                    Ghi chú
+                                </h4>
+                                <p class="text-gray-700">@cust.Description</p>
+                            </div>
+                        }
+
                         <!-- Action Buttons -->
-                        <div class="flex items-center justify-center gap-6 pt-8 border-t border-white/20">
-                            <a asp-action="Edit" asp-route-id="@Model.IDAccount"
-                                class="group relative px-10 py-4 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white font-bold rounded-2xl shadow-2xl hover:shadow-cyan-500/25 transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-300 overflow-hidden">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                </div>
-                                <span class="relative flex items-center text-lg">
-                                    <i class="fa-solid fa-pen-to-square mr-3 text-xl"></i>
-                                    Chỉnh sửa
-                                </span>
+                        <div class="mt-6 flex flex-wrap gap-3">
+
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="EditCustomer" asp-route-id="@cust.IDCustomer"
+                               class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg">
+                                <i class="fas fa-edit mr-2"></i> Chỉnh sửa
                             </a>
-                            <a asp-action="Delete" asp-route-id="@Model.IDAccount"
-                                class="group relative px-10 py-4 bg-gradient-to-r from-red-500 via-orange-500 to-pink-600 text-white font-bold rounded-2xl shadow-2xl hover:shadow-red-500/25 transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-red-300 overflow-hidden">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-r from-pink-600 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                </div>
-                                <span class="relative flex items-center text-lg">
-                                    <i class="fa-solid fa-trash mr-3 text-xl"></i>
-                                    Xóa
-                                </span>
-                            </a>
-                            <a asp-action="Index"
-                                class="group relative px-10 py-4 bg-white/20 backdrop-blur-sm text-white font-bold rounded-2xl border-2 border-white/30 hover:bg-white/30 hover:border-white/50 transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/20">
-                                <span class="flex items-center text-lg">
-                                    <i class="fa-solid fa-list mr-3 text-xl"></i>
-                                    Danh sách
-                                </span>
+
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="Delete" asp-route-id="@cust.IDCustomer" 
+                               class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-semibold">
+                                <i class="fas fa-trash mr-2"></i>
+                                Xóa
                             </a>
                         </div>
-                    </div>
+
+                        <!-- Customer Note when exists -->
+                        <div class="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-emerald-500 mr-2 mt-1"></i>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-emerald-800 mb-1">Thông tin khách hàng</h4>
+                                    <p class="text-sm text-emerald-700">
+                                        Khách hàng này đã được liên kết với tài khoản. 
+                                        Có thể quản lý đơn hàng, lịch sử mua hàng và thông tin cá nhân.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
