@@ -8,19 +8,19 @@ using ComputerSales.Domain.Entity.E_Order;
 
 namespace ComputerSales.Application.UseCase.Order_UC
 {
-    public class GetOrderByIDCustomerAndOrderID
+    public class GetOrderByID_UC
     {
         private IRespository<Order> _repo;
         private IUnitOfWorkApplication _unitOfWorkApplication;
 
-        public GetOrderByIDCustomerAndOrderID(IRespository<Order> repo,
+        public GetOrderByID_UC(IRespository<Order> repo,
             IUnitOfWorkApplication unitOfWorkApplication)
         {
             _repo = repo;
             _unitOfWorkApplication = unitOfWorkApplication;
         }
 
-        public async Task<OrderOutputDTO?> HandleAsync(InputGetOrderByandCustomerID input, CancellationToken ct)
+        public async Task<OrderOutputDTO?> HandleAsync(InputGetOrderByID input, CancellationToken ct)
         {
             var entity = await _repo.GetByIdAsync(input.OrderID, ct);
 

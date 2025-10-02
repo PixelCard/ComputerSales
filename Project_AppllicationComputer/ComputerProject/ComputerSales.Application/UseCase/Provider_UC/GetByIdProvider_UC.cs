@@ -5,13 +5,13 @@ using ComputerSales.Domain.Entity.EProvider;
 
 namespace ComputerSales.Application.UseCase.Provider_UC
 {
-    public class GetByIdCategory_UC
+    public class GetByIdProvider_UC
     {
         private IRespository<Provider> respository;
 
         private IUnitOfWorkApplication unitOfWorkApplication;
 
-        public GetByIdCategory_UC(IRespository<Provider> respository,
+        public GetByIdProvider_UC(IRespository<Provider> respository,
             IUnitOfWorkApplication unitOfWorkApplication)
         {
             this.respository = respository;
