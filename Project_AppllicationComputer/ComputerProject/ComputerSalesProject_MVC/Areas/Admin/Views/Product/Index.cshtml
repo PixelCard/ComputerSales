@@ -1,52 +1,261 @@
-﻿@using ComputerSales.Application.UseCaseDTO.Account_DTO
-@model IEnumerable<AccountOutputDTO>
-
+﻿@using ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM
+@model ProductIndexVM
 @{
-    ViewData["Title"] = "Tài khoản";
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<div class="flex items-center justify-between mb-4">
-    <h1 class="text-2xl font-semibold">Danh sách tài khoản</h1>
-    <a class="px-4 py-2 rounded-xl bg-blue-600 text-white" asp-action="Create">Tạo mới</a>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <!-- Header Section -->
+    <div class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                        <i class="fas fa-box text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Quản lý sản phẩm</h1>
+                        <p class="text-gray-600 mt-1">Danh sách sản phẩm trong hệ thống</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-r from-green-100 to-emerald-100 px-4 py-2 rounded-lg">
+                        <span class="text-green-800 font-semibold">@(Model.Items?.Count() ?? 0) sản phẩm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Filter Section -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 mb-8">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-filter text-blue-500 text-xl mr-3"></i>
+                <h3 class="text-xl font-semibold text-gray-800">Bộ lọc tìm kiếm</h3>
+            </div>
+            <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-2">
+                    <div class="relative">
+                        <input type="text" name="q" value="@Model.Query"
+                               placeholder="🔍 Tìm theo tên hoặc SKU..."
+                               class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-700 placeholder-gray-400" />
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+                <div>
+                    <select name="status" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-700">
+                        <option value="">-- Trạng thái --</option>
+                        <option value="Active" selected="@(Model.Status == "Active")">Active</option>
+                        <option value="Inactive" selected="@(Model.Status == "Inactive")">Inactive</option>
+                    </select>
+                </div>
+                <div class="flex space-x-3">
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-search mr-2"></i>Lọc
+                    </button>
+                    <a asp-action="Index" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-times mr-2"></i>Xóa
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Section -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-600">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <i class="fas fa-table mr-3"></i>
+                    Danh sách sản phẩm
+                </h2>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả ngắn</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accessories</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số biến thể</th>
+                            <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            foreach (var item in Model.Items)
+                            {
+                                <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300 group">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                                                <span class="text-white font-bold text-sm">@item.ProductID</span>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-900">@item.ProductID</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">@item.SKU</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@item.Slug</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">@item.ShortDescription</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.ProviderName</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.AccessoriesName</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if (item.Status == ComputerSales.Domain.Entity.EProduct.ProductStatus.Active)
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <i class="fas fa-check-circle mr-1"></i>Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                <i class="fas fa-times-circle mr-1"></i>Inactive
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">@item.VariantsCount</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center space-x-2">
+
+                           
+
+                                            @* btn xem chi tiết sản phẩm *@
+                                            <a asp-area="Admin"
+                                               asp-controller="Product"
+                                               asp-action="ProductDetails"
+                                               asp-route-id="@item.ProductID"
+                                               class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-teal-600 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg">
+                                                <i class="fas fa-info-circle mr-2"></i>Chi tiết
+                                            </a>
+
+
+                                            @* btn create Product Variant *@
+                                            <a asp-area="Admin"
+                                               asp-controller="ProductVariant"
+                                               asp-action="Create"
+                                               asp-route-productId="@item.ProductID">
+                                                Thêm biến thể
+                                            </a>
+
+
+
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                            <i class="fas fa-box-open text-gray-400 text-2xl"></i>
+                                        </div>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2">Không có sản phẩm nào</h3>
+                                        <p class="text-gray-500">Hãy thêm sản phẩm đầu tiên để bắt đầu</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalItems > Model.PageSize)
+        {
+            var totalPages = (int)Math.Ceiling(Model.TotalItems / (double)Model.PageSize);
+            <div class="mt-8 flex justify-center">
+                <nav class="flex space-x-2">
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        if (i == Model.Page)
+                        {
+                            <span class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-medium shadow-lg">@i</span>
+                        }
+                        else
+                        {
+                            <a asp-action="Index"
+                               asp-route-page="@i"
+                               asp-route-status="@Model.Status"
+                               asp-route-q="@Model.Query"
+                               class="px-4 py-2 bg-white text-gray-700 rounded-lg font-medium hover:bg-gray-50 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg border border-gray-200">@i</a>
+                        }
+                    }
+                </nav>
+            </div>
+        }
+    </div>
 </div>
 
-<div class="overflow-x-auto bg-white rounded-2xl shadow">
-    <table class="min-w-full text-sm">
-        <thead>
-            <tr class="border-b bg-gray-50">
-                <th class="text-left p-3">ID</th>
-                <th class="text-left p-3">Email</th>
-                <th class="text-left p-3">Role ID</th>
-                <th class="text-left p-3">Tên role</th>
-                <th class="text-right p-3">Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var x in Model)
-                {
-                    <tr class="border-b">
-                        <td class="p-3">@x.IDAccount</td>
-                        <td class="p-3">@x.Email</td>
-                        <td class="p-3">@x.IDRole</td>
-                        <td class="p-3">@x.TenRole</td>
-                        <td class="p-3 text-right whitespace-nowrap">
-                            <a class="text-blue-600 hover:underline" asp-action="Details" asp-route-id="@x.IDAccount">Xem</a>
-                            <span class="mx-2">|</span>
-                            <a class="hover:underline" asp-action="Edit" asp-route-id="@x.IDAccount">Sửa</a>
-                            <span class="mx-2">|</span>
-                            <a class="text-red-600 hover:underline" asp-action="Delete" asp-route-id="@x.IDAccount">Xóa</a>
-                        </td>
-                    </tr>
-                }
+<!-- Custom JavaScript for enhanced interactions -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add ripple effect to buttons
+    const buttons = document.querySelectorAll('a, button');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.classList.add('ripple');
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+
+    // Add loading state to forms
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang xử lý...';
+                submitBtn.disabled = true;
             }
-            else
-            {
-                <tr>
-                    <td class="p-4 text-center text-gray-500" colspan="5">Chưa có tài khoản.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        });
+    });
+});
+
+// Add ripple effect CSS
+const style = document.createElement('style');
+style.textContent = `
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+    
+    keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>

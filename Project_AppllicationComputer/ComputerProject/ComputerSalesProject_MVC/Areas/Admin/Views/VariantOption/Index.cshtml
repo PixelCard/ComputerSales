@@ -1,0 +1,47 @@
+﻿@model IEnumerable<ComputerSales.Domain.Entity.EOptional.OptionType>
+@{
+    ViewData["Title"] = "Option Types";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-5xl mx-auto py-8">
+    <h2 class="text-2xl font-bold mb-6 text-purple-600">
+        Danh sách OptionType của Variant #@ViewBag.VariantId
+    </h2>
+
+    <div class="flex justify-between mb-4">
+        <a asp-action="CreateOptionType" asp-route-productId="@ViewBag.ProductId"
+           asp-route-variantId="@ViewBag.VariantId"
+           class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg shadow">
+            ➕ Thêm OptionType
+        </a>
+        <a asp-area="Admin" asp-controller="ProductVariant" asp-action="Index" asp-route-productId="@ViewBag.ProductId"
+           class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg">⬅ Quay lại Variant</a>
+    </div>
+
+    <table class="w-full bg-white shadow rounded-lg overflow-hidden">
+        <thead class="bg-gray-100 text-gray-700 text-sm">
+            <tr>
+                <th class="px-6 py-3 text-left">ID</th>
+                <th class="px-6 py-3 text-left">Code</th>
+                <th class="px-6 py-3 text-left">Tên</th>
+                <th class="px-6 py-3 text-center">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y">
+            @foreach (var item in Model)
+            {
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-3">@item.Id</td>
+                    <td class="px-6 py-3">@item.Code</td>
+                    <td class="px-6 py-3">@item.Name</td>
+                    <td class="px-6 py-3 text-center">
+                        <a asp-action="CreateOptionValue" asp-route-optionTypeId="@item.Id"
+                           asp-route-variantId="@ViewBag.VariantId"
+                           class="px-3 py-1 bg-blue-500 text-white rounded-lg">➕ Thêm Value</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

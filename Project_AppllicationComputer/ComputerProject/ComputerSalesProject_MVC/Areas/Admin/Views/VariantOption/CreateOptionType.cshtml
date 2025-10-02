@@ -1,0 +1,35 @@
+﻿@model ComputerSales.Application.UseCaseDTO.OptionalType_DTO.OptionalTypeInput
+@{
+    ViewData["Title"] = "Thêm OptionType";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-lg mx-auto py-8">
+    <h2 class="text-xl font-bold text-purple-600 mb-6">Thêm OptionType mới</h2>
+
+    <form asp-action="CreateOptionType" method="post">
+        <!-- Hidden giữ ProductId -->
+        <input type="hidden" name="productId" value="@ViewBag.ProductId" />
+
+        <div class="mb-4">
+            <label asp-for="Code" class="block font-medium text-gray-700"></label>
+            <input asp-for="Code" class="mt-1 block w-full border rounded px-3 py-2" />
+            <span asp-validation-for="Code" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Name" class="block font-medium text-gray-700"></label>
+            <input asp-for="Name" class="mt-1 block w-full border rounded px-3 py-2" />
+            <span asp-validation-for="Name" class="text-red-500"></span>
+        </div>
+
+        <div class="flex space-x-3">
+            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg">💾 Lưu</button>
+
+            <!-- Link quay về Index với đúng variantId -->
+            <a asp-action="Index"
+               asp-route-variantId="Request.Query["variantId"]"
+               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">⬅ Hủy</a>
+        </div>
+    </form>
+</div>

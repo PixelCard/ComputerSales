@@ -1,0 +1,41 @@
+﻿@model ComputerSales.Application.UseCaseDTO.OptionalValue_DTO.OptionalValueInput
+@{
+    ViewData["Title"] = "Thêm OptionValue";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-lg mx-auto py-8">
+    <h2 class="text-xl font-bold text-purple-600 mb-6">Thêm OptionValue mới</h2>
+
+    <form asp-action="CreateOptionValue" method="post">
+        <!-- Hidden giữ OptionTypeId -->
+        <input type="hidden" asp-for="OptionTypeId" value="@ViewBag.OptionTypeId" />
+
+        <div class="mb-4">
+            <label asp-for="Value" class="block font-medium text-gray-700"></label>
+            <input asp-for="Value" class="mt-1 block w-full border rounded px-3 py-2" />
+            <span asp-validation-for="Value" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="SortOrder" class="block font-medium text-gray-700"></label>
+            <input asp-for="SortOrder" class="mt-1 block w-full border rounded px-3 py-2" />
+            <span asp-validation-for="SortOrder" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Price" class="block font-medium text-gray-700"></label>
+            <input asp-for="Price" class="mt-1 block w-full border rounded px-3 py-2" />
+            <span asp-validation-for="Price" class="text-red-500"></span>
+        </div>
+
+        <div class="flex space-x-3">
+            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg">💾 Lưu</button>
+
+            <!-- Link quay về Index với đúng variantId -->
+            <a asp-action="Index"
+               asp-route-variantId="Request.Query["variantId"]"
+               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">⬅ Hủy</a>
+        </div>
+    </form>
+</div>

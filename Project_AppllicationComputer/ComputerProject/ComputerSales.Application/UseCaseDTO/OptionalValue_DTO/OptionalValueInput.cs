@@ -6,3 +6,4 @@
         int SortOrder,
         decimal Price);
 }
+

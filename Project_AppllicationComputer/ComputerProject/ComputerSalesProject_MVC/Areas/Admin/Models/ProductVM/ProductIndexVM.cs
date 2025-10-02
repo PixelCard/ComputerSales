@@ -1,4 +1,4 @@
-﻿namespace ComputerSalesProject_MVC.Areas.Admin.Models
+﻿namespace ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM
 {
     public class ProductIndexVM
     {
