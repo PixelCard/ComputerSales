@@ -3,6 +3,7 @@ using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCaseDTO.Product_DTO;
 using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO;
 using ComputerSales.Domain.Entity.EProduct; // ProductStatus
+using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence; // AppDbContext
 using ComputerSalesProject_MVC.Areas.Admin.Models;
 using ComputerSalesProject_MVC.Areas.Admin.Models.NewFolder;
@@ -395,7 +396,56 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         }
 
 
+private static bool IsExpired(VariantPrice p, DateTime nowUtc)
+    {
+        if (p == null) return true;
 
+        // Hết hạn khi: chưa đến ValidFrom, hoặc đã qua ValidTo, hoặc Inactive
+        if (p.Status != PriceStatus.Active) return true;
+        if (p.ValidFrom.HasValue && p.ValidFrom.Value > nowUtc) return true;
+        if (p.ValidTo.HasValue && p.ValidTo.Value < nowUtc) return true;
 
+        return false;
     }
+
+    private static decimal EffectiveDiscount(VariantPrice p, DateTime nowUtc)
+    {
+        // Nếu hết hạn → discount = 0
+        return IsExpired(p, nowUtc) ? 0m : (p.DiscountPrice <= 0m ? 0m : p.DiscountPrice);
+    }
+
+    /// <summary>
+    /// Tính giá hiển thị theo quy tắc:
+    /// - Discount 0..100 => % khuyến mãi (price - price * %/100)
+    /// - Discount > 100  => là giá đã giảm (final price)
+    /// - Hết hạn / Inactive => discount = 0 (dùng giá gốc)
+    /// </summary>
+    private static (decimal price, decimal? old, string currency) ResolveDisplayPrice(VariantPrice? row, DateTime? nowUtc = null)
+    {
+        if (row == null) return (0m, null, "VND");
+
+        var now = nowUtc ?? DateTime.UtcNow;
+        var discount = EffectiveDiscount(row, now);  // <-- dùng hàm trên
+        var currency = string.IsNullOrWhiteSpace(row.Currency) ? "VND" : row.Currency;
+
+        if (discount <= 0m)
+            return (row.Price, null, currency);
+
+        if (discount <= 100m)
+        {
+            var final = Math.Round(row.Price * (1m - (discount / 100m)), 2, MidpointRounding.AwayFromZero);
+            return (final, row.Price, currency);
+        }
+
+        // discount > 100 => discount là "giá sau giảm"
+        var price = discount;
+        var old = row.Price > price ? row.Price : (decimal?)null;
+        return (price, old, currency);
+    }
+
+
+
+
+
+}
 }

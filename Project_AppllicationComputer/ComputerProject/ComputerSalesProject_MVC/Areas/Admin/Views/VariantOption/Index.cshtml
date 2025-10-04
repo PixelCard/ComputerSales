@@ -88,14 +88,49 @@
 
                             <!-- Actions -->
                             <div class="lg:col-span-3">
-                                <div class="flex justify-end">
-                                    <a asp-action="CreateOptionValue" asp-route-optionTypeId="@item.Id"
+                                <div class="flex flex-wrap justify-end gap-2">
+
+                                    <!-- Thêm Value -->
+                                    <a asp-action="CreateOptionValue"
+                                       asp-route-optionTypeId="@item.Id"
                                        asp-route-variantId="@ViewBag.VariantId"
-                                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
                                         <i class="fas fa-plus mr-2"></i>Thêm Value
                                     </a>
+
+                                    <!-- Sửa OptionType (tuỳ chọn) -->
+                                    <a asp-action="EditOptionType"
+                                       asp-route-id="@item.Id"
+                                       asp-route-variantId="@ViewBag.VariantId"
+                                       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                        <i class="fas fa-edit mr-2"></i>Sửa
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="VariantOption" asp-action="IndexOptionValue"
+                                       asp-route-optionTypeId="@item.Id"
+                                       asp-route-variantId="@ViewBag.VariantId"
+                                       class="inline-flex ...">
+                                        Xem Value
+                                    </a>
+
+
+
+                                    <!-- Xóa OptionType -->
+                                    <form asp-action="DeleteOptionType"
+                                          method="post"
+                                          class="inline"
+                                          onsubmit="return confirm('Bạn chắc chắn muốn xoá OptionType này? Nếu còn OptionValue sẽ không thể xoá.');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="variantId" value="@ViewBag.VariantId" />
+                                        <button type="submit"
+                                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 text-white font-semibold rounded-xl hover:from-rose-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                            <i class="fas fa-trash-alt mr-2"></i>Xóa
+                                        </button>
+                                    </form>
+
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 }
@@ -124,49 +159,49 @@
 
 <!-- Custom JavaScript for enhanced interactions -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Add ripple effect to buttons
-    const buttons = document.querySelectorAll('a');
-    buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const ripple = document.createElement('span');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-            
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.classList.add('ripple');
-            
-            this.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add ripple effect to buttons
+        const buttons = document.querySelectorAll('a');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
         });
     });
-});
 
-// Add ripple effect CSS
-const style = document.createElement('style');
-style.textContent = `
-    .ripple {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.6);
-        transform: scale(0);
-        animation: ripple-animation 0.6s linear;
-        pointer-events: none;
-    }
-    
-    keyframes ripple-animation {
-        to {
-            transform: scale(4);
-            opacity: 0;
+    // Add ripple effect CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
         }
-    }
-`;
-document.head.appendChild(style);
+
+        keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
 </script>

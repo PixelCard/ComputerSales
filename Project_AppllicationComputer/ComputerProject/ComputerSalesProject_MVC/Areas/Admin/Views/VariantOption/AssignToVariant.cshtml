@@ -1,0 +1,32 @@
+﻿@using ComputerSalesProject_MVC.Areas.Admin.Models.VariantOptionValue
+@model AssignToVariantVM
+
+<h2>Assign cho Variant #@Model.VariantId (@ViewBag.OptionTypeName)</h2>
+
+<form asp-area="Admin"
+      asp-controller="VariantOption"
+      asp-action="AssignToVariant"
+      method="post">
+    @Html.AntiForgeryToken()
+
+    <!-- BẮT BUỘC: khớp tham số action POST -->
+    <input type="hidden" asp-for="VariantId" />
+    <input type="hidden" asp-for="OptionTypeId" />
+
+    <ul>
+        @foreach (var item in Model.Items)
+        {
+            <li>
+                <label>
+                    <input type="checkbox"
+                           name="selectedIds"
+                           value="@item.Id"
+                    @(item.IsAssigned ? "checked" : "") />
+                    @item.Value (Giá: @item.Price, Sort: @item.SortOrder) - @(item.IsAssigned ? "Đã assign" : "Chưa")
+                </label>
+            </li>
+        }
+    </ul>
+
+    <button type="submit" class="btn btn-primary">Lưu Assign</button>
+</form>
