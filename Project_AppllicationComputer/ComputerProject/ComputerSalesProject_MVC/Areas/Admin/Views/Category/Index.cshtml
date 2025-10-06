@@ -1,6 +1,8 @@
 ﻿@model ComputerSales.Application.UseCaseDTO.Category_DTO.CategoryPagedResult
+<script src="https://cdn.tailwindcss.com"></script>
 @{
     ViewData["Title"] = "Categories (Admin)";
+    Layout = null;
     var q = Context.Request.Query["q"].ToString();
     var pageIndex = Model.pageIndex;
     var pageSize = Model.pageSize;
@@ -10,82 +12,114 @@
     string BuildUrl(int p) => Url.Action("Index", "Categories", new { area = "Admin", pageIndex = p, pageSize, q })!;
 }
 
-<h2>Categories</h2>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <h2 class="text-2xl font-semibold text-gray-900 mb-4">Categories</h2>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
+    @if (TempData["Success"] != null)
+    {
+        <div class="mb-4 rounded-md bg-green-50 p-4 border border-green-200 text-green-800">
+            @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="mb-4 rounded-md bg-rose-50 p-4 border border-rose-200 text-rose-800">
+            @TempData["Error"]
+        </div>
+    }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <a class="btn btn-primary" href="@Url.Action("Create","Categories", new { area="Admin" })">+ Tạo mới</a>
+    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <a class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+           href="@Url.Action("Create","Category", new { area="Admin" })">
+            + Tạo mới
+        </a>
 
-    <form method="get" asp-action="Index" asp-controller="Categories" asp-area="Admin" class="d-flex" role="search">
-        <input type="hidden" name="pageIndex" value="1" />
-        <input type="hidden" name="pageSize" value="@pageSize" />
-        <input class="form-control me-2" type="search" placeholder="Tìm theo tên..." name="q" value="@q" />
-        <button class="btn btn-outline-secondary" type="submit">Tìm</button>
-    </form>
-</div>
-
-@if (Model.items?.Count > 0)
-{
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead>
-                <tr>
-                    <th style="width:120px">ID</th>
-                    <th>Name</th>
-                    <th style="width:220px"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var it in Model.items)
-                {
-                    <tr>
-                        <td>@it.id</td>
-                        <td>@it.name</td>
-                        <td class="text-end">
-                            <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Details","Categories", new { area="Admin", id = it.id })">Xem</a>
-                            <a class="btn btn-sm btn-warning" href="@Url.Action("Edit","Categories", new { area="Admin", id = it.id })">Sửa</a>
-                            <a class="btn btn-sm btn-danger" href="@Url.Action("Delete","Categories", new { area="Admin", id = it.id })">Xoá</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <form method="get" asp-action="Index" asp-controller="Categories" asp-area="Admin" class="flex items-center gap-2">
+            <input type="hidden" name="pageIndex" value="1" />
+            <input type="hidden" name="pageSize" value="@pageSize" />
+            <label for="q" class="sr-only">Tìm theo tên</label>
+            <input id="q" name="q" type="search"
+                   value="@q"
+                   placeholder="Tìm theo tên..."
+                   class="w-64 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+            <button type="submit"
+                    class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
+                Tìm
+            </button>
+        </form>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="text-muted">
-            Tổng: <strong>@total</strong> bản ghi • Trang <strong>@pageIndex</strong>/<strong>@pageCount</strong>
+    @if (Model.items?.Count > 0)
+    {
+        <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="w-[120px] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">ID</th>
+                        <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Name</th>
+                        <th scope="col" class="w-[220px] px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-600">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach (var it in Model.items)
+                    {
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-sm text-gray-900">@it.id</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">@it.name</td>
+                            <td class="px-4 py-3">
+                                <div class="flex justify-end gap-2">
+                                    <a class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+                                       href="@Url.Action("Details","Category", new { area="Admin", id = it.id })">Xem</a>
+                                    <a class="inline-flex items-center rounded-md bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2"
+                                       href="@Url.Action("Edit","Category", new { area="Admin", id = it.id })">Sửa</a>
+                                    <a class="inline-flex items-center rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-600 focus:ring-offset-2"
+                                       href="@Url.Action("Delete","Category", new { area="Admin", id = it.id })">Xoá</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
 
-        <nav>
-            <ul class="pagination mb-0">
-                <li class="page-item @(pageIndex <= 1 ? "disabled" : "")">
-                    <a class="page-link" href="@(pageIndex <= 1 ? "#" : BuildUrl(pageIndex - 1))">«</a>
-                </li>
+        <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="text-sm text-gray-600">
+                Tổng: <span class="font-semibold text-gray-900">@total</span> bản ghi •
+                Trang <span class="font-semibold text-gray-900">@pageIndex</span>/<span class="font-semibold text-gray-900">@pageCount</span>
+            </div>
 
-                @for (int p = 1; p <= pageCount; p++)
-                {
-                    <li class="page-item @(p == pageIndex ? "active" : "")">
-                        <a class="page-link" href="@BuildUrl(p)">@p</a>
+            <nav class="flex">
+                <ul class="inline-flex items-center -space-x-px rounded-md border border-gray-300 bg-white">
+                    <li>
+                        <a class="px-3 py-2 text-sm border-r border-gray-300 @(pageIndex <= 1 ? "text-gray-300 cursor-not-allowed" : "text-gray-700 hover:bg-gray-50")"
+                           href="@(pageIndex <= 1 ? "#" : BuildUrl(pageIndex - 1))"
+                           aria-disabled="@(pageIndex <= 1 ? "true" : "false")" tabindex="@(pageIndex <= 1 ? "-1" : "0")">«</a>
                     </li>
-                }
 
-                <li class="page-item @(pageIndex >= pageCount ? "disabled" : "")">
-                    <a class="page-link" href="@(pageIndex >= pageCount ? "#" : BuildUrl(pageIndex + 1))">»</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-}
-else
-{
-    <div class="alert alert-info">Không có dữ liệu.</div>
-}
+                    @for (int p = 1; p <= pageCount; p++)
+                    {
+                        var isActive = p == pageIndex;
+                        <li>
+                            <a href="@BuildUrl(p)"
+                               class="px-3 py-2 text-sm border-r border-gray-300 @(isActive ? "bg-indigo-600 text-white" : "text-gray-700 hover:bg-gray-50")">
+                                @p
+                            </a>
+                        </li>
+                    }
+
+                    <li>
+                        <a class="px-3 py-2 text-sm @(pageIndex >= pageCount ? "text-gray-300 cursor-not-allowed" : "text-gray-700 hover:bg-gray-50")"
+                           href="@(pageIndex >= pageCount ? "#" : BuildUrl(pageIndex + 1))"
+                           aria-disabled="@(pageIndex >= pageCount ? "true" : "false")" tabindex="@(pageIndex >= pageCount ? "-1" : "0")">»</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+    else
+    {
+        <div class="rounded-md border border-blue-200 bg-blue-50 p-4 text-blue-800">
+            Không có dữ liệu.
+        </div>
+    }
+</div>

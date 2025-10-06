@@ -17,6 +17,7 @@
     <None Remove="Views\Account\2hspxr20.hv1~" />
     <None Remove="Views\Account\klfwqyfu.5yj~" />
     <None Remove="Views\Order\gdlvzska.kr0~" />
+    <None Remove="Views\Shared\2dwzoklj.ept~" />
   </ItemGroup>
 
   <ItemGroup>

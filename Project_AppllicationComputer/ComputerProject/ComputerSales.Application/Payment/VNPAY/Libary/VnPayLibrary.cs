@@ -24,7 +24,7 @@ namespace ComputerSales.Application.Payment.VNPAY.Libary
                     vnPay.AddResponseData(key, value);
                 }
             }
-            var orderId = Convert.ToInt64(vnPay.GetResponseData("vnp_TxnRef"));
+            var txtRef = vnPay.GetResponseData("vnp_TxnRef");
             var vnPayTranId = Convert.ToInt64(vnPay.GetResponseData("vnp_TransactionNo"));
             var vnpResponseCode = vnPay.GetResponseData("vnp_ResponseCode");
             var vnpSecureHash =
@@ -42,7 +42,7 @@ namespace ComputerSales.Application.Payment.VNPAY.Libary
                 Success = true,
                 PaymentMethod = "VnPay",
                 OrderDescription = orderInfo,
-                OrderId = orderId.ToString(),
+                OrderId = txtRef.ToString(),
                 PaymentId = vnPayTranId.ToString(),
                 TransactionId = vnPayTranId.ToString(),
                 Token = vnpSecureHash,
