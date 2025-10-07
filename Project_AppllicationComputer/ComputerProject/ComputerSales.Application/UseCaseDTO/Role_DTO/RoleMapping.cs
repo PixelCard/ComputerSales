@@ -20,10 +20,6 @@ namespace ComputerSales.Application.UseCaseDTO.Role_DTO
              );
         }
 
-        public static void ApplyUpdate(this Role e, UpdateRoleDTO dto)
-        {
-            e.TenRole = dto.TenRole;
-        }
 
     }
 }

@@ -1,4 +1,4 @@
-﻿@model int
+﻿@model ComputerSales.Application.UseCaseDTO.Order_DTO.OrderOutputDTO;
 @{
     ViewData["Title"] = "Order Success";
     var txnRef = TempData["TxnRef"] as string; // nếu bạn set ở callback
@@ -48,7 +48,7 @@
         <p class="subtitle">Chúng tôi sẽ sớm liên hệ để xác nhận và giao hàng.</p>
 
         <div style="margin:16px 0 20px">
-          <div><strong>Mã đơn hàng:</strong> #@Model</div>
+          <div><strong>Mã đơn hàng:</strong> #@Model.OrderID</div>
           @if (!string.IsNullOrWhiteSpace(txnRef))
           {
             <div class="subtitle" style="margin-top:6px"><small>Mã thanh toán (TxnRef): @txnRef</small></div>
@@ -56,11 +56,11 @@
         </div>
 
         <div class="actions">
-          <a class="btn btn-primary" asp-controller="Account" asp-action="OrderDetails" asp-route-id="@Model">Xem chi tiết đơn</a>
-          <a class="btn btn-ghost" asp-controller="Home" asp-action="Index">Tiếp tục mua sắm</a>
+                    <a class="btn btn-primary" asp-controller="Profile" asp-action="OrdersInfo" asp-route-id="@Model.OrderID">Xem chi tiết đơn</a>
+                    <a class="btn btn-ghost" asp-controller="Home" asp-action="Index">Tiếp tục mua sắm</a>
         </div>
 
-        <p class="note"><small>Nếu cần hỗ trợ, vui lòng liên hệ CSKH với mã đơn #@Model.</small></p>
+        <p class="note"><small>Nếu cần hỗ trợ, vui lòng liên hệ CSKH với mã đơn #@Model.OrderID</small></p>
       </div>
     </div>
   </div>

@@ -1,0 +1,523 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    /* Reset default body margin */
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<!-- Admin Header -->
+<header class="bg-[#0b2f63] text-white shadow-lg">
+    <div class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
+        <!-- Top Row: Logo, Search, Admin Actions -->
+        <div class="flex items-center justify-between h-16 gap-2 sm:gap-4">
+
+
+            <div class="flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0">
+                <!-- Logo -->
+                <a asp-area="Admin" asp-controller="AdminHome" asp-action="AdminLayout"
+                    class="flex items-center gap-1 hover:opacity-90 transition">
+                    <div
+                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                        <span class="text-white font-bold text-sm sm:text-base">A</span>
+                    </div>
+                    <span class="hidden sm:block font-bold text-lg sm:text-xl tracking-tight text-white">Admin
+                        Panel</span>
+                </a>
+
+                <!-- Admin Status -->
+                <div
+                    class="hidden md:flex items-center gap-1 px-1 py-1 rounded hover:bg-white/10 transition cursor-pointer">
+                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <div class="text-left">
+                        <div class="text-xs text-orange-200">Status</div>
+                        <div class="text-sm font-medium">Online</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER: Quick Search -->
+            <div class="flex-1 max-w-2xl mx-6 sm:mx-8">
+                <div class="relative flex items-center bg-white rounded-lg shadow-sm border border-gray-200">
+                    <input type="text" placeholder="Quick search products, orders, customers..."
+                        class="flex-1 px-3 py-2 text-gray-900 placeholder-gray-500 outline-none text-sm sm:text-base" />
+                    <button
+                        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-r-lg transition-colors">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M10 2a8 8 0 1 1 5.3 14l4.4 4.4-1.4 1.4-4.4-4.4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT: Admin Actions -->
+            <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                <!-- Notifications -->
+                <button class="relative flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 transition">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+                    </svg>
+                    <span
+                        class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">3</span>
+                </button>
+
+                <!-- Admin Profile -->
+                <div class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition cursor-pointer">
+                    <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">AD</span>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-xs text-orange-200">Admin</div>
+                        <div class="text-sm font-medium">Dashboard</div>
+                    </div>
+                </div>
+
+                <!-- Logout -->
+                <a asp-controller="Account" asp-action="Logout" class="px-3 py-2 rounded hover:bg-white/10 transition">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Admin Navigation -->
+        <div class="flex items-center justify-between py-2 border-t border-blue-800">
+            <!-- Left Navigation -->
+            <div class="flex items-center gap-6">
+                <a asp-area="Admin" asp-controller="AdminHome" asp-action="AdminLayout"
+                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Dashboard</a>
+                <a asp-area="Admin" asp-controller="Product" asp-action="Index"
+                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Sản phẩm</a>
+                <a asp-area="Admin" asp-controller="Customers" asp-action="Index"
+                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Khách hàng</a>
+            </div>
+
+            <!-- Right Navigation -->
+            <div class="flex items-center gap-4">
+                <a asp-area="Admin" asp-controller="Accounts" asp-action="Index"
+                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Tài khoản</a>
+                <a asp-controller="Home" asp-action="Index"
+                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Xem trang chủ</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-6">
+
+    <!-- Dashboard Stats -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Orders -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total Orders</p>
+                    <p class="text-3xl font-bold text-gray-900">1,234</p>
+                    <p class="text-sm text-green-600">+12% from last month</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M7 18H5a2 2 0 0 1-2-2V5h2v11h2v2Zm14-9-7-7v4H9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h5v4l7-7Z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Products -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total Products</p>
+                    <p class="text-3xl font-bold text-gray-900">856</p>
+                    <p class="text-sm text-green-600">+8% from last month</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Customers -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total Customers</p>
+                    <p class="text-3xl font-bold text-gray-900">2,456</p>
+                    <p class="text-sm text-green-600">+15% from last month</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Revenue</p>
+                    <p class="text-3xl font-bold text-gray-900">$45,678</p>
+                    <p class="text-sm text-green-600">+22% from last month</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-orange-600" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Management Sections -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Left Column: Product Management -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <!-- Product Management -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Quản lý sản phẩm</h3>
+                    <a asp-area="Admin" asp-controller="Product" asp-action="Index"
+                        class="text-orange-500 hover:text-orange-600 font-medium">Xem tất cả</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Products -->
+                    <a asp-area="Admin" asp-controller="Product" asp-action="Index"
+                        class="p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Sản phẩm</h4>
+                                <p class="text-sm text-gray-600">Quản lý danh mục sản phẩm</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Product Variants -->
+                    <a asp-area="Admin" asp-controller="ProductVariant" asp-action="Index"
+                        class="p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 5h8v6H3V5Zm10 0h8v6h-8V5ZM3 13h8v6H3v-6Zm10 0h8v6h-8v-6Z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Biến thể sản phẩm</h4>
+                                <p class="text-sm text-gray-600">Quản lý các biến thể sản phẩm</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Option Types -->
+                    <a asp-area="Admin" asp-controller="OptionType" asp-action="Index"
+                        class="p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Loại tùy chọn</h4>
+                                <p class="text-sm text-gray-600">Quản lý các loại tùy chọn</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Option Values -->
+                    <a asp-area="Admin" asp-controller="OptionValue" asp-action="Index"
+                        class="p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-red-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Giá trị tùy chọn</h4>
+                                <p class="text-sm text-gray-600">Quản lý giá trị tùy chọn</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order Management -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Quản lý hình ảnh & giá</h3>
+                    <a asp-area="Admin" asp-controller="VariantImage" asp-action="IndexVariantImage"
+                        class="text-orange-500 hover:text-orange-600 font-medium">Xem tất cả</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Variant Images -->
+                    <a asp-area="Admin" asp-controller="VariantImage" asp-action="IndexVariantImage"
+                        class="p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 4h16v12H4V4zm2 2v8h12V6H6zm2 2h8v4H8V8z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Orders</h4>
+                                <p class="text-sm text-gray-600">Manage customer orders</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Variant Prices -->
+                    <a asp-area="Admin" asp-controller="VariantPrice" asp-action="IndexVariantPrice"
+                        class="p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Giá biến thể</h4>
+                                <p class="text-sm text-gray-600">Quản lý giá sản phẩm</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: System Management -->
+        <div class="space-y-6">
+
+            <!-- Customer Management -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Quản lý khách hàng</h3>
+                    <a asp-area="Admin" asp-controller="Customers" asp-action="Index"
+                        class="text-orange-500 hover:text-orange-600 font-medium">Xem tất cả</a>
+                </div>
+
+                <div class="space-y-3">
+                    <a asp-area="Admin" asp-controller="Customers" asp-action="Index"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Khách hàng</h4>
+                                <p class="text-xs text-gray-600">Quản lý tài khoản khách hàng</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a asp-area="Admin" asp-controller="Accounts" asp-action="Index"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Tài khoản</h4>
+                                <p class="text-xs text-gray-600">Quản lý tài khoản người dùng</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a asp-area="Admin" asp-controller="VariantOption" asp-action="Index"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Tùy chọn biến thể</h4>
+                                <p class="text-xs text-gray-600">Quản lý tùy chọn biến thể</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- System Management -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Quản lý hệ thống</h3>
+                </div>
+
+                <div class="space-y-3">
+                    <a asp-area="Admin" asp-controller="Product" asp-action="Index"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-orange-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 5h8v6H3V5Zm10 0h8v6h-8V5ZM3 13h8v6H3v-6Zm10 0h8v6h-8v-6Z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Danh mục</h4>
+                                <p class="text-xs text-gray-600">Quản lý danh mục sản phẩm</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a asp-area="Admin" asp-controller="ProductVariant" asp-action="Index"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Nhà cung cấp</h4>
+                                <p class="text-xs text-gray-600">Quản lý nhà cung cấp</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a asp-area="Admin" asp-controller="OptionType" asp-action="Index"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Phương thức thanh toán</h4>
+                                <p class="text-xs text-gray-600">Quản lý phương thức thanh toán</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a asp-area="Admin" asp-controller="VariantPrice" asp-action="IndexVariantPrice"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Giao dịch VNPay</h4>
+                                <p class="text-xs text-gray-600">Xem các giao dịch thanh toán</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Cart & Promotion Management -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Giỏ hàng & Khuyến mãi</h3>
+                </div>
+
+                <div class="space-y-3">
+                    <a asp-area="Admin" asp-controller="OptionValue" asp-action="Index"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-orange-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 .001 4.001A2 2 0 0 0 17 18ZM6 6h14l-1.5 8.5H8.3L7 4H3V2h4l.7 4Z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Giỏ hàng</h4>
+                                <p class="text-xs text-gray-600">Quản lý giỏ hàng khách hàng</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a asp-area="Admin" asp-controller="Product" asp-action="Create"
+                        class="p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Khuyến mãi</h4>
+                                <p class="text-xs text-gray-600">Quản lý chương trình giảm giá</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // Admin dashboard functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add click handlers for navigation
+        const navLinks = document.querySelectorAll('a[asp-area="Admin"]');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                // Add loading state
+                this.style.opacity = '0.7';
+                setTimeout(() => {
+                    this.style.opacity = '1';
+                }, 200);
+            });
+        });
+
+        // Quick search functionality
+        const quickSearch = document.querySelector('input[placeholder*="Quick search"]');
+        if (quickSearch) {
+            quickSearch.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query) {
+                        // Redirect to product search results
+                        window.location.href = `/Admin/Product/Index?q=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+        }
+    });
+</script>

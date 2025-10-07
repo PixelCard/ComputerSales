@@ -1,0 +1,419 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Forgot Password</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .orange-gradient {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+        }
+        .orange-gradient:hover {
+            background: linear-gradient(135deg, #e55a2b, #e0841a);
+        }
+        .mobile-frame {
+            max-width: 375px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        }
+        .status-bar {
+            background: #000;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .verification-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #e5e7eb;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+        }
+        .verification-input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        .verification-input.filled {
+            border-color: #ff6b35;
+            background-color: #fff5f0;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 flex items-center justify-center p-4">
+    <!-- Mobile Frame -->
+    <div class="mobile-frame bg-white">
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="flex items-center space-x-1">
+                <div class="flex space-x-1">
+                    <div class="w-4 h-2 bg-white rounded-sm"></div>
+                    <div class="w-4 h-2 bg-white rounded-sm"></div>
+                    <div class="w-4 h-2 bg-white rounded-sm"></div>
+                </div>
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="p-8">
+            <!-- hidden state -->
+            <input type="hidden" id="stateEmail" />
+            <input type="hidden" id="resetToken" />
+
+            <!-- Step 1: Email Entry -->
+            <div id="step1" class="step">
+                <h1 class="text-2xl font-bold text-gray-800 mb-8 text-center">Change Password</h1>
+
+                <p id="step1Msg" class="text-sm text-center text-gray-600 min-h-[20px] mb-4"></p>
+
+                <div class="mb-2">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Enter Email Address</label>
+                    <input type="email" id="emailInput" placeholder="example@email.com"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                </div>
+                <p id="step1Msg" class="text-sm text-center text-gray-600 min-h-[20px] mb-4"></p>
+
+                <div class="mb-6">
+                    <a href="/Profile/AccountInfo" class="text-sm text-gray-600 hover:text-orange-500">Back to AccountInfo</a>
+                </div>
+
+                <button id="sendEmailBtn" type="button"
+                        class="w-full orange-gradient text-white py-3 rounded-lg font-medium mb-6 transition-all duration-300">
+                    Send code
+                </button>
+
+                <div class="flex items-center mb-6">
+                    <div class="flex-1 border-t border-gray-300"></div>
+                    <span class="px-4 text-gray-500 text-sm">or</span>
+                    <div class="flex-1 border-t border-gray-300"></div>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-6">
+                    <button class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                    </button>
+                    <button class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                        <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                    </button>
+                    <button class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                        <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-gray-600 mb-4">Do you have an account?</p>
+                    <a href="/Account/Register" class="inline-block px-6 py-2 border-2 border-orange-500 text-orange-500 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-300">
+                        Sign up
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 2: Verification Code -->
+            <div id="step2" class="step hidden">
+                <h1 class="text-2xl font-bold text-gray-800 mb-8 text-center">Verification</h1>
+
+                <p id="step2Msg" class="text-sm text-center text-gray-600 min-h-[20px] mb-4"></p>
+
+                <div class="mb-8">
+                    <label class="block text-gray-700 text-sm font-medium mb-4 text-center">Enter Verification Code</label>
+                    <div class="flex justify-center">
+                        <input type="text" maxlength="1" inputmode="numeric" class="verification-input" data-index="0">
+                        <input type="text" maxlength="1" inputmode="numeric" class="verification-input" data-index="1">
+                        <input type="text" maxlength="1" inputmode="numeric" class="verification-input" data-index="2">
+                        <input type="text" maxlength="1" inputmode="numeric" class="verification-input" data-index="3">
+                    </div>
+                </div>
+
+                <p id="step2Msg" class="text-sm text-center text-gray-600 min-h-[20px] mb-4"></p>
+
+                <div class="mb-6 text-center">
+                    <span class="text-sm text-gray-600">If you didn't receive a code, </span>
+                    <button id="resendBtn" class="text-sm text-orange-500 hover:text-orange-600 underline">Resend</button>
+                </div>
+
+                <button id="verifyBtn" type="button" class="w-full orange-gradient text-white py-3 rounded-lg font-medium mb-6 transition-all duration-300">
+                    Verify
+                </button>
+
+                <div class="flex items-center mb-6">
+                    <div class="flex-1 border-t border-gray-300"></div>
+                    <span class="px-4 text-gray-500 text-sm">or</span>
+                    <div class="flex-1 border-t border-gray-300"></div>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-6">
+                    <button class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                    </button>
+                    <button class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                        <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                    </button>
+                    <button class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+                        <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-gray-600 mb-4">Do you have an account?</p>
+                    <a href="/Account/Register" class="inline-block px-6 py-2 border-2 border-orange-500 text-orange-500 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-300">
+                        Sign up
+                    </a>
+                </div>
+            </div>
+
+            <!-- Step 3: New Password -->
+            <div id="step3" class="step hidden">
+                <h1 class="text-2xl font-bold text-gray-800 mb-8 text-center">New Password</h1>
+
+                <p id="step3Msg" class="text-sm text-center text-gray-600 min-h-[20px] mb-4"></p>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Enter New Password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    <p class="text-xs text-gray-500 mt-1">At least 8 digits</p>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm password"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                </div>
+
+                <button id="resetPasswordBtn" type="button" class="w-full orange-gradient text-white py-3 rounded-lg font-medium transition-all duration-300">
+                    Reset Password
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ===== helpers =====
+        const q = s => document.querySelector(s);
+        const qa = s => Array.from(document.querySelectorAll(s));
+        const show = el => el.classList.remove('hidden');
+        const hide = el => el.classList.add('hidden');
+        let currentStep = 1;
+        function showStep(step){ qa('.step').forEach(hide); show(q('#step'+step)); currentStep=step; }
+
+        // ===== state =====
+        const stateEmail = q('#stateEmail');
+        const resetToken = q('#resetToken');
+
+        // ===== elements =====
+        const emailInput = q('#emailInput');
+        const sendEmailBtn = q('#sendEmailBtn');
+        const verifyBtn = q('#verifyBtn');
+        const resendBtn = q('#resendBtn');
+        const resetPasswordBtn = q('#resetPasswordBtn');
+        const otpInputs = qa('.verification-input');
+
+        const step1Msg = q('#step1Msg');
+        const step2Msg = q('#step2Msg');
+        const step3Msg = q('#step3Msg');
+
+        const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+        const API = {
+            request: '/ForgetPassword/RequestOtp',
+            verify: '/ForgetPassword/VerifyOtp',
+            reset: '/ForgetPassword/Reset'
+        };
+
+        // ===== OTP inputs behavior =====
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', e => {
+                // chỉ cho số
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0,1);
+                if (e.target.value) {
+                    e.target.classList.add('filled');
+                    if (index < otpInputs.length - 1) otpInputs[index+1].focus();
+                } else {
+                    e.target.classList.remove('filled');
+                }
+            });
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index-1].focus();
+                }
+                if (e.key === 'Enter') verifyBtn.click();
+            });
+        });
+
+        // ===== Step 1: Request OTP =====
+        sendEmailBtn.addEventListener('click', async () => {
+            step1Msg.textContent = '';
+            const email = (emailInput.value || '').trim().toLowerCase();
+            if (!emailRegex.test(email)) { step1Msg.textContent = 'Please enter a valid email address.'; return; }
+
+            sendEmailBtn.disabled = true; sendEmailBtn.classList.add('btn-disabled'); sendEmailBtn.textContent = 'Sending...';
+            try {
+                const res = await fetch(API.request, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.ok && data?.success !== false) {
+                    stateEmail.value = email;
+                    otpInputs.forEach(i => { i.value=''; i.classList.remove('filled'); });
+                    startResendCooldown();
+                    showStep(2);
+                    step2Msg.textContent = 'We\'ve sent a verification code to your email.';
+                } else {
+                    step1Msg.textContent = data?.message || 'Failed to send code. Please try again.';
+                }
+            } catch {
+                step1Msg.textContent = 'Network error. Please try again.';
+            } finally {
+                sendEmailBtn.disabled = false; sendEmailBtn.classList.remove('btn-disabled'); sendEmailBtn.textContent = 'Send code';
+            }
+        });
+
+        // ===== Resend with cooldown =====
+        let resendCooldown = 0, resendTimer = null;
+        function startResendCooldown(){
+            resendCooldown = 60;
+            updateResendLabel();
+            resendBtn.disabled = true; resendBtn.classList.add('btn-disabled');
+            if (resendTimer) clearInterval(resendTimer);
+            resendTimer = setInterval(() => {
+                resendCooldown--;
+                updateResendLabel();
+                if (resendCooldown <= 0){
+                    clearInterval(resendTimer);
+                    resendBtn.disabled = false; resendBtn.classList.remove('btn-disabled');
+                    resendBtn.textContent = 'Resend';
+                }
+            }, 1000);
+        }
+        function updateResendLabel(){ resendBtn.textContent = `Resend (${resendCooldown}s)`; }
+
+        resendBtn.addEventListener('click', async () => {
+            const email = stateEmail.value;
+            if (!email) return showStep(1);
+            step2Msg.textContent = '';
+            try {
+                const res = await fetch(API.request, {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json().catch(()=>({}));
+                if (res.ok && data?.success !== false){
+                    step2Msg.textContent = 'Verification code re-sent.';
+                    startResendCooldown();
+                } else {
+                    step2Msg.textContent = data?.message || 'Failed to resend code.';
+                }
+            } catch {
+                step2Msg.textContent = 'Network error. Please try again.';
+            }
+        });
+
+        // ===== Step 2: Verify OTP =====
+        verifyBtn.addEventListener('click', async () => {
+            step2Msg.textContent = '';
+            const email = stateEmail.value;
+            if (!email){ showStep(1); step1Msg.textContent = 'Session expired. Please enter your email again.'; return; }
+
+            const code = otpInputs.map(i => i.value).join('');
+            if (code.length !== 4){ step2Msg.textContent = 'Please enter the complete 4-digit code.'; return; }
+
+            verifyBtn.disabled = true; verifyBtn.classList.add('btn-disabled'); verifyBtn.textContent = 'Verifying...';
+            try {
+                const res = await fetch(API.verify, {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ email, code })
+                });
+                const data = await res.json().catch(()=>({}));
+                if (res.ok && data?.success){
+                    resetToken.value = data.resetToken || data.token || '';
+                    if (!resetToken.value){ step2Msg.textContent = 'Verification ok but missing token.'; }
+                    showStep(3);
+                } else {
+                    step2Msg.textContent = data?.message || 'Invalid or expired code.';
+                }
+            } catch {
+                step2Msg.textContent = 'Network error. Please try again.';
+            } finally {
+                verifyBtn.disabled = false; verifyBtn.classList.remove('btn-disabled'); verifyBtn.textContent = 'Verify';
+            }
+        });
+
+        // ===== Step 3: Reset password =====
+        resetPasswordBtn.addEventListener('click', async () => {
+            step3Msg.textContent = '';
+            const email = stateEmail.value;
+            const token = resetToken.value;
+            const newPassword = (q('#newPassword').value || '').trim();
+            const confirm = (q('#confirmPassword').value || '').trim();
+
+            if (!email || !token){ showStep(1); step1Msg.textContent = 'Session expired. Please start again.'; return; }
+            if (newPassword.length < 8){ step3Msg.textContent = 'Password must be at least 8 characters long.'; return; }
+            if (newPassword !== confirm){ step3Msg.textContent = 'Passwords do not match.'; return; }
+
+            resetPasswordBtn.disabled = true; resetPasswordBtn.classList.add('btn-disabled'); resetPasswordBtn.textContent = 'Processing...';
+            try {
+                const res = await fetch(API.reset, {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ email, token, newPassword })
+                });
+                const data = await res.json().catch(()=>({}));
+                if (res.ok && data?.success){
+                    step3Msg.textContent = 'Password reset successfully. Redirecting...';
+                    setTimeout(()=> window.location.href='/Account/Login', 1200);
+                } else {
+                    step3Msg.textContent = data?.message || 'Reset failed. Please try again.';
+                }
+            } catch {
+                step3Msg.textContent = 'Network error. Please try again.';
+            } finally {
+                resetPasswordBtn.disabled = false; resetPasswordBtn.classList.remove('btn-disabled'); resetPasswordBtn.textContent = 'Reset Password';
+            }
+        });
+
+        // Start
+        showStep(1);
+    </script>
+</body>
+</html>

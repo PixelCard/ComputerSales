@@ -27,6 +27,19 @@ namespace ComputerSalesProject_MVC.Controllers
             _addItem = addItem;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Count(CancellationToken ct)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+            if (userId == 0)
+            {
+                return Json(new { count = 0 });
+            }
+
+            var vm = await _get.Handle(new GetCartPageQuery(userId), ct);
+            return Json(new { count = vm.ItemsCount });
+        }
+
         public async Task<IActionResult> CartHome(CancellationToken ct)
         {
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");//Tìm claim đầu tiên có type "NameIdentifier".

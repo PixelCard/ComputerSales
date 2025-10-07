@@ -1,0 +1,35 @@
+﻿@model ComputerSales.Application.UseCaseDTO.NewFolder.VariantImageInputDTO
+@{
+    ViewData["Title"] = "Thêm ảnh biến thể";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-lg mx-auto py-8">
+    <h2 class="text-2xl font-bold text-purple-600 mb-6">Thêm ảnh cho biến thể</h2>
+
+    <form asp-action="CreateVariantImage" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="VariantId" />
+
+        <div class="mb-4">
+            <label asp-for="Url" class="block font-medium text-gray-700">Đường dẫn ảnh</label>
+            <input asp-for="Url" class="mt-1 block w-full border rounded px-3 py-2" placeholder="Nhập URL ảnh..." />
+            <span asp-validation-for="Url" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="DescriptionImg" class="block font-medium text-gray-700">Mô tả ảnh</label>
+            <input asp-for="DescriptionImg" class="mt-1 block w-full border rounded px-3 py-2" placeholder="VD: Ảnh mặt trước" />
+            <span asp-validation-for="DescriptionImg" class="text-red-500"></span>
+        </div>
+
+        @* Không cho nhập SortOrder vì nó auto tăng *@
+
+        <div class="flex space-x-3">
+            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">💾 Lưu</button>
+            <a asp-action="Index" asp-route-variantId="@Model.VariantId"
+               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">⬅ Quay lại</a>
+        </div>
+    </form>
+</div>

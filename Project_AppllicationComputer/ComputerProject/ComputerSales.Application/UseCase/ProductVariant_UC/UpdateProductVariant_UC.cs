@@ -26,6 +26,7 @@ namespace ComputerSales.Application.UseCase.ProductVariant_UC
             if (entity == null) return null;
 
             entity.Quantity = input.Quantity;
+            entity.ProductId = input.ProductId;
 
             entity.SKU = input.SKU;
 

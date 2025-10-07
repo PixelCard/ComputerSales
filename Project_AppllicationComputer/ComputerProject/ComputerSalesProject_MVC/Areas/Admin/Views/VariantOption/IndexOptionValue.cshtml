@@ -1,0 +1,168 @@
+﻿@model ComputerSalesProject_MVC.Areas.Admin.Models.ProductVariantVM.OptionValueIndexVM
+@{
+    ViewData["Title"] = "Danh sách OptionValue";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">
+                OptionValue của <span class="text-indigo-600">@Model.OptionTypeName</span>
+                <span class="text-gray-500 text-sm">(@Model.OptionTypeCode)</span>
+            </h1>
+            <p class="text-gray-500 mt-1">
+                OptionType ID: @Model.OptionTypeId
+                @(Model.VariantId.HasValue ? $" | Variant ID: {Model.VariantId}" : "")
+            </p>
+        </div>
+        <div class="flex gap-2">
+            @if (Model.VariantId.HasValue)
+            {
+                <a class="px-4 py-2 rounded-lg border hover:bg-gray-50"
+                   asp-area="Admin" asp-controller="VariantOption" asp-action="Index"
+                   asp-route-variantId="@Model.VariantId">
+                    ← Về danh sách OptionType
+                </a>
+            }
+            <a class="px-4 py-2 rounded-lg bg-indigo-600 text-white"
+               asp-area="Admin" asp-controller="VariantOption" asp-action="CreateOptionValue"
+               asp-route-optionTypeId="@Model.OptionTypeId" asp-route-variantId="@Model.VariantId">
+                Tạo mới
+            </a>
+        </div>
+    </div>
+
+    <form method="get" class="mb-4 flex gap-2 items-center"
+          asp-area="Admin" asp-controller="VariantOption" asp-action="IndexOptionValue">
+        <input type="hidden" name="optionTypeId" value="@Model.OptionTypeId" />
+        @if (Model.VariantId.HasValue)
+        {
+            <input type="hidden" name="variantId" value="@Model.VariantId" />
+        }
+        <input name="q" value="@Model.Query" placeholder="Tìm theo Value..."
+               class="w-72 px-3 py-2 border rounded-lg" />
+        <button class="px-4 py-2 rounded-lg bg-indigo-600 text-white">Tìm</button>
+    </form>
+
+    <div class="bg-white rounded-xl border shadow">
+        <table class="w-full table-auto">
+            <thead class="bg-gray-50 text-left text-sm text-gray-600">
+                <tr>
+                    <th class="px-4 py-3 w-20">ID</th>
+                    <th class="px-4 py-3">Value</th>
+                    <th class="px-4 py-3 w-32">Sort</th>
+                    <th class="px-4 py-3 w-40">Price</th>
+                    @if (Model.VariantId.HasValue)
+                    {
+                        <th class="px-4 py-3 w-32">Assigned to Variant #@Model.VariantId</th>
+                        <th class="px-4 py-3 w-40">Actions</th>
+                    }
+                </tr>
+            </thead>
+            <tbody class="divide-y">
+                @if (Model.Items.Any())
+                {
+                    foreach (var v in Model.Items)
+                    {
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3">@v.Id</td>
+                            <td class="px-4 py-3 font-medium">@v.Value</td>
+                            <td class="px-4 py-3">@v.SortOrder</td>
+                            <td class="px-4 py-3">@v.Price.ToString("N0")</td>
+
+                            @if (Model.VariantId.HasValue)
+                            {
+                                <td class="px-4 py-3">
+                                    @if (v.IsAssigned)
+                                    {
+                                        <span class="text-green-600">✓ Đã gán</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-red-600">✗ Chưa gán</span>
+                                    }
+                                </td>
+                                <td class="px-4 py-3">
+                                    @if (v.IsAssigned)
+                                    {
+                                        <!-- Button Unassign: gọi với assign=false -->
+                                        <form asp-area="Admin"
+                                              asp-controller="VariantOption"
+                                              asp-action="AssignValue"
+                                              method="post" style="display:inline;" class="mr-2">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="optionValueId" value="@v.Id" />
+                                            <input type="hidden" name="variantId" value="@Model.VariantId" />
+                                            <input type="hidden" name="assign" value="false" />
+                                            <input type="hidden" name="optionTypeId" value="@Model.OptionTypeId" />
+                                            <button type="submit" class="px-2 py-1 text-xs rounded bg-red-500 text-white">
+                                                Unassign
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <!-- Button Assign: gọi với assign=true -->
+                                        <form asp-area="Admin"
+                                              asp-controller="VariantOption"
+                                              asp-action="AssignValue"
+                                              method="post" style="display:inline;" class="mr-2">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="optionValueId" value="@v.Id" />
+                                            <input type="hidden" name="variantId" value="@Model.VariantId" />
+                                            <input type="hidden" name="assign" value="true" />
+                                            <input type="hidden" name="optionTypeId" value="@Model.OptionTypeId" />
+                                            <button type="submit" class="px-2 py-1 text-xs rounded bg-green-500 text-white">
+                                                Assign
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <a asp-area="Admin" asp-controller="VariantOption" asp-action="EditOptionValue"
+                                       asp-route-id="@v.Id" asp-route-variantId="@Model.VariantId"
+                                       class="px-2 py-1 text-xs rounded bg-blue-500 text-white">Edit</a>
+
+                                    <form asp-area="Admin" asp-controller="VariantOption" asp-action="DeleteOptionValue"
+                                          method="post" style="display:inline;" onsubmit="return confirm('Xóa?')" class="ml-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@v.Id" />
+                                        <input type="hidden" name="variantId" value="@Model.VariantId" />
+                                        <button type="submit" class="px-2 py-1 text-xs rounded bg-red-500 text-white">Delete</button>
+                                    </form>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="@(Model.VariantId.HasValue ? 6 : 4)" class="px-4 py-6 text-center text-gray-500">
+                            Không có dữ liệu
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="mt-4 flex gap-2 justify-center">
+            <a class="px-3 py-2 border rounded @(Model.Page <= 1 ? "opacity-50 pointer-events-none" : "")"
+               asp-area="Admin" asp-controller="VariantOption" asp-action="IndexOptionValue"
+               asp-route-optionTypeId="@Model.OptionTypeId" asp-route-variantId="@Model.VariantId"
+               asp-route-q="@Model.Query" asp-route-pageSize="@Model.PageSize" asp-route-page="@(Model.Page - 1)">
+                « Prev
+            </a>
+            <span class="px-3 py-2">Trang @Model.Page / @Model.TotalPages</span>
+            <a class="px-3 py-2 border rounded @(Model.Page >= Model.TotalPages ? "opacity-50 pointer-events-none" : "")"
+               asp-area="Admin" asp-controller="VariantOption" asp-action="IndexOptionValue"
+               asp-route-optionTypeId="@Model.OptionTypeId" asp-route-variantId="@Model.VariantId"
+               asp-route-q="@Model.Query" asp-route-pageSize="@Model.PageSize" asp-route-page="@(Model.Page + 1)">
+                Next »
+            </a>
+        </div>
+    }
+</div>

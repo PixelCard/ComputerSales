@@ -1,0 +1,196 @@
+@model ComputerSales.Application.UseCaseDTO.Order_DTO.GetOrdersList.GetOrdersListResultDTO
+@using ComputerSales.Domain.Entity.E_Order;
+<script src="https://cdn.tailwindcss.com"></script>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-12 px-4 flex items-start justify-center relative">
+    <div class="pointer-events-none absolute inset-0 [background:radial-gradient(520px_220px_at_15%_0%,rgba(99,102,241,0.08),transparent_60%),radial-gradient(620px_260px_at_100%_12%,rgba(20,184,166,0.08),transparent_60%)]"></div>
+    <div class="relative w-full max-w-7xl bg-white/90 backdrop-blur rounded-2xl shadow-xl ring-1 ring-gray-200">
+        <div class="p-6 border-b border-gray-100">
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <div class="text-xl font-semibold text-gray-900">Danh sách đơn hàng</div>
+                    <div class="text-sm text-gray-500">Tổng: <span class="font-medium text-gray-700">@Model.TotalCount</span></div>
+                </div>
+
+                <!-- Desktop/Tablet: pill filters -->
+                <div class="hidden md:flex flex-wrap gap-2">
+                    <a href="@Url.Action("OrderAdminHome", new { status = (OrderStatus?)null, page = 1 })"
+                       class="px-3 py-1.5 rounded-full text-sm border @(ViewBag.StatusFilter == null ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")">Tất cả</a>
+                    <a href="@Url.Action("OrderAdminHome", new { status = OrderStatus.ChoXacNhan, page = 1 })"
+                       class="px-3 py-1.5 rounded-full text-sm border @(ViewBag.StatusFilter == OrderStatus.ChoXacNhan ? "bg-amber-500 text-white border-amber-500" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")">Chờ xác nhận</a>
+                    <a href="@Url.Action("OrderAdminHome", new { status = OrderStatus.DangDongGoi, page = 1 })"
+                       class="px-3 py-1.5 rounded-full text-sm border @(ViewBag.StatusFilter == OrderStatus.DangDongGoi ? "bg-sky-500 text-white border-sky-500" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")">Đang đóng gói</a>
+                    <a href="@Url.Action("OrderAdminHome", new { status = OrderStatus.DangGiao, page = 1 })"
+                       class="px-3 py-1.5 rounded-full text-sm border @(ViewBag.StatusFilter == OrderStatus.DangGiao ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")">Đang giao</a>
+                    <a href="@Url.Action("OrderAdminHome", new { status = OrderStatus.DaGiaoThanhCong, page = 1 })"
+                       class="px-3 py-1.5 rounded-full text-sm border @(ViewBag.StatusFilter == OrderStatus.DaGiaoThanhCong ? "bg-emerald-600 text-white border-emerald-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")">Đã giao</a>
+                    <a href="@Url.Action("OrderAdminHome", new { status = OrderStatus.DaHuy, page = 1 })"
+                       class="px-3 py-1.5 rounded-full text-sm border @(ViewBag.StatusFilter == OrderStatus.DaHuy ? "bg-rose-600 text-white border-rose-600" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50")">Đã hủy</a>
+                </div>
+
+                <!-- Mobile: one button toggles a dropdown menu -->
+                <div class="md:hidden relative">
+                    <button id="statusFilterBtn" type="button" class="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                        Bộ lọc trạng thái
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.261l3.71-3.03a.75.75 0 1 1 .94 1.17l-4.18 3.41a.75.75 0 0 1-.94 0l-4.18-3.41a.75.75 0 0 1-.02-1.06Z" clip-rule="evenodd"/></svg>
+                    </button>
+                    <div id="statusFilterMenu" class="hidden absolute z-20 mt-2 w-56 rounded-md border border-gray-200 bg-white shadow-lg">
+                        <div class="py-1 text-sm">
+                            <a class="block px-3 py-2 hover:bg-gray-50" href="@Url.Action("OrderAdminHome", new { status = (OrderStatus?)null, page = 1 })">Tất cả</a>
+                            <a class="block px-3 py-2 hover:bg-gray-50" href="@Url.Action("OrderAdminHome", new { status = OrderStatus.ChoXacNhan, page = 1 })">Chờ xác nhận</a>
+                            <a class="block px-3 py-2 hover:bg-gray-50" href="@Url.Action("OrderAdminHome", new { status = OrderStatus.DangDongGoi, page = 1 })">Đang đóng gói</a>
+                            <a class="block px-3 py-2 hover:bg-gray-50" href="@Url.Action("OrderAdminHome", new { status = OrderStatus.DangGiao, page = 1 })">Đang giao</a>
+                            <a class="block px-3 py-2 hover:bg-gray-50" href="@Url.Action("OrderAdminHome", new { status = OrderStatus.DaGiaoThanhCong, page = 1 })">Đã giao</a>
+                            <a class="block px-3 py-2 hover:bg-gray-50" href="@Url.Action("OrderAdminHome", new { status = OrderStatus.DaHuy, page = 1 })">Đã hủy</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-indigo-500 via-transparent to-emerald-500 opacity-30"></div>
+
+        <div class="p-6">
+            <div class="overflow-hidden rounded-xl ring-1 ring-gray-200 bg-white">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Mã đơn</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Ngày đặt</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Khách hàng</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Trạng thái</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600">Tổng tiền</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Ghi chú</th>
+                            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 bg-white">
+                        @if (Model.Orders.Any())
+                        {
+                            @foreach (var order in Model.Orders)
+                            {
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-900">#@order.OrderID</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">@order.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">@order.IDCustomer</td>
+                                    <td class="px-4 py-3">
+                                        @switch (order.OrderStatus)
+                                        {
+                                            case ComputerSales.Domain.Entity.E_Order.OrderStatus.ChoXacNhan:
+                                                <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">Chờ xác nhận</span>
+                                                break;
+                                            case ComputerSales.Domain.Entity.E_Order.OrderStatus.DangDongGoi:
+                                                <span class="inline-flex items-center rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-medium text-sky-800">Đang đóng gói</span>
+                                                break;
+                                            case ComputerSales.Domain.Entity.E_Order.OrderStatus.DangGiao:
+                                                <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">Đang giao</span>
+                                                break;
+                                            case ComputerSales.Domain.Entity.E_Order.OrderStatus.DaGiaoThanhCong:
+                                                <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">Đã giao thành công</span>
+                                                break;
+                                            case ComputerSales.Domain.Entity.E_Order.OrderStatus.DaHuy:
+                                                <span class="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-medium text-rose-800">Đã hủy</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="px-4 py-3 text-right text-sm font-semibold text-gray-900">@order.GrandTotal.ToString("N0") VNĐ</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">
+                                        @if (!string.IsNullOrEmpty(order.OrderNote))
+                                        {
+                                            <span title="@order.OrderNote">@(order.OrderNote.Length > 50 ? order.OrderNote.Substring(0, 50) + "..." : order.OrderNote)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-gray-400">Không có</span>
+                                        }
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex justify-end gap-2">
+                                            <a href="@Url.Action("OrderGet", new { id = order.OrderID })" 
+                                               class="inline-flex items-center rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">Xem</a>
+                                            @if (order.OrderStatus != ComputerSales.Domain.Entity.E_Order.OrderStatus.DangGiao && 
+                                                 order.OrderStatus != ComputerSales.Domain.Entity.E_Order.OrderStatus.DaGiaoThanhCong &&
+                                                 order.OrderStatus != ComputerSales.Domain.Entity.E_Order.OrderStatus.DaHuy)
+                                            {
+                                                <button type="button" onclick="cancelOrder(@order.OrderID)"
+                                                        class="inline-flex items-center rounded-md bg-rose-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-rose-700">Hủy</button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="px-4 py-10 text-center text-sm text-gray-500">
+                                    Không có đơn hàng nào
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="mt-6 flex items-center justify-center gap-1">
+                    @if (ViewBag.HasPreviousPage)
+                    {
+                        <a class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50" href="@Url.Action("OrderAdminHome", new { status = ViewBag.StatusFilter, page = ViewBag.CurrentPage - 1 })">Trước</a>
+                    }
+                    @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                    {
+                        <a class="inline-flex items-center rounded-md px-3 py-1.5 text-sm @(i == ViewBag.CurrentPage ? "bg-indigo-600 text-white" : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50")" href="@Url.Action("OrderAdminHome", new { status = ViewBag.StatusFilter, page = i })">@i</a>
+                    }
+                    @if (ViewBag.HasNextPage)
+                    {
+                        <a class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50" href="@Url.Action("OrderAdminHome", new { status = ViewBag.StatusFilter, page = ViewBag.CurrentPage + 1 })">Sau</a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        var btn = document.getElementById('statusFilterBtn');
+        var menu = document.getElementById('statusFilterMenu');
+        if (btn && menu) {
+            btn.addEventListener('click', function(){
+                menu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function(e){
+                if (!btn.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        }
+    })();
+    function cancelOrder(orderId) {
+        const reason = prompt('Nhập lý do hủy (tuỳ chọn):', '');
+        if (!confirm('Xác nhận hủy đơn #' + orderId + '?')) return;
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("CancelOrder")';
+
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'orderId';
+        idInput.value = orderId;
+
+        const reasonInput = document.createElement('input');
+        reasonInput.type = 'hidden';
+        reasonInput.name = 'cancelReason';
+        reasonInput.value = reason || '';
+
+        form.appendChild(idInput);
+        form.appendChild(reasonInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>

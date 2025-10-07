@@ -46,7 +46,7 @@ app.UseMiddleware<AutoRefreshAccessMiddleware>();
 
 
 //dùng cho logo
-app.UseStaticFiles();
+//app.UseStaticFiles();
 
 app.MapControllerRoute(
     name: "areas",

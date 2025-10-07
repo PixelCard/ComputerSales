@@ -1,0 +1,182 @@
+﻿@* Areas/Admin/Views/Product/CreateVariant.cshtml *@
+@using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO
+@using ComputerSales.Domain.Entity.EProduct
+@model ProductVariantInput
+
+@{
+    ViewData["Title"] = "Thêm biến thể";
+    dynamic product = ViewBag.Product;
+    var variants = (IEnumerable<dynamic>)(ViewBag.Variants ?? Array.Empty<object>());
+    int variantsCount = ViewBag.VariantsCount ?? 0;
+}
+
+<style>
+    :root{
+      --brand-50:#eef2ff; --brand-600:#4f46e5; --brand-700:#4338ca;
+      --fg:#0f172a; --muted:#64748b; --border:#e2e8f0; --bg-soft:#f8fafc;
+      --success-bg:#dcfce7; --success-fg:#166534; --success-bd:#86efac;
+      --secondary-bg:#f1f5f9; --secondary-fg:#334155; --secondary-bd:#cbd5e1;
+    }
+    .hero{background:linear-gradient(135deg,rgba(79,70,229,.10),rgba(99,102,241,.06));border:1px solid rgba(15,23,42,.06);}
+    .card-soft{background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:1px solid rgba(15,23,42,.06);}
+    .table thead th{background:#f8fafc !important;color:#475569 !important;text-transform:uppercase;letter-spacing:.04em;font-weight:700;position:sticky;top:0;z-index:5;}
+    .table tbody tr:hover{background:var(--brand-50) !important;}
+    .badge{border-radius:9999px;}
+    .badge.bg-success{background:var(--success-bg)!important;color:var(--success-fg)!important;border:1px solid var(--success-bd)!important;}
+    .badge.bg-secondary{background:var(--secondary-bg)!important;color:var(--secondary-fg)!important;border:1px solid var(--secondary-bd)!important;}
+</style>
+
+<div class="container-fluid py-3 px-2 px-sm-3 px-md-4 max-w-screen-xl mx-auto">
+
+    <!-- Header -->
+    <div class="hero rounded-3 p-3 p-sm-4 mb-3 d-flex align-items-center justify-content-between bg-gradient-to-r from-indigo-50 to-cyan-50" style="border-radius:12px;">
+        <div>
+            <h4 class="mb-1 fw-semibold text-slate-800 d-flex align-items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M12 20l9-5-9-5-9 5 9 5z"/><path d="M12 12l9-5-9-5-9 5 9 5z"/></svg>
+                @ViewData["Title"]
+            </h4>
+            <div class="text-secondary small d-flex flex-wrap gap-3 mt-1">
+                <span class="inline-flex align-items-center gap-1"><span class="text-slate-500">Sản phẩm:</span> <strong>@(product?.ShortDescription ?? "(không tên)")</strong></span>
+                <span class="inline-flex align-items-center gap-1"><span class="text-slate-500">ID:</span> <span>@(product?.ProductID)</span></span>
+                <span class="inline-flex align-items-center gap-1"><span class="text-slate-500">SKU:</span> <span>@(product?.SKU)</span></span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary inline-flex items-center gap-2"
+               asp-area="Admin" asp-controller="Product" asp-action="Detail" asp-route-id="@(product?.ProductID)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-600"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Chi tiết sản phẩm
+            </a>
+        </div>
+    </div>
+
+    <!-- Form tạo biến thể -->
+    <div class="card card-soft rounded-3 mb-3">
+        <div class="card-header d-flex align-items-center gap-2">
+            <span class="rounded bg-indigo-50 text-indigo-700 px-2 py-1 small">Form</span>
+            <strong>Nhập thông tin biến thể</strong>
+        </div>
+        <div class="card-body">
+            @if (TempData["Success"] is string okMsg)
+            {
+                <div class="alert alert-success">@okMsg</div>
+            }
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <form asp-area="Admin" asp-controller="Product" asp-action="CreateVariant" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ProductId" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="SKU" class="form-label d-flex align-items-center gap-2">
+                            <span class="rounded-circle bg-indigo-50 text-indigo-700 d-inline-flex align-items-center justify-content-center" style="width:22px;height:22px;">#</span>
+                            SKU
+                        </label>
+                        <input asp-for="SKU" class="form-control shadow-sm" placeholder="VD: XYZ-16GB-512" />
+                        <div class="form-text text-secondary">Mã định danh cho biến thể để tra cứu nhanh.</div>
+                        <span asp-validation-for="SKU" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="VariantName" class="form-label d-flex align-items-center gap-2">
+                            <span class="rounded-circle bg-indigo-50 text-indigo-700 d-inline-flex align-items-center justify-content-center" style="width:22px;height:22px;">Aa</span>
+                            Tên biến thể
+                        </label>
+                        <input asp-for="VariantName" class="form-control shadow-sm" placeholder="VD: 16GB/512GB, Đen" />
+                        <div class="form-text text-secondary">Tên hiển thị cho khách hàng (phân biệt các phiên bản).</div>
+                        <span asp-validation-for="VariantName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Status" class="form-label d-flex align-items-center gap-2">
+                            <span class="rounded-circle bg-green-50 text-green-700 d-inline-flex align-items-center justify-content-center" style="width:22px;height:22px;">✓</span>
+                            Trạng thái
+                        </label>
+                        <select asp-for="Status" asp-items="ViewBag.VariantStatusList" class="form-select shadow-sm"></select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Quantity" class="form-label d-flex align-items-center gap-2">
+                            <span class="rounded-circle bg-amber-50 text-amber-700 d-inline-flex align-items-center justify-content-center" style="width:22px;height:22px;">#</span>
+                            Số lượng
+                        </label>
+                        <input asp-for="Quantity" type="number" min="0" class="form-control shadow-sm" />
+                        <div class="form-text text-secondary">Tồn kho hiện tại cho biến thể này.</div>
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary inline-flex align-items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M19 21H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2z"/><rect x="8" y="11" width="8" height="6" rx="1"/></svg>
+                        Lưu biến thể
+                    </button>
+                    <button type="submit" name="continueAdd" value="1" class="btn btn-outline-primary inline-flex align-items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Lưu & thêm biến thể khác
+                    </button>
+                    <a asp-area="Admin" asp-controller="Product" asp-action="Detail" asp-route-id="@(product?.ProductID)" class="btn btn-light inline-flex align-items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-600"><polyline points="15 18 9 12 15 6"/></svg>
+                        Về chi tiết
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Danh sách biến thể hiện có -->
+    <div class="card card-soft rounded-3">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <span class="rounded bg-slate-100 text-slate-700 px-2 py-1 small">List</span>
+                <strong>Danh sách biến thể</strong>
+            </div>
+            <span class="badge bg-light text-secondary border">Tổng: @variantsCount</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 w-100" style="border-collapse:separate;border-spacing:0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-slate-600" style="width:90px;">ID</th>
+                        <th class="text-slate-600" style="width:200px;">SKU</th>
+                        <th class="text-slate-600" style="width:260px;">Tên biến thể</th>
+                        <th class="text-center text-slate-600" style="width:120px;">Số lượng</th>
+                        <th class="text-center text-slate-600" style="width:140px;">Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody class="text-slate-700">
+                    @if (!variants.Any())
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-4">Chưa có biến thể nào.</td></tr>
+                    }
+                    else
+                    {
+                        var __i = 0;
+                        foreach (var v in variants)
+                        {
+                            var rowClass = (__i % 2 == 0) ? "bg-white" : "bg-slate-50";
+                            __i++;
+                            <tr class="@rowClass hover:bg-indigo-50 transition-colors">
+                                <td class="py-2">@v.Id</td>
+                                <td class="text-truncate py-2" style="max-width:200px;" title="@v.SKU">@v.SKU</td>
+                                <td class="text-truncate py-2" style="max-width:260px;" title="@v.VariantName">@v.VariantName</td>
+                                <td class="text-center py-2">@v.Quantity</td>
+                                <td class="text-center py-2">
+                                    <span class="badge @(v.Status == VariantStatus.Active ? "bg-success" : "bg-secondary")">@v.Status</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script src="https://cdn.tailwindcss.com"></script>

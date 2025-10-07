@@ -4,7 +4,8 @@ namespace ComputerSales.Application.UseCaseDTO.ProductVariant_DTO
 {
     public sealed record ProductVariantOutput(
      string SKU,
-     VariantStatus Status, 
+     VariantStatus Status,
+     long ProductId,
      int Quantity,
      int Id,
      string VariantName);

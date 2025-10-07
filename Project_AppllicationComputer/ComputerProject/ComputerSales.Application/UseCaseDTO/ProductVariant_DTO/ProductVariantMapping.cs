@@ -20,7 +20,9 @@ namespace ComputerSales.Application.UseCaseDTO.ProductVariant_DTO
             return new ProductVariantOutput(
                 e.SKU, 
                 e.Status, 
+                (int)e.ProductId,
                 e.Quantity,
+                
                 e.Id,
                 e.VariantName
             );

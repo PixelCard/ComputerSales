@@ -1,0 +1,43 @@
+﻿@model ComputerSales.Application.UseCaseDTO.Category_DTO.CategoryOutput
+<script src="https://cdn.tailwindcss.com"></script>
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="mb-6 flex items-start justify-between">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-900">Chi tiết Category</h1>
+            <p class="text-sm text-gray-500 mt-1">Xem thông tin danh mục.</p>
+        </div>
+
+        <div class="flex gap-2">
+            <a asp-area="Admin" asp-controller="Category" asp-action="Edit" asp-route-id="@Model.id"
+               class="inline-flex items-center rounded-md bg-amber-500 px-3 py-2 text-sm font-medium text-white hover:bg-amber-400">
+                Sửa
+            </a>
+            <a asp-area="Admin" asp-controller="Category" asp-action="Delete" asp-route-id="@Model.id"
+               class="inline-flex items-center rounded-md bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-500">
+                Xoá
+            </a>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+        <div class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div class="text-sm font-medium text-gray-500">ID</div>
+            <div class="sm:col-span-2 text-sm text-gray-900">@Model.id</div>
+        </div>
+        <div class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div class="text-sm font-medium text-gray-500">Tên</div>
+            <div class="sm:col-span-2 text-sm text-gray-900">@Model.name</div>
+        </div>
+    </div>
+
+    <div class="mt-6">
+        <a asp-area="Admin" asp-controller="Category" asp-action="Index"
+           class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            ← Quay lại danh sách
+        </a>
+    </div>
+</div>

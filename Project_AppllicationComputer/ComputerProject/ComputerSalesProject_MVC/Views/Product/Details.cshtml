@@ -22,10 +22,10 @@
         <span class="text-gray-700 truncate" title="@Model.Title">@Model.Title</span>
     </nav>
 
-    <!-- ALWAYS 3 COLUMNS ON lg+ -->
+    <!-- 3 COLUMNS -->
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <!-- LEFT: Gallery (6/12) -->
+        <!-- LEFT: Gallery -->
         <div class="col-span-1 lg:col-span-6">
             <div class="bg-white rounded-2xl p-4 shadow">
                 <div class="aspect-[16/10] bg-white rounded-xl overflow-hidden flex items-center justify-center border">
@@ -33,19 +33,15 @@
                          src="@(Model.Images?.FirstOrDefault() ?? "/images/placeholder.svg")"
                          class="max-h-[70vh] w-auto object-contain" alt="@Model.Title" />
                 </div>
-
-                <!-- thumbnails để JS quản lý -->
                 <div id="thumbs" class="mt-3 flex flex-wrap gap-2"></div>
             </div>
         </div>
 
-        <!-- MIDDLE: Info/Bullets (3/12) -->
+        <!-- MIDDLE: Info -->
         <div class="col-span-1 lg:col-span-3">
             <div class="bg-white rounded-2xl p-4 sm:p-5 shadow">
-                <!-- brand + shop-all -->
                 <div class="flex items-center gap-2 mb-1">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/ASUS_Logo.svg"
-                         class="h-5 w-auto" alt="brand" />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/ASUS_Logo.svg" class="h-5 w-auto" alt="brand" />
                     <a class="text-blue-700 text-sm font-semibold hover:underline inline-flex items-center gap-1" href="#">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6a3 3 0 0 1 3-3h5l2 2h5a3 3 0 0 1 3 3v1H3V6Z" /><path d="M3 10h18v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7Z" /></svg>
                         Shop All ASUS ROG
@@ -53,6 +49,7 @@
                 </div>
 
                 <h1 class="text-2xl font-bold leading-snug">@Model.Title</h1>
+
                 @if (Model.Variants?.Any() == true)
                 {
                     <div class="mt-3">
@@ -62,9 +59,11 @@
                             {
                                 <button type="button"
                                         class="px-3 py-2 rounded-lg border text-sm bg-white
-                               hover:border-blue-500 hover:bg-blue-50 transition
-                               @(Model.VariantId == v.VariantId ? "border-blue-600 ring-2 ring-blue-200" : "border-gray-300")"
+                                               hover:border-blue-500 hover:bg-blue-50 transition
+                                               @(Model.VariantId == v.VariantId ? "border-blue-600 ring-2 ring-blue-200" : "border-gray-300")"
                                         data-variant-id="@v.VariantId"
+                                        data-variant-price="@v.Price"
+                                        data-variant-old-price="@(v.OldPrice?.ToString() ?? "")"
                                         onclick="selectVariant(this)">
                                     @v.SKU
                                 </button>
@@ -72,8 +71,34 @@
                         </div>
                     </div>
                 }
-                <!-- OptionValues render tại đây -->
-                <div id="optionsWrap" class="mt-4"></div>
+
+                <div id="optionsWrap" class="mt-4">
+                    @if (Model.OptionGroups?.Any() == true)
+                    {
+                        @foreach (var group in Model.OptionGroups)
+                        {
+                            <div class="mt-3">
+                                <div class="text-sm font-medium mb-1">@group.Name</div>
+                                <div class="flex gap-2 flex-wrap">
+                                    @foreach (var item in group.Items)
+                                    {
+                                        <button type="button"
+                                                class="px-3 py-1 border rounded-lg text-sm hover:bg-blue-50 transition
+                                                       @(item.Disabled ? "opacity-50 cursor-not-allowed text-gray-400 border-gray-300" : "border-gray-300")
+                                                       @(item.Selected ? "border-blue-600 bg-blue-50" : "")"
+                                                data-option-group="@group.Name"
+                                                data-option-label="@item.Label"
+                                                data-option-price="@item.Price"
+                                                title="@(item.Disabled ? "Chưa có phiên bản này" : "")"
+                                                onclick="@(item.Disabled ? "" : $"selectOption(this, '{group.Name}', '{item.Label}')")">
+                                            @item.Label
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
 
                 <div class="mt-2 text-sm text-gray-500 flex gap-2 flex-wrap">
                     <span>Item#: @Model.SKU</span>
@@ -83,23 +108,6 @@
                     }
                 </div>
 
-
-                <div class="mt-1 text-sm text-gray-500 flex items-center gap-3 flex-wrap">
-                    <span class="inline-flex items-center gap-1">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 2H7a2 2 0 0 0-2 2v16l7-3 7 3V4a2 2 0 0 0-2-2Z" /></svg>
-                        Item#: @Model.SKU
-                    </span>
-                    @if (!string.IsNullOrWhiteSpace(Model.VariantSku))
-                    {
-                        <span>• Variant: @Model.VariantSku</span>
-                    }
-                    <a class="text-blue-700 hover:underline inline-flex items-center gap-1" href="#">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M7 8a5 5 0 1 1 10 0c0 2.761-2.239 5-5 5H9l-2 2v-2a5 5 0 0 1-0-5Z" /></svg>
-                        Ask Or Answer A Question
-                    </a>
-                </div>
-
-                <!-- badge -->
                 <div class="mt-2 inline-flex items-center gap-2 text-xs text-blue-700">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87L18.18 22 12 18.77 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2Z" /></svg>
                     Recently Launched
@@ -107,7 +115,6 @@
 
                 <hr class="my-4" />
 
-                <!-- bullets -->
                 <ul class="space-y-2 text-[15px] text-gray-800 pl-1">
                     @if (bullets.Count > 0)
                     {
@@ -143,12 +150,11 @@
             }
         </div>
 
-        <!-- RIGHT: Price panel (3/12) -->
+        <!-- RIGHT: Price panel -->
         <aside class="col-span-1 lg:col-span-3">
             <div class="bg-white rounded-2xl p-4 sm:p-5 shadow sticky top-20">
-                <!-- Price -->
                 <div class="flex items-baseline gap-2">
-                    <div class="text-4xl font-extrabold text-gray-900 inline-flex items-baseline gap-1">
+                    <div id="currentPrice" class="text-4xl font-extrabold text-gray-900 inline-flex items-baseline gap-1">
                         <svg class="w-6 h-6 mt-1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1a2 2 0 0 1 2 2v1h1a3 3 0 0 1 0 6h-3v2h3a3 3 0 1 1 0 6h-1v1a2 2 0 1 1-4 0v-1H9a3 3 0 0 1 0-6h3v-2H9a3 3 0 0 1 0-6h1V3a2 2 0 0 1 2-2Z" /></svg>
                         @Model.Currency@Math.Truncate(Model.Price)
                         <span class="text-base align-super">
@@ -159,21 +165,29 @@
                             .@tail
                         </span>
                     </div>
+
                     @if (Model.OldPrice.HasValue && Model.OldPrice.Value > Model.Price)
                     {
-                        <div class="text-gray-400 line-through">
+                        <div id="oldPrice" class="text-gray-400 line-through">
                             @Model.Currency@Model.OldPrice.Value.ToString("0.##")
                         </div>
                     }
+                    else
+                    {
+                        <div id="oldPrice" style="display:none"></div>
+                    }
                 </div>
 
-                <!-- Financing -->
-                <div class="mt-2 text-xs text-gray-600">
+                <div class="mt-2 text-xs text-gray-600 financing-info">
                     Pay in 4 interest-free payments of
-                    <span class="font-semibold">@Model.Currency@((Model.Price / 4m))</span>
+                    <span class="font-semibold">@Model.Currency@(Math.Truncate((Model.Price / 4m)))</span>
+                    @{
+                        var finCents = ((Model.Price / 4m) - Math.Truncate((Model.Price / 4m)));
+                        var finTail = (finCents == 0 ? "00" : (finCents.ToString("0.##").Replace("0.", "")).PadRight(2, '0'));
+                    }
+                    .<span class="text-xs">@finTail</span>
                 </div>
 
-                <!-- Qty -->
                 <div class="mt-4 inline-flex items-center rounded-full border overflow-hidden">
                     <button class="w-9 h-9 grid place-items-center hover:bg-gray-50" onclick="chgQty(-1)" aria-label="Decrease">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M5 11h14v2H5z" /></svg>
@@ -184,7 +198,6 @@
                     </button>
                 </div>
 
-                <!-- CTAs -->
                 <button class="mt-4 w-full rounded-full bg-[#f7a928] hover:bg-[#e1981e] text-[#0b2f63] font-semibold py-3 inline-flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13L5.4 5M7 13l-2 7h2l2-7m8 0l2 7h2l-2-7" /></svg>
                     Add to cart
@@ -193,160 +206,197 @@
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6H8l-2-2H2v2h3l3.6 7.59-1.35 2.45A2 2 0 0 0 9 18h10v-2H9.42a.25.25 0 0 1-.22-.37L10 14h7a2 2 0 0 0 1.8-1.1l2.9-5.8V6Z" /></svg>
                     Add to PC build list
                 </button>
-
-                <!-- Shipping -->
-                <div class="mt-4 text-sm">
-                    <div class="text-green-600 font-semibold inline-flex items-center gap-2">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 7h11v7h-1.18A3 3 0 0 0 10 17a3 3 0 0 0-2.82-3H3V7Zm11 7h2a3 3 0 0 1 6 0h-1a2 2 0 0 0-4 0h-1Zm-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 2a2 2 0 1 0 4 0h-4Z" /></svg>
-                        Free Shipping
-                    </div>
-                    <div class="text-gray-600">Select delivery location</div>
-                </div>
-
-                <div class="my-4 h-px bg-gray-200"></div>
-
-                <!-- Tools -->
-                <div class="flex flex-wrap items-center gap-4 text-sm text-gray-700">
-                    <button class="hover:underline inline-flex items-center gap-1">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3H3v7h7V3Zm11 0h-7v7h7V3ZM10 14H3v7h7v-7Zm11 0h-7v7h7v-7Z" /></svg>
-                        Compare
-                    </button>
-                    <button class="hover:underline inline-flex items-center gap-1">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" /></svg>
-                        Price alert
-                    </button>
-                    <button class="hover:underline inline-flex items-center gap-1">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v2H4z" /><path d="M6 6h12l-1 14-5-3-5 3L6 6Z" /></svg>
-                        Report a listing
-                    </button>
-                </div>
-                <div class="mt-3 text-sm text-blue-700 inline-flex items-center gap-1">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-6-4.35-8.485-6.835A5.5 5.5 0 1 1 12 5.5a5.5 5.5 0 1 1 8.485 8.665C18 16.65 12 21 12 21Z" /></svg>
-                    Add to wish list
-                </div>
-
-                <div class="my-4 h-px bg-gray-200"></div>
-
-                <div class="text-xs text-gray-600 space-y-1">
-                    <div class="inline-flex items-center gap-1">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 7h18v10H3z" /><path d="M7 7V5h10v2" /></svg>
-                        Sold by <span class="font-semibold">Newegg</span>
-                    </div><br />
-                    <div class="inline-flex items-center gap-1">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-5l-3-3h-4V4H3v12h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h0Z" /></svg>
-                        Shipped by <span class="font-semibold">Newegg</span>
-                    </div>
-                </div>
             </div>
         </aside>
-
     </section>
 </main>
-
 <script>
-    // ============ chọn variant -> đổi ảnh + option ============
+    let currentVariantPrice = @Model.Price; // Giá variant cơ bản
+    let currentOldPrice = @Model.OldPrice ?? 0; // Giá cũ nếu có
+    let selectedOptions = {}; // { groupName: { label: price } } - lưu option đang chọn và giá
+
+    // chọn variant -> cập nhật giá tạm từ data-attrs, sau đó gọi API để chuẩn hóa
     async function selectVariant(btn){
         try{
             const id = btn.getAttribute('data-variant-id');
             if(!id) return;
 
+            // tạm thời update giá cho mượt
+            const p0 = parseFloat(btn.getAttribute('data-variant-price') || "0");
+            const o0 = btn.getAttribute('data-variant-old-price');
+            currentVariantPrice = p0;
+            currentOldPrice = o0 ? parseFloat(o0) : 0;
+            updatePrice(p0 + calculateOptionTotal(), o0, '@Model.Currency');
+
             const res = await fetch(`/product/variant-data/${id}`);
             if(!res.ok) return;
             const data = await res.json();
 
-            // ✅ đổi ảnh chính + thumbnails (hỗ trợ object {url, descriptionImg})
+            // Reset selected options khi đổi variant
+            selectedOptions = {};
+
+            // Ảnh
             if (data?.images?.length){
-                const first = typeof data.images[0] === 'string' ? data.images[0] : data.images[0].url;
-                document.getElementById('mainImg').src = first;
+                document.getElementById('mainImg').src = data.images[0];
                 renderThumbs(data.images);
             }
 
-            // đổi Variant SKU
+            // SKU biến thể
             const variantSkuSpan = document.getElementById('variantSku');
             if(variantSkuSpan && data?.variantSku){
                 variantSkuSpan.textContent = `• Variant: ${data.variantSku}`;
             }
 
-            // highlight nút đang chọn
+            // Highlight
             document.querySelectorAll('[data-variant-id]')
                 .forEach(b => b.classList.remove('border-blue-600','ring-2','ring-blue-200','bg-blue-50'));
             btn.classList.add('border-blue-600','ring-2','ring-blue-200','bg-blue-50');
 
-            // ✅ render option values (đã camelCase)
-            renderOptions(data.options);
+            // Options
+            renderOptionGroups(data.optionGroups, data.selectedOptions, data.availableValues);
+            // Giá từ API (đã áp quy tắc hết hạn/percent/final) + options
+            const apiPrice = data.price || p0;
+            const apiOldPrice = data.oldPrice || o0;
+            currentVariantPrice = apiPrice;
+            currentOldPrice = apiOldPrice ? parseFloat(apiOldPrice) : 0;
+            updatePrice(apiPrice + calculateOptionTotal(), apiOldPrice, data.currency || '@Model.Currency');
 
-        }catch(e){
-            console.error(e);
+        }catch(e){ console.error(e); }
+    }
+
+    // Chọn option -> cộng giá option vào total
+    function selectOption(btn, groupName, label) {
+        const price = parseFloat(btn.getAttribute('data-option-price') || '0');
+        const isCurrentlySelected = selectedOptions[groupName] && selectedOptions[groupName].label === label;
+
+        if (isCurrentlySelected) {
+            // Unselect nếu đã chọn
+            delete selectedOptions[groupName];
+        } else {
+            // Select mới (giả sử chỉ chọn 1 per group)
+            selectedOptions[groupName] = { label: label, price: price };
+        }
+
+        // Update highlight cho group
+        const groupButtons = btn.parentElement.querySelectorAll('button');
+        groupButtons.forEach(b => b.classList.remove('border-blue-600', 'bg-blue-50'));
+        if (!isCurrentlySelected) {
+            btn.classList.add('border-blue-600', 'bg-blue-50');
+        }
+
+        // Cập nhật giá total
+        const optionTotal = calculateOptionTotal();
+        updatePrice(currentVariantPrice + optionTotal, currentOldPrice > 0 ? currentOldPrice + optionTotal : null, '@Model.Currency');
+    }
+
+    // Tính tổng giá options đang chọn
+    function calculateOptionTotal() {
+        return Object.values(selectedOptions).reduce((sum, opt) => sum + (opt.price || 0), 0);
+    }
+
+    function updatePrice(price, oldPrice, currency){
+        const cur = currency || '@Model.Currency';
+        const el = document.getElementById('currentPrice');
+        const oldEl = document.getElementById('oldPrice');
+
+        const p = Number(price || 0);
+        const whole = Math.trunc(p);
+        const dec = (p - whole).toFixed(2).substring(2).padEnd(2, '0');
+
+        if(el){
+            el.innerHTML = `
+                <svg class="w-6 h-6 mt-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a2 2 0 0 1 2 2v1h1a3 3 0 0 1 0 6h-3v2h3a3 3 0 1 1 0 6h-1v1a2 2 0 1 1-4 0v-1H9a3 3 0 0 1 0-6h3v-2H9a3 3 0 0 1 0-6h1V3a2 2 0 0 1 2-2Z"/></svg>
+                ${cur}${whole}<span class="text-base align-super">.${dec}</span>`;
+        }
+
+        if(oldEl){
+            if(oldPrice && Number(oldPrice) > 0){
+                const oldP = Number(oldPrice);
+                const oldWhole = Math.trunc(oldP);
+                const oldDec = (oldP - oldWhole).toFixed(2).substring(2).padEnd(2, '0');
+                oldEl.innerHTML = `${cur}${oldWhole}.<span class="text-sm">${oldDec}</span>`;
+                oldEl.style.display = 'block';
+            } else {
+                oldEl.style.display = 'none';
+            }
+        }
+
+        const fin = document.querySelector('.financing-info');
+        if (fin) {
+            const finP = p / 4;
+            const finWhole = Math.trunc(finP);
+            const finDec = (finP - finWhole).toFixed(2).substring(2).padEnd(2, '0');
+            fin.innerHTML = `Pay in 4 interest-free payments of <span class="font-semibold">${cur}${finWhole}.<span class="text-xs">${finDec}</span></span>`;
         }
     }
 
-    // ===================== Render thumbnails =====================
     function renderThumbs(items){
         const wrap = document.getElementById('thumbs');
         if(!wrap) return;
         wrap.innerHTML = '';
 
-        items.forEach((it, idx) => {
-            const url = (typeof it === 'string') ? it : it.url;
-            const desc = (typeof it === 'string') ? ''  : (it.descriptionImg || '');
-
+        items.forEach((url, idx) => {
             const btn = document.createElement('button');
             btn.className = 'rounded-lg border border-gray-200 bg-white hover:border-blue-500 p-1';
-            btn.onclick = () => {
-                const main = document.getElementById('mainImg');
-                if(main){ main.src = url; }
-            };
+            btn.onclick = () => { const main = document.getElementById('mainImg'); if(main){ main.src = url; } };
 
             const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'thumb ' + idx;
+            img.src = url; img.alt = 'thumb ' + idx;
             img.className = 'w-20 h-14 object-cover rounded border border-gray-200';
 
             btn.appendChild(img);
-
-            // ✅ thêm mô tả (nếu có)
-            if (desc) {
-                const cap = document.createElement('div');
-                cap.className = 'mt-1 text-[11px] leading-snug text-gray-500 w-20';
-                cap.textContent = desc;
-                btn.appendChild(cap);
-            }
-
             wrap.appendChild(btn);
         });
     }
 
-    // ===================== Render OptionValues =====================
-    function renderOptions(options) {
+    function renderOptionGroups(groups, selected, availableValues) {
         const wrap = document.getElementById("optionsWrap");
         wrap.innerHTML = "";
+        if (!groups || !groups.length) return;
 
-        if (!options || !options.length) return;
-
-        const grouped = {};
-        options.forEach(o => {
-            const key = o.optionTypeName || o.OptionTypeName;  // phòng khi data cũ
-            const val = o.value || o.Value;
-            if (!grouped[key]) grouped[key] = [];
-            if (!grouped[key].includes(val)) grouped[key].push(val);
-        });
-
-        for (const type in grouped) {
+        groups.forEach(g => {
             const div = document.createElement("div");
             div.className = "mt-3";
-            div.innerHTML = `<div class="font-medium text-sm mb-1">${type}</div>`;
+            div.innerHTML = `<div class="font-medium text-sm mb-1">${g.name}</div>`;
 
             const list = document.createElement("div");
             list.className = "flex gap-2 flex-wrap";
 
-            grouped[type].forEach(val => {
+            (g.values || []).forEach(valObj => {
+                // Giả sử g.values là array of {label: string, price: number}
+                const val = valObj.label || valObj; // Backward compat nếu chỉ string
+                const price = valObj.price || 0;
                 const btn = document.createElement("button");
-                btn.className = "px-3 py-1 border rounded-lg text-sm hover:bg-blue-50";
+                btn.className = "px-3 py-1 border rounded-lg text-sm hover:bg-blue-50 transition border-gray-300";
                 btn.innerText = val;
+                btn.setAttribute('data-option-group', g.name);
+                btn.setAttribute('data-option-label', val);
+                btn.setAttribute('data-option-price', price.toString());
+
+                // highlight value đang được chọn của biến thể
+                const isSelected = selected && selected[g.name] === val;
+                if (isSelected) {
+                    btn.classList.add("border-blue-600", "bg-blue-50");
+                    selectedOptions[g.name] = { label: val, price: price };
+                }
+
+                // Disable nếu không available (chưa assign variant)
+                const availForType = availableValues?.[g.name] || [];
+                const isAvailable = availForType.includes(val);
+                if (!isAvailable) {
+                    btn.disabled = true;
+                    btn.classList.add("opacity-50", "cursor-not-allowed", "text-gray-400");
+                    btn.title = "Chưa có phiên bản này";
+                }
 
                 btn.onclick = () => {
-                    [...list.children].forEach(b => b.classList.remove("border-blue-600", "bg-blue-50"));
-                    btn.classList.add("border-blue-600", "bg-blue-50");
+                    if (btn.disabled) return;
+                    // chỉ highlight tại group hiện tại (không gọi API lọc biến thể ở đây)
+                    [...list.children].forEach(b => b.classList.remove("border-blue-600","bg-blue-50"));
+                    if (selectedOptions[g.name]?.label !== val) {
+                        btn.classList.add("border-blue-600", "bg-blue-50");
+                    }
+                    selectOption(btn, g.name, val);
                 };
 
                 list.appendChild(btn);
@@ -354,10 +404,10 @@
 
             div.appendChild(list);
             wrap.appendChild(div);
-        }
+        });
     }
 
-    // ===================== Auto-load variant đang được chọn khi mở trang =====================
+    // Auto-load variant đang chọn
     document.addEventListener("DOMContentLoaded", () => {
         const activeBtn =
             document.querySelector('[data-variant-id].ring-2') ||
@@ -365,14 +415,16 @@
             document.querySelector('[data-variant-id]');
 
         if (activeBtn) {
-            // Gọi luôn để lấy images (kèm description) & options mới nhất
             selectVariant(activeBtn);
         } else {
-            // Fallback: nếu không có variant button thì render từ Model.Images (chuỗi)
-            const initImages = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Images ?? new List<string>()));
-            if(initImages.length){
-                renderThumbs(initImages);
-            }
+            const initImages = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Images ?? new System.Collections.Generic.List<string>()));
+            if(initImages.length){ renderThumbs(initImages); }
         }
     });
+
+    function chgQty(delta){
+        const el = document.getElementById('qty');
+        const v = Math.max(1, (parseInt(el.value || "1") || 1) + delta);
+        el.value = v;
+    }
 </script>
