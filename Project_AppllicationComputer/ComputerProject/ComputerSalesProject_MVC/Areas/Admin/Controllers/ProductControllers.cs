@@ -3,11 +3,15 @@ using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCaseDTO.Product_DTO;
 using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO;
 using ComputerSales.Domain.Entity.EProduct; // ProductStatus
+using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence; // AppDbContext
 using ComputerSalesProject_MVC.Areas.Admin.Models;
+using ComputerSalesProject_MVC.Areas.Admin.Models.NewFolder;
+using ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using System.ComponentModel.DataAnnotations;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
@@ -26,6 +30,9 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             _createUC = createUC;
             _createVariantUC = createVariantUC;
         }
+
+
+        // Index hiển thị danh sách sản phẩm 
         [HttpGet]
         public async Task<IActionResult> Index(string? q, string? status, int page = 1, int pageSize = 20, CancellationToken ct = default)
         {
@@ -105,7 +112,6 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             return View(); // @model ProductDTOInput
         }
 
-        // POST /Admin/Product/Create (tạo qua form)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductDTOInput input, CancellationToken ct)
@@ -118,14 +124,16 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 
             try
             {
-                // Gọi thẳng UseCase, không chỉnh DTO/UC
                 ProductOutputDTOcs output = await _createUC.HandleAsync(input, ct);
 
                 TempData["Success"] = "Tạo sản phẩm thành công.";
-                // sau khi _createUC.HandleAsync(...) trả về output.ProductID
-                return RedirectToAction(nameof(CreateVariant), new { productId = output.ProductID });
 
-                return View(output);
+                // 🔥 Chuyển sang trang Index của ProductVariant kèm productId
+                return RedirectToAction(
+                    actionName: "Index",
+                    controllerName: "ProductVariant",
+                    routeValues: new { area = "Admin", productId = output.ProductID }
+                );
             }
             catch (ValidationException ex)
             {
@@ -139,6 +147,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             await LoadLookupsAsync(ct);
             return View(input);
         }
+
         [HttpGet]
         public async Task<IActionResult> CreateVariant(long productId, CancellationToken ct)
         {
@@ -231,6 +240,212 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             return View(input);
         }
 
+        //============================= Product Details =============================//
+        [HttpGet]
+        public async Task<IActionResult> ProductDetails(long id, CancellationToken ct)
+        {
+            var product = await _db.Set<Product>()
+                .AsNoTracking()
+                .Include(p => p.Provider)
+                .Include(p => p.Accessories)
+                .Include(p => p.ProductVariants)
+                .FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
 
+            if (product is null)
+                return NotFound();
+
+            // Chuẩn hóa sang ViewModel để hiển thị
+            var vm = new ProductDetailsVM
+            {
+                ProductID = product.ProductID,
+                ShortDescription = product.ShortDescription,
+                SKU = product.SKU,
+                Slug = product.Slug,
+                Status = product.Status,
+                ProviderName = product.Provider?.ProviderName ?? "(N/A)",
+                AccessoriesName = product.Accessories?.Name ?? "(N/A)",
+                Variants = product.ProductVariants
+                    .OrderByDescending(v => v.Id)
+                    .Select(v => new ProductVariantDetailVM
+                    {
+                        Id = v.Id,
+                        SKU = v.SKU,
+                        ProductId = v.ProductId,
+                        VariantName = v.VariantName,
+                        Quantity = v.Quantity,
+                        Status = v.Status
+                    })
+                    .ToList()
+            };
+
+            return View(vm);
+        }
+        //=================== Edit Product  ========================//
+        // GET: /Admin/Product/Edit/5
+        [HttpGet]
+        public async Task<IActionResult> UpdateProduct(long id, CancellationToken ct)
+        {
+            var product = await _db.Set<Product>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
+
+            if (product == null) return NotFound();
+
+            // map sang DTO input để hiển thị trong form
+            var input = new ProductDTOInput(
+                ShortDescription: product.ShortDescription,
+                Status: (int)product.Status,
+                AccessoriesID: product.AccessoriesID,
+                ProviderID: product.ProviderID,
+                Slug: product.Slug,
+                SKU: product.SKU
+            );
+
+            ViewBag.ProductId = product.ProductID;
+            await LoadLookupsAsync(ct);
+            return View(input);
+        }
+
+        // POST: /Admin/Product/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProduct(long id, ProductDTOInput input, CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ProductId = id;
+                await LoadLookupsAsync(ct);
+                return View(input);
+            }
+
+            var product = await _db.Set<Product>().FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
+            if (product == null) return NotFound();
+
+            try
+            {
+                product.ShortDescription = input.ShortDescription;
+                product.Status = (ProductStatus)input.Status;
+                product.AccessoriesID = input.AccessoriesID;
+                product.ProviderID = input.ProviderID;
+                product.Slug = input.Slug;
+                product.SKU = input.SKU;
+
+                _db.Update(product);
+                await _db.SaveChangesAsync(ct);
+
+                TempData["Success"] = "Cập nhật sản phẩm thành công.";
+                return RedirectToAction(nameof(ProductDetails), new { id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Lỗi: {ex.Message}");
+                await LoadLookupsAsync(ct);
+                return View(input);
+            }
+        }
+        //=========================================================================================//
+        // GET: /Admin/Product/Delete/5
+        [HttpGet]
+        public async Task<IActionResult> DeleteProduct(long id, CancellationToken ct)
+        {
+            var product = await _db.Set<Product>()
+                .AsNoTracking()
+                .Include(p => p.Provider)
+                .Include(p => p.Accessories)
+                .FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
+
+            if (product == null) return NotFound();
+
+            var vm = new ProductDetailsVM
+            {
+                ProductID = product.ProductID,
+                ShortDescription = product.ShortDescription,
+                SKU = product.SKU,
+                Slug = product.Slug,
+                Status = product.Status,
+                ProviderName = product.Provider?.ProviderName ?? "(N/A)",
+                AccessoriesName = product.Accessories?.Name ?? "(N/A)"
+            };
+
+            return View(vm); // hiển thị confirm "Bạn có chắc muốn xóa không?"
+        }
+
+        // POST: /Admin/Product/DeleteConfirmed/5
+        [HttpPost, ActionName("DeleteConfirmed")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(long id, CancellationToken ct)
+        {
+            var product = await _db.Set<Product>().FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
+            if (product == null) return NotFound();
+
+            try
+            {
+                // soft delete
+                product.IsDeleted = true;
+                _db.Update(product);
+                await _db.SaveChangesAsync(ct);
+
+                TempData["Success"] = "Sản phẩm đã được xóa (soft delete).";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Lỗi khi xóa: {ex.Message}";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
+        }
+
+
+private static bool IsExpired(VariantPrice p, DateTime nowUtc)
+    {
+        if (p == null) return true;
+
+        // Hết hạn khi: chưa đến ValidFrom, hoặc đã qua ValidTo, hoặc Inactive
+        if (p.Status != PriceStatus.Active) return true;
+        if (p.ValidFrom.HasValue && p.ValidFrom.Value > nowUtc) return true;
+        if (p.ValidTo.HasValue && p.ValidTo.Value < nowUtc) return true;
+
+        return false;
     }
+
+    private static decimal EffectiveDiscount(VariantPrice p, DateTime nowUtc)
+    {
+        // Nếu hết hạn → discount = 0
+        return IsExpired(p, nowUtc) ? 0m : (p.DiscountPrice <= 0m ? 0m : p.DiscountPrice);
+    }
+
+    /// <summary>
+    /// Tính giá hiển thị theo quy tắc:
+    /// - Discount 0..100 => % khuyến mãi (price - price * %/100)
+    /// - Discount > 100  => là giá đã giảm (final price)
+    /// - Hết hạn / Inactive => discount = 0 (dùng giá gốc)
+    /// </summary>
+    private static (decimal price, decimal? old, string currency) ResolveDisplayPrice(VariantPrice? row, DateTime? nowUtc = null)
+    {
+        if (row == null) return (0m, null, "VND");
+
+        var now = nowUtc ?? DateTime.UtcNow;
+        var discount = EffectiveDiscount(row, now);  // <-- dùng hàm trên
+        var currency = string.IsNullOrWhiteSpace(row.Currency) ? "VND" : row.Currency;
+
+        if (discount <= 0m)
+            return (row.Price, null, currency);
+
+        if (discount <= 100m)
+        {
+            var final = Math.Round(row.Price * (1m - (discount / 100m)), 2, MidpointRounding.AwayFromZero);
+            return (final, row.Price, currency);
+        }
+
+        // discount > 100 => discount là "giá sau giảm"
+        var price = discount;
+        var old = row.Price > price ? row.Price : (decimal?)null;
+        return (price, old, currency);
+    }
+
+
+
+
+
+}
 }

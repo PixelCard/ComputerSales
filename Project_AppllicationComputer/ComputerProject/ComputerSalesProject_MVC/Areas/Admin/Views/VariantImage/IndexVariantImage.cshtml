@@ -1,0 +1,42 @@
+﻿@model IEnumerable<ComputerSales.Application.UseCaseDTO.VariantImage.VariantImageOutputDTO>
+@{
+    ViewData["Title"] = "Danh sách ảnh biến thể";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-4xl mx-auto py-8">
+    <h2 class="text-2xl font-bold text-blue-600 mb-6">Danh sách ảnh của biến thể</h2>
+
+    <a asp-action="CreateVariantImage" asp-route-variantId="@ViewBag.VariantId"
+       class="mb-4 inline-block px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">➕ Thêm ảnh</a>
+
+    <table class="w-full border border-gray-200 shadow-sm rounded-lg">
+        <thead class="bg-gray-100 text-left">
+            <tr>
+                <th class="px-4 py-2">Ảnh</th>
+                <th class="px-4 py-2">Mô tả</th>
+                <th class="px-4 py-2">Sort Order</th>
+                <th class="px-4 py-2">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="border-t">
+                    <td class="px-4 py-2">
+                        <img src="@item.Url" alt="@item.DescriptionImg" class="w-24 h-24 object-cover rounded" />
+                    </td>
+                    <td class="px-4 py-2">@item.DescriptionImg</td>
+                    <td class="px-4 py-2">@item.SortOrder</td>
+                    <td class="px-4 py-2 space-x-2">
+                        <a asp-action="UpdateVariantImage" asp-route-id="@item.Id"
+                           class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">✏ Sửa</a>
+                        <a asp-action="DeleteVariantImage" asp-route-id="@item.Id"
+                           class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                           onclick="return confirm('Bạn có chắc muốn xóa ảnh này không?');">🗑 Xóa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

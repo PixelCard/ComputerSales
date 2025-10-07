@@ -1,0 +1,281 @@
+﻿@model ComputerSales.Application.UseCaseDTO.Account_DTO.AccountOutputDTO
+@using ComputerSales.Application.UseCaseDTO.Customer_DTO
+
+@{
+    ViewData["Title"] = "Chi tiết tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var cust = ViewBag.Customer as CustomerOutputDTO; // có thể null
+}
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Chi tiết tài khoản</h1>
+                    <p class="text-gray-600">Thông tin chi tiết về tài khoản và khách hàng liên kết</p>
+                </div>
+                <a asp-action="Index" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Quay lại danh sách
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- ACCOUNT BLOCK -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Account Header -->
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                    <div class="flex items-center">
+                        <div class="bg-white/20 rounded-lg p-2 mr-3">
+                            <i class="fas fa-user-circle text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-white">Thông tin tài khoản</h2>
+                            <p class="text-blue-100 text-sm">Chi tiết đăng nhập và phân quyền</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Content -->
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-id-badge text-blue-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <dt class="text-sm font-medium text-gray-500">ID Tài khoản</dt>
+                                <dd class="text-lg font-semibold text-gray-900">#@Model.IDAccount</dd>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-envelope text-green-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <dt class="text-sm font-medium text-gray-500">Email đăng nhập</dt>
+                                <dd class="text-lg font-semibold text-gray-900">@Model.Email</dd>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-key text-purple-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <dt class="text-sm font-medium text-gray-500">ID Vai trò</dt>
+                                <dd class="text-lg font-semibold text-gray-900">#@Model.IDRole</dd>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                <i class="fas fa-user-tag text-orange-600 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <dt class="text-sm font-medium text-gray-500">Tên vai trò</dt>
+                                <dd class="text-lg font-semibold text-gray-900">@Model.TenRole</dd>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Note -->
+                    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mr-2 mt-1"></i>
+                            <div>
+                                <h4 class="text-sm font-semibold text-blue-800 mb-1">Ghi chú về tài khoản</h4>
+                                <p class="text-sm text-blue-700">
+                                    Tài khoản này được sử dụng để đăng nhập vào hệ thống. 
+                                    Vai trò quyết định các quyền truy cập và chức năng có thể sử dụng.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CUSTOMER BLOCK -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Customer Header -->
+                <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-white/20 rounded-lg p-2 mr-3">
+                                <i class="fas fa-users text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold text-white">Thông tin khách hàng</h2>
+                                <p class="text-emerald-100 text-sm">Chi tiết cá nhân và liên hệ</p>
+                            </div>
+                        </div>
+                        @if (cust == null)
+                        {
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="Create" 
+                               class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-semibold">
+                                <i class="fas fa-plus mr-1"></i>
+                                Tạo Customer
+                            </a>
+                        }
+                    </div>
+                </div>
+
+                <!-- Customer Content -->
+                <div class="p-6">
+                    @if (cust == null)
+                    {
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user-plus text-gray-400 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Chưa có thông tin khách hàng</h3>
+                            <p class="text-gray-600 mb-6">Tài khoản này chưa được liên kết với thông tin khách hàng nào.</p>
+                            
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="Create" 
+                               class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-semibold">
+                                <i class="fas fa-plus mr-2"></i>
+                                Tạo thông tin khách hàng
+                            </a>
+                        </div>
+                        
+                        <!-- Customer Note when empty -->
+                        <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-amber-500 mr-2 mt-1"></i>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-amber-800 mb-1">Lưu ý về khách hàng</h4>
+                                    <p class="text-sm text-amber-700">
+                                        Để hoàn thiện hồ sơ, cần tạo thông tin khách hàng bao gồm: 
+                                        họ tên, số điện thoại, địa chỉ và các thông tin cá nhân khác.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Avatar -->
+                            <div class="md:col-span-1">
+                                @if (!string.IsNullOrWhiteSpace(cust.IMG))
+                                {
+                                    <div class="relative">
+                                        <img src="@cust.IMG" alt="Avatar" 
+                                             class="w-full aspect-square object-cover rounded-xl border-4 border-emerald-100" />
+                                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-sm"></i>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="w-full aspect-square bg-gray-100 rounded-xl border-4 border-gray-200 flex flex-col items-center justify-center">
+                                        <i class="fas fa-user text-gray-400 text-4xl mb-2"></i>
+                                        <span class="text-gray-500 text-sm">Chưa có ảnh</span>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Customer Details -->
+                            <div class="md:col-span-2 space-y-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-id-card text-emerald-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">ID Khách hàng</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">#@cust.IDCustomer</dd>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-user text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Họ và tên</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.Name</dd>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-phone text-purple-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Số điện thoại</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.sdt</dd>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-map-marker-alt text-orange-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Địa chỉ</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.address</dd>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-calendar text-pink-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Ngày tạo</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.Date.ToString("dd/MM/yyyy")</dd>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(cust.Description))
+                        {
+                            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-2">
+                                    <i class="fas fa-sticky-note text-gray-600 mr-2"></i>
+                                    Ghi chú
+                                </h4>
+                                <p class="text-gray-700">@cust.Description</p>
+                            </div>
+                        }
+
+                        <!-- Action Buttons -->
+                        <div class="mt-6 flex flex-wrap gap-3">
+
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="EditCustomer" asp-route-id="@cust.IDCustomer"
+                               class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg">
+                                <i class="fas fa-edit mr-2"></i> Chỉnh sửa
+                            </a>
+
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="Delete" asp-route-id="@cust.IDCustomer" 
+                               class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-semibold">
+                                <i class="fas fa-trash mr-2"></i>
+                                Xóa
+                            </a>
+                        </div>
+
+                        <!-- Customer Note when exists -->
+                        <div class="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-emerald-500 mr-2 mt-1"></i>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-emerald-800 mb-1">Thông tin khách hàng</h4>
+                                    <p class="text-sm text-emerald-700">
+                                        Khách hàng này đã được liên kết với tài khoản. 
+                                        Có thể quản lý đơn hàng, lịch sử mua hàng và thông tin cá nhân.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

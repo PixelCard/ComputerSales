@@ -16,7 +16,7 @@ namespace API_ComputerProject.Controllers
         private readonly GetProduct_UC _get;
         private readonly UpdateProduct_UC _update;
 
-        public ProductsController(CreateProduct_UC create,DeleteProduct_UC delete,UpdateProduct_UC update,GetProduct_UC getProduct)
+        public ProductsController(CreateProduct_UC create, DeleteProduct_UC delete, UpdateProduct_UC update, GetProduct_UC getProduct)
         {
             _create = create;
             _delete = delete;

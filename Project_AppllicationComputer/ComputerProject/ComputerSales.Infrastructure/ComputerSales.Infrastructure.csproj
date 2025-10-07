@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\NewFolder\" />
     <Folder Include="Repositories\Product_Respo\" />
     <Folder Include="Repositories\UnitOfWork\" />
   </ItemGroup>

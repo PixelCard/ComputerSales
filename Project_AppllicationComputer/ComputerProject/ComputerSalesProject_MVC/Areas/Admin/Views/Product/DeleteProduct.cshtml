@@ -1,0 +1,32 @@
+﻿@model ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM.ProductDetailsVM
+
+@{
+    ViewData["Title"] = "Xóa sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-2xl mx-auto py-8">
+    <div class="bg-white shadow rounded-xl p-6">
+        <h1 class="text-2xl font-bold text-red-600 mb-4">Xóa sản phẩm</h1>
+        <p class="mb-4">Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+
+        <dl class="space-y-2">
+            <dt class="font-semibold">Tên sản phẩm:</dt>
+            <dd>@Model.ShortDescription</dd>
+            <dt class="font-semibold">Mã (ID):</dt>
+            <dd>@Model.ProductID</dd>
+            <dt class="font-semibold">SKU:</dt>
+            <dd>@Model.SKU</dd>
+        </dl>
+
+        <form asp-action="DeleteConfirmed" asp-route-id="@Model.ProductID" method="post" class="mt-6">
+            <button type="submit"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                Xác nhận xóa
+            </button>
+            <a asp-action="ProductDetails" asp-route-id="@Model.ProductID" class="ml-2 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                Hủy
+            </a>
+        </form>
+    </div>
+</div>

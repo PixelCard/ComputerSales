@@ -1,0 +1,301 @@
+﻿@model ComputerSales.Application.UseCaseDTO.VariantPrice_DTO.VariantPriceInput_Output.VariantPriceOutputDTO
+
+@{
+    ViewData["Title"] = "Xóa giá biến thể";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-rose-50">
+    <!-- Header Section -->
+    <div class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl shadow-lg">
+                        <i class="fas fa-trash-alt text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Xóa thông tin giá</h1>
+                        <p class="text-gray-600 mt-1">Xác nhận xóa thông tin giá biến thể</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a asp-action="IndexVariantPrice" asp-route-variantId="@Model.VariantId"
+                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white text-sm font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg">
+                        <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Warning Alert -->
+        <div class="bg-gradient-to-r from-red-100 to-pink-100 border border-red-300 rounded-2xl p-6 mb-8">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-red-200 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-red-900">Cảnh báo!</h3>
+                    <p class="text-red-800 mt-1">
+                        Bạn đang thực hiện xóa thông tin giá. Hành động này không thể hoàn tác và sẽ ảnh hưởng đến việc
+                        hiển thị sản phẩm trên website.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Price Information Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+            <!-- Card Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-700">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <i class="fas fa-info-circle mr-3"></i>
+                    Thông tin giá sẽ bị xóa
+                </h2>
+            </div>
+
+            <!-- Price Details -->
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Currency -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-blue-800 mb-1">Đơn vị tiền tệ</p>
+                                <p class="text-2xl font-bold text-blue-900">@Model.Currency</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-coins text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Original Price -->
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-green-800 mb-1">Giá gốc</p>
+                                <p class="text-2xl font-bold text-green-900">@Model.Price.ToString("N0")</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-money-bill text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Discount Price -->
+                    <div class="bg-gradient-to-r from-red-50 to-pink-50 p-6 rounded-xl border border-red-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-semibold text-red-800 mb-1">Giá khuyến mãi</p>
+                                <p class="text-2xl font-bold text-red-900">@Model.DiscountPrice.ToString("N0")</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-percentage text-red-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status and Validity -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <!-- Status -->
+                    <div class="bg-gradient-to-r from-purple-50 to-violet-50 p-6 rounded-xl border border-purple-100">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-info-circle text-purple-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-purple-800 mb-1">Trạng thái</p>
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                    @Model.Status
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validity Period -->
+                    <div class="bg-gradient-to-r from-teal-50 to-cyan-50 p-6 rounded-xl border border-teal-100">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calendar-alt text-teal-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-teal-800 mb-1">Thời gian hiệu lực</p>
+                                <p class="text-lg font-bold text-teal-900">
+                                    @(Model.ValidFrom?.ToString("dd/MM/yyyy") ?? "N/A") -
+                                    @(Model.ValidTo?.ToString("dd/MM/yyyy") ?? "N/A")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consequences Card -->
+        <div class="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl p-6 border border-orange-200 mb-8">
+            <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation-circle text-orange-600"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-orange-900 mb-2">Hậu quả khi xóa</h3>
+                    <ul class="text-orange-800 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-times-circle text-red-500 mr-2"></i>Sản phẩm sẽ
+                            không hiển thị giá trên website</li>
+                        <li class="flex items-center"><i class="fas fa-times-circle text-red-500 mr-2"></i>Khách hàng
+                            không thể mua sản phẩm này</li>
+                        <li class="flex items-center"><i class="fas fa-times-circle text-red-500 mr-2"></i>Tất cả thông
+                            tin giá sẽ bị mất vĩnh viễn</li>
+                        <li class="flex items-center"><i class="fas fa-info-circle text-blue-500 mr-2"></i>Cần tạo lại
+                            thông tin giá để kích hoạt bán hàng</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Form -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <!-- Card Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-red-500 to-pink-600">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <i class="fas fa-shield-alt mr-3"></i>
+                    Xác nhận xóa
+                </h2>
+            </div>
+
+            <!-- Form Content -->
+            <div class="p-8">
+                <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Confirmation Checkbox -->
+                    <div class="mb-6">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" id="confirmDelete"
+                                class="w-5 h-5 text-red-600 border-2 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
+                                required>
+                            <span class="text-gray-700 font-medium">
+                                Tôi hiểu rằng hành động này không thể hoàn tác và đồng ý xóa thông tin giá này
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                        <button type="submit" id="deleteButton" disabled
+                            onclick="return confirm('Bạn có chắc chắn muốn xóa thông tin giá này? Hành động này không thể hoàn tác!');"
+                            class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-500 to-pink-600 text-white font-semibold rounded-xl hover:from-red-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                            <i class="fas fa-trash-alt mr-3"></i>Xác nhận xóa
+                        </button>
+
+                        <a asp-action="IndexVariantPrice" asp-route-variantId="@Model.VariantId"
+                            class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-semibold rounded-xl hover:from-gray-600 hover:to-gray-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-times mr-3"></i>Hủy bỏ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom JavaScript for enhanced interactions -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Enable/disable delete button based on checkbox
+        const confirmCheckbox = document.getElementById('confirmDelete');
+        const deleteButton = document.getElementById('deleteButton');
+
+        confirmCheckbox.addEventListener('change', function () {
+            deleteButton.disabled = !this.checked;
+            if (this.checked) {
+                deleteButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                deleteButton.classList.add('hover:scale-105');
+            } else {
+                deleteButton.classList.add('opacity-50', 'cursor-not-allowed');
+                deleteButton.classList.remove('hover:scale-105');
+            }
+        });
+
+        // Form submission enhancement
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (e) {
+            if (!confirmCheckbox.checked) {
+                e.preventDefault();
+                alert('Vui lòng xác nhận bằng cách tích vào ô checkbox!');
+                return;
+            }
+
+            const submitBtn = deleteButton;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Đang xóa...';
+            submitBtn.disabled = true;
+        });
+
+        // Add ripple effect to buttons
+        const buttons = document.querySelectorAll('button, a');
+        buttons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                if (this.disabled) return;
+
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add hover animations to cards
+        const cards = document.querySelectorAll('.bg-gradient-to-r');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-2px)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+
+    // Add ripple effect CSS
+    const style = document.createElement('style');
+    style.textContent = `
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        transform: scale(0);
+        animation: ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+    
+    keyframes ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+    document.head.appendChild(style);
+</script>

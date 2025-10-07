@@ -1,0 +1,55 @@
+﻿@model ComputerSales.Application.UseCaseDTO.ProductVariant_DTO.UpdateDTO.UpdateDTO_ProductVariant
+
+@{
+    ViewData["Title"] = "Cập nhật biến thể";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-3xl mx-auto py-8">
+    <h2 class="text-2xl font-bold mb-6 text-yellow-600">Cập nhật biến thể</h2>
+
+    <form asp-action="UpdateProductVariant" asp-route-id="@Model.Id" method="post">
+
+        <div asp-validation-summary="All" class="text-red-600"></div>
+
+        @Html.AntiForgeryToken()
+
+        <!-- Hidden giữ Id và ProductId -->
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ProductId" />
+
+        <div class="mb-4">
+            <label asp-for="SKU" class="block font-medium text-gray-700"></label>
+            <input asp-for="SKU" class="mt-1 block w-full border rounded-lg px-3 py-2" />
+            <span asp-validation-for="SKU" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="VariantName" class="block font-medium text-gray-700"></label>
+            <input asp-for="VariantName" class="mt-1 block w-full border rounded-lg px-3 py-2" />
+            <span asp-validation-for="VariantName" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Quantity" class="block font-medium text-gray-700"></label>
+            <input asp-for="Quantity" type="number" class="mt-1 block w-full border rounded-lg px-3 py-2" />
+            <span asp-validation-for="Quantity" class="text-red-500"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Status" class="block font-medium text-gray-700"></label>
+            <select asp-for="Status" asp-items="ViewBag.VariantStatusList" class="mt-1 block w-full border rounded-lg px-3 py-2"></select>
+            <span asp-validation-for="Status" class="text-red-500"></span>
+        </div>
+
+        <div class="flex space-x-3">
+            <button type="submit" class="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg hover:from-yellow-600 hover:to-orange-700">
+                💾 Lưu thay đổi
+            </button>
+            <a asp-action="Index" asp-route-productId="@Model.ProductId"
+               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                ⬅ Quay lại
+            </a>
+        </div>
+    </form>
+</div>
