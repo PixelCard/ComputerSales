@@ -5,24 +5,27 @@ using ComputerSales.Application.Payment.VNPAY.Entity;
 using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
 using ComputerSales.Application.UseCase.Customer_UC;
+using ComputerSales.Application.UseCase.Order_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.GetAccountByID;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO.getCustomerByUserID;
 using ComputerSales.Application.UseCaseDTO.Order_DTO;
+using ComputerSales.Application.UseCaseDTO.Order_DTO.GetOrderByID;
 using ComputerSales.Application.UseCaseDTO.VNPAYMENT_DTO;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Security.Claims;
 
 namespace ComputerSalesProject_MVC.Controllers
 {
-   public class OrderController : Controller
+    public class OrderController : Controller
    {
             private readonly getCustomerByUserID getCustomerByUserID;
 
             private readonly GetAccount_UC getAccount_UC;
 
             private readonly IVnPayService _vnPayService;
+
+            private readonly GetOrderByID_UC getOrderByID_UC;
 
             private readonly IOrderFromCart _addOrder;
 
@@ -36,7 +39,8 @@ namespace ComputerSalesProject_MVC.Controllers
                 GetAccount_UC getAccount_UC,
                 IOrderFromCart _addOrder,
                 IVnPayService _vnPayService,
-                IVnPaySessionService _vnPaySession)
+                IVnPaySessionService _vnPaySession,
+                GetOrderByID_UC getOrderByID_UC)
             {
                 this.getCustomerByUserID = getCustomerByUserID;
                 this.getCartPageQueryHandler = getCartPageQueryHandler;
@@ -44,6 +48,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 this._addOrder = _addOrder;
                 this._vnPayService= _vnPayService;
                 this._vnPaySession = _vnPaySession;
+            this.getOrderByID_UC = getOrderByID_UC;
             }
 
             public async Task<IActionResult> OrderHome(CancellationToken ct)
@@ -163,55 +168,61 @@ namespace ComputerSalesProject_MVC.Controllers
                 return RedirectToAction(nameof(Success), new { id = orderId });
             }
 
-            [HttpGet]
-            public IActionResult Success(int id) => View(model: id);
+            [HttpGet("Success/{id:long}")]
+            public async Task<IActionResult> Success(int id,CancellationToken ct)
+            {
+                    var order = await getOrderByID_UC.HandleAsync(new InputGetOrderByID(id),ct);
+                    return View(order);
+            }
 
             [HttpGet]
             public IActionResult Failed(PaymentVNPAY_Response response) => View(model: response);
 
 
-            [HttpGet]
-            public async Task<IActionResult> PaymentCallbackVnpay(CancellationToken ct)
+        [HttpGet]
+        public async Task<IActionResult> PaymentCallbackVnpay(CancellationToken ct)
+        {
+            var resp = _vnPayService.PaymentExecute(Request.Query);
+            var ok = resp.VnPayResponseCode == "0" || resp.VnPayResponseCode == "00";
+            if (!ok) return View("Failed", resp);
+
+            var txnRef = resp.OrderId; // "000000000123" (chuỗi số)
+            var session = await _vnPaySession.GetByTxnRefAsync(txnRef, ct);
+            if (session == null) return View("Failed", "SESSION_NOT_FOUND");
+
+            if (session.Status == "Completed" && session.OrderId.HasValue)
+                return RedirectToAction(nameof(Success), new { id = session.OrderId.Value });
+
+            // tạo Order
+            var customer = await getCustomerByUserID.HandleAsync(new CustomerGetCustomerByUserID_Request(session.UserId), ct);
+            var account = await getAccount_UC.HandleAsync(new getAccountByID(session.UserId), ct);
+
+            var newOrderId = await _addOrder.CreateFromCartAsync(
+                session.UserId,
+                customer?.Name ?? "Khách hàng",
+                customer?.sdt ?? "",
+                account?.Email,
+                customer?.address ?? "",
+                null,
+                PaymentKind.VNPAY,
+                ct
+            );
+
+            await _addOrder.MarkPaidAsync(newOrderId, PaymentKind.VNPAY, resp.TransactionId, resp.VnPayResponseCode, ct);
+
+            await _vnPaySession.CompleteAsync(txnRef, newOrderId, new VnPayCallbackDataDTO
             {
-                var resp = _vnPayService.PaymentExecute(Request.Query);
-                var ok = resp.VnPayResponseCode == "0" || resp.VnPayResponseCode == "00";
-                if (!ok) return View("Failed", resp);
+                TransactionId = resp.TransactionId,
+                ResponseCode = resp.VnPayResponseCode,
+                Amount = session.Amount // hoặc bóc vnp_Amount từ query để log
+            }, ct);
 
-                var txnRef = resp.OrderId; // "000000000123" (chuỗi số)
-                var session = await _vnPaySession.GetByTxnRefAsync(txnRef, ct);
-                if (session == null) return View("Failed", "SESSION_NOT_FOUND");
+            // Bạn có thể render TxnRef (số) ra GUI nếu muốn
+            TempData["TxnRef"] = txnRef;
 
-                if (session.Status == "Completed" && session.OrderId.HasValue)
-                    return RedirectToAction(nameof(Success), new { id = session.OrderId.Value });
-
-                // tạo Order
-                var customer = await getCustomerByUserID.HandleAsync(new CustomerGetCustomerByUserID_Request(session.UserId), ct);
-                var account = await getAccount_UC.HandleAsync(new getAccountByID(session.UserId), ct);
-
-                var newOrderId = await _addOrder.CreateFromCartAsync(
-                    session.UserId,
-                    customer?.Name ?? "Khách hàng",
-                    customer?.sdt ?? "",
-                    account?.Email,
-                    customer?.address ?? "",
-                    null,
-                    PaymentKind.VNPAY,
-                    ct
-                );
-
-                await _addOrder.MarkPaidAsync(newOrderId, PaymentKind.VNPAY, resp.TransactionId, resp.VnPayResponseCode, ct);
-
-                await _vnPaySession.CompleteAsync(txnRef, newOrderId, new VnPayCallbackDataDTO
-                {
-                    TransactionId = resp.TransactionId,
-                    ResponseCode = resp.VnPayResponseCode,
-                    Amount = session.Amount // hoặc bóc vnp_Amount từ query để log
-                }, ct);
-
-                // Bạn có thể render TxnRef (số) ra GUI nếu muốn
-                TempData["TxnRef"] = txnRef;
-                return RedirectToAction("Success",new {oid = resp.OrderId});
+            return RedirectToAction(nameof(Success), new { id = newOrderId });
         }
-   }
+    }
 }
+
 

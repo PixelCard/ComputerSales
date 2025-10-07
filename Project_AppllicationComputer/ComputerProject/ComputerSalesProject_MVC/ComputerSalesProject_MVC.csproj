@@ -7,9 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Admin\Views\ProductControllers\**" />
+    <Content Remove="Areas\Admin\Views\ProductControllers\**" />
+    <EmbeddedResource Remove="Areas\Admin\Views\ProductControllers\**" />
+    <None Remove="Areas\Admin\Views\ProductControllers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Views\Account\2hspxr20.hv1~" />
     <None Remove="Views\Account\klfwqyfu.5yj~" />
     <None Remove="Views\Order\gdlvzska.kr0~" />
+    <None Remove="Views\Shared\2dwzoklj.ept~" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Views\ProductControllers\" />
     <Folder Include="Image\" />
     <Folder Include="JavaScript\" />
   </ItemGroup>

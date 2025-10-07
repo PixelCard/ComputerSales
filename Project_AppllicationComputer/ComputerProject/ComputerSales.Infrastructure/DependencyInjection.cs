@@ -1,15 +1,22 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
 using ComputerSales.Application.Interface.Cart_Interface;
 using ComputerSales.Application.Interface.Interface_Email_Respository;
+using ComputerSales.Application.Interface.Interface_ForgetPassword;
 using ComputerSales.Application.Interface.Interface_OrderFromCart;
 using ComputerSales.Application.Interface.InterFace_ProductOptionalType_Respository;
 using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
 using ComputerSales.Application.Interface.Interface_VariantPriceRespo;
 using ComputerSales.Application.Interface.InterfaceCustomerRespo;
 using ComputerSales.Application.Interface.InterfaceRespository;
+using ComputerSales.Application.Interface.InterfaceVNPAYMENT;
 using ComputerSales.Application.Interface.Product_Interface;
 using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
+using ComputerSales.Application.Payment.Interface;
+using ComputerSales.Application.Payment.VNPAY.Respository;
+using ComputerSales.Application.Sercurity.JWT.Enity;
+using ComputerSales.Application.Sercurity.JWT.Interface;
+using ComputerSales.Application.Sercurity.JWT.Respository;
 using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCase.Cart_UC.Commands.AddCart;
 using ComputerSales.Application.UseCase.Cart_UC.Commands.RemoveItem;
@@ -17,6 +24,7 @@ using ComputerSales.Application.UseCase.Cart_UC.Commands.UpdateQuantity;
 using ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage;
 using ComputerSales.Application.UseCase.Category_UC;
 using ComputerSales.Application.UseCase.Customer_UC;
+using ComputerSales.Application.UseCase.ForgetPass_UC;
 using ComputerSales.Application.UseCase.OptionalType_UC;
 using ComputerSales.Application.UseCase.OptionalValue_UC;
 using ComputerSales.Application.UseCase.Order_UC;
@@ -24,6 +32,7 @@ using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCase.ProductOvetView_UC;
 using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Application.UseCase.ProductVariant_UC;
+using ComputerSales.Application.UseCase.Provider_UC;
 using ComputerSales.Application.UseCase.Role_UC;
 using ComputerSales.Application.UseCase.VariantImage_UC;
 using ComputerSales.Application.UseCase.VariantPrice_UC.variantGetPriceByVariantID;
@@ -38,6 +47,7 @@ using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead;
 using ComputerSales.Infrastructure.Repositories.Cart_Respo.CartWrite;
 using ComputerSales.Infrastructure.Repositories.Customer_Respo;
 using ComputerSales.Infrastructure.Repositories.EmailVerifyKeyRepository;
+using ComputerSales.Infrastructure.Repositories.ForgetPassRespo;
 using ComputerSales.Infrastructure.Repositories.OrderCart_Respo;
 using ComputerSales.Infrastructure.Repositories.Product_Respo;
 using ComputerSales.Infrastructure.Repositories.ProductOptionalType_Respository;
@@ -47,9 +57,7 @@ using ComputerSales.Infrastructure.Repositories.Role_Respo;
 using ComputerSales.Infrastructure.Repositories.SmtpEmailSender_Respository;
 using ComputerSales.Infrastructure.Repositories.UnitOfWork;
 using ComputerSales.Infrastructure.Repositories.VariantPrice_Respo;
-using ComputerSales.Application.Sercurity.JWT.Enity;
-using ComputerSales.Application.Sercurity.JWT.Interface;
-using ComputerSales.Application.Sercurity.JWT.Respository;
+using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -149,11 +157,12 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<getVariantImageById_UC>();
             services.AddScoped<UpdateVariantImage_UC>();
 
-            //================ Provider ==================//
+            //================ Category ==================//
             services.AddScoped<CreateCategory_UC>();
             services.AddScoped<DeleteCategory_UC>();
             services.AddScoped<UpdateCategory_UC>();
             services.AddScoped<GetByIdCategory_UC>();
+            services.AddScoped<GetAllCategories_UC>();
 
             //========================      OptionType      =====================//
             services.AddScoped<CreateOptionalType_UC>();
@@ -200,8 +209,10 @@ namespace ComputerSales.Infrastructure
             //============  Order   ================//
             services.AddScoped<CreateOrder_UC>();
             services.AddScoped<DeleteOrder_UC>();
-            services.AddScoped<GetOrderByIDCustomerAndOrderID>();
+            services.AddScoped<GetOrderByID_UC>();
             services.AddScoped<UpdateOrder_UC>();
+            services.AddScoped<CancelOrder_UC>();
+            services.AddScoped<GetOrdersList_UC>();
             //==========================================
 
 
@@ -258,6 +269,16 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<ForgotResetPassword_UC>();
             services.AddScoped<ForgotVerifyOtp_UC>();
             services.AddScoped<ForgotRequestOtp_UC>();
+
+
+
+            //================= Provider ==============//
+            services.AddScoped<GetAllProviders_UC>();
+            services.AddScoped<CreateProvider_UC>();
+            services.AddScoped<DeleteProvider_UC>();
+            services.AddScoped<GetByIdProvider_UC>();
+            services.AddScoped<UpdateProvider_UC>();
+
 
             return services;
         }
