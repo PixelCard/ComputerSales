@@ -1,8 +1,12 @@
 ﻿<!-- Tailwind CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  /* Reset default body margin to allow full-bleed header */
-  html, body { margin: 0; padding: 0; }
+    /* Reset default body margin to allow full-bleed header */
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+    }
 </style>
 
 <header class="fixed inset-x-0 top-0 z-50 bg-[#0b2f63] text-white shadow-lg w-screen">
@@ -10,21 +14,24 @@
     <div class="w-full px-0">
         <!-- Top Row: Logo, Search, Actions -->
         <div class="flex items-center justify-between h-16 gap-2 sm:gap-4 px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-18">
-            
+
             <!-- LEFT: Logo + Location -->
             <div class="flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0">
                 <!-- Logo -->
                 <a href="/" class="flex items-center gap-1 hover:opacity-90 transition">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                    <div
+                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
                         <span class="text-white font-bold text-sm sm:text-base">N</span>
                     </div>
                     <span class="hidden sm:block font-bold text-lg sm:text-xl tracking-tight text-white">Newegg</span>
                 </a>
 
                 <!-- Location Selector -->
-                <div class="hidden md:flex items-center gap-1 px-1 py-1 rounded hover:bg-white/10 transition cursor-pointer">
+                <div
+                    class="hidden md:flex items-center gap-1 px-1 py-1 rounded hover:bg-white/10 transition cursor-pointer ml-[4rem]">
                     <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" />
+                        <path
+                            d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" />
                     </svg>
                     <div class="text-left">
                         <div class="text-xs text-orange-200">Deliver to</div>
@@ -38,7 +45,8 @@
                 <div class="relative flex items-center bg-white rounded-lg shadow-sm border border-gray-200">
                     <!-- Category Dropdown -->
                     <div class="hidden sm:flex items-center border-r border-gray-200">
-                        <select class="px-3 py-2 text-sm text-gray-700 bg-transparent border-none outline-none cursor-pointer">
+                        <select
+                            class="px-3 py-2 text-sm text-gray-700 bg-transparent border-none outline-none cursor-pointer">
                             <option>All Categories</option>
                             <option>Computer Parts</option>
                             <option>Electronics</option>
@@ -46,86 +54,89 @@
                             <option>Home & Garden</option>
                         </select>
                         <svg class="w-4 h-4 text-gray-500 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M7 10l5 5 5-5z"/>
+                            <path d="M7 10l5 5 5-5z" />
                         </svg>
                     </div>
 
                     <!-- Search Input -->
-                    <input id="searchInput" 
-                           type="text" 
-                           placeholder="Search for products, brands, and more..."
-                           class="flex-1 px-3 py-2 text-gray-900 placeholder-gray-500 outline-none text-sm sm:text-base" />
+                    <input id="searchInput" type="text" placeholder="Search for products, brands, and more..."
+                        class="flex-1 px-3 py-2 text-gray-900 placeholder-gray-500 outline-none text-sm sm:text-base" />
 
                     <!-- Search Button -->
-                    <button id="btnSearch" 
-                            class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-r-lg transition-colors">
+                    <button id="btnSearch"
+                        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-r-lg transition-colors">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10 2a8 8 0 1 1 5.3 14l4.4 4.4-1.4 1.4-4.4-4.4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z" />
+                            <path
+                                d="M10 2a8 8 0 1 1 5.3 14l4.4 4.4-1.4 1.4-4.4-4.4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z" />
                         </svg>
                     </button>
                 </div>
             </div>
 
             <!-- RIGHT: Actions -->
-            <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-                <!-- Language/Region -->
-                <button class="hidden sm:flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 transition">
-                    <span class="text-lg">🇺🇸</span>
-                    <span class="hidden lg:block text-sm">EN</span>
-                </button>
-
+            <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0 ml-4">
                 <!-- Account -->
                 @using System.Security.Claims
                 @if (User?.Identity?.IsAuthenticated ?? false)
                 {
                     var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.Identity!.Name;
-                    <a href="/Profile/AccountInfo" class="hidden lg:flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" />
-                    </svg>
-                    <div class="text-left">
-                        <div class="text-xs text-orange-200">Hello</div>
-                        <div class="text-sm font-medium truncate max-w-[12rem]">@email</div>
-                    </div>
-                </a>
+                    <a href="/Profile/AccountInfo"
+                        class="hidden lg:flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" />
+                        </svg>
+                        <div class="text-left">
+                            <div class="text-xs text-orange-200">Hello</div>
+                            <div class="text-sm font-medium truncate max-w-[12rem]">@email</div>
+                        </div>
+                    </a>
                 }
                 else
                 {
-                <a href="/account/login" class="hidden lg:flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" />
-                    </svg>
-                    <div class="text-left">
-                        <div class="text-xs text-orange-200">Hello, Sign in</div>
-                        <div class="text-sm font-medium">Account & Lists</div>
-                    </div>
-                </a>
+                    <a href="/account/login"
+                        class="hidden lg:flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 2.5-9 5v1h18v-1c0-2.5-4-5-9-5Z" />
+                        </svg>
+                        <div class="text-left">
+                            <div class="text-xs text-orange-200">Hello, Sign in</div>
+                            <div class="text-sm font-medium">Account & Lists</div>
+                        </div>
+                    </a>
                 }
 
                 <!-- Cart -->
-                <a href="/Cart/CartHome" class="relative flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 transition">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 .001 4.001A2 2 0 0 0 17 18ZM6 6h14l-1.5 8.5H8.3L7 4H3V2h4l.7 4Z" />
-                    </svg>
+                <a href="/Cart/CartHome"
+                    class="relative flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 transition">
+                    <div class="relative">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 .001 4.001A2 2 0 0 0 17 18ZM6 6h14l-1.5 8.5H8.3L7 4H3V2h4l.7 4Z" />
+                        </svg>
+                        <span
+                            class="cart-badge absolute w-4 h-4 bg-orange-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold"
+                            style="display:none; top: -0.52rem; right: 1.05rem;"></span>
+                    </div>
                     <span class="hidden sm:block text-sm font-medium">Cart</span>
-                    <span class="cart-badge absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-xs rounded-full items-center justify-center font-bold" style="display:none"></span>
                 </a>
             </div>
         </div>
 
         <!-- Bottom Row: Navigation Menu (Desktop) -->
-        <div class="hidden lg:flex items-center justify-between py-2 border-t border-blue-800 px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-18">
+        <div
+            class="hidden lg:flex items-center justify-between py-2 border-t border-blue-800 px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-18">
             <!-- Left Navigation -->
             <div class="flex items-center gap-6">
                 <button class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+                        <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
                     </svg>
                     <span class="font-medium">All Categories</span>
                 </button>
-                
+
                 <a href="/deals" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Today's Deals</a>
-                <a href="/customer-service" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Customer Service</a>
+                <a href="/customer-service" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Customer
+                    Service</a>
                 <a href="/registry" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Registry</a>
                 <a href="/gift-cards" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Gift Cards</a>
                 <a href="/sell" class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Sell</a>
@@ -145,14 +156,15 @@
             <div class="flex items-center justify-between py-2 px-6 md:px-8 lg:px-10 xl:px-14 2xl:px-18">
                 <button class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+                        <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
                     </svg>
                     <span class="font-medium">All</span>
                 </button>
-                
+
                 <div class="flex items-center gap-4">
                     <a href="/deals" class="px-3 py-2 rounded hover:bg-white/10 transition text-sm">Deals</a>
-                    <a href="/customer-service" class="px-3 py-2 rounded hover:bg-white/10 transition text-sm">Support</a>
+                    <a href="/customer-service"
+                        class="px-3 py-2 rounded hover:bg-white/10 transition text-sm">Support</a>
                 </div>
             </div>
         </div>
@@ -170,9 +182,9 @@
     // Search on button click
     btn?.addEventListener('click', () => {
         const q = input.value.trim();
-        if (!q) { 
-            input.focus(); 
-            return; 
+        if (!q) {
+            input.focus();
+            return;
         }
         window.location.href = `/search?q=${encodeURIComponent(q)}`;
     });
@@ -190,7 +202,7 @@
     // Mobile menu toggle (if needed)
     const mobileMenuBtn = document.querySelector('[data-mobile-menu]');
     const mobileMenu = document.querySelector('[data-mobile-menu-content]');
-    
+
     if (mobileMenuBtn && mobileMenu) {
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
@@ -210,12 +222,12 @@
     window.updateCartCount = updateCartCount;
 
     // Fetch cart count on load
-    (async function fetchCartCount(){
+    (async function fetchCartCount() {
         try {
             const res = await fetch('/Cart/Count', { credentials: 'same-origin' });
             if (!res.ok) return;
             const data = await res.json();
             if (typeof data.count === 'number') updateCartCount(data.count);
-        } catch {}
+        } catch { }
     })();
 </script>

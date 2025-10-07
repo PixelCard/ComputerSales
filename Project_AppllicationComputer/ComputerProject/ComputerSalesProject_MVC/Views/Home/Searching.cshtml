@@ -1,16 +1,18 @@
 ﻿@model List<ProductCardVM>
 <script src="https://cdn.tailwindcss.com"></script>
 
+@await Html.PartialAsync("_Header")
+
 <div class="min-h-screen bg-gray-50">
     <!-- Search Header -->
-    <div class="bg-white border-b border-gray-200">
-        <div class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-6">
+    <div class="bg-white border-b border-gray-200 pt-6">
+        <div class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-4">
             <div class="max-w-6xl mx-auto">
                 <!-- Breadcrumb -->
                 <nav class="flex items-center gap-2 text-sm text-gray-500 mb-4">
                     <a href="/" class="hover:text-orange-500 transition-colors">Trang chủ</a>
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
                     </svg>
                     <span class="text-gray-900 font-medium">Kết quả tìm kiếm</span>
                 </nav>
@@ -22,7 +24,8 @@
                         <p class="text-gray-600">
                             @if (Model != null && Model.Any())
                             {
-                                <span>Tìm thấy <span class="font-semibold text-orange-600">@Model.Count</span> sản phẩm</span>
+                                <span>Tìm thấy <span class="font-semibold text-orange-600">@Model.Count</span> sản
+                                    phẩm</span>
                             }
                             else
                             {
@@ -30,196 +33,206 @@
                             }
                         </p>
                     </div>
-                    
+
                     <!-- Search Stats -->
                     <div class="hidden md:flex items-center gap-4">
                         <div class="text-right">
                             <div class="text-sm text-gray-500">Thời gian tìm kiếm</div>
-                            <div class="text-lg font-semibold text-gray-900">< 0.1s</div>
-                        </div>
-                        <div class="w-px h-12 bg-gray-200"></div>
-                        <div class="text-right">
-                            <div class="text-sm text-gray-500">Tổng sản phẩm</div>
-                            <div class="text-lg font-semibold text-gray-900">@(Model?.Count ?? 0)</div>
+                            <div class="text-lg font-semibold text-gray-900">
+                                < 0.1s</div>
+                            </div>
+                            <div class="w-px h-12 bg-gray-200"></div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-500">Tổng sản phẩm</div>
+                                <div class="text-lg font-semibold text-gray-900">@(Model?.Count ?? 0)</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main Content -->
-    <main class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-8">
-        <div class="max-w-6xl mx-auto">
-            
-            @if (Model == null || !Model.Any())
-            {
-                <!-- No Results -->
-                <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-12 text-center">
-                    <div class="max-w-md mx-auto">
-                        <!-- No Results Icon -->
-                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-10 h-10 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                            </svg>
-                        </div>
-                        
-                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Không tìm thấy sản phẩm</h3>
-                        <p class="text-gray-600 mb-6">
-                            Rất tiếc, chúng tôi không tìm thấy sản phẩm nào phù hợp với từ khóa của bạn.
-                        </p>
-                        
-                        <!-- Search Suggestions -->
-                        <div class="bg-gray-50 rounded-xl p-6 mb-6">
-                            <h4 class="font-medium text-gray-900 mb-3">Gợi ý tìm kiếm:</h4>
-                            <ul class="text-sm text-gray-600 space-y-2">
-                                <li>• Kiểm tra chính tả từ khóa</li>
-                                <li>• Thử từ khóa khác hoặc từ đồng nghĩa</li>
-                                <li>• Sử dụng từ khóa chung hơn</li>
-                                <li>• Tìm kiếm theo SKU hoặc tên sản phẩm</li>
-                            </ul>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <a href="/" 
-                               class="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors font-medium">
-                                Về trang chủ
-                            </a>
-                            <button onclick="history.back()" 
+        <!-- Main Content -->
+        <main class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-4">
+            <div class="max-w-6xl mx-auto">
+
+                @if (Model == null || !Model.Any())
+                {
+                    <!-- No Results -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-12 text-center">
+                        <div class="max-w-md mx-auto">
+                            <!-- No Results Icon -->
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <svg class="w-10 h-10 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                                </svg>
+                            </div>
+
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Không tìm thấy sản phẩm</h3>
+                            <p class="text-gray-600 mb-6">
+                                Rất tiếc, chúng tôi không tìm thấy sản phẩm nào phù hợp với từ khóa của bạn.
+                            </p>
+
+                            <!-- Search Suggestions -->
+                            <div class="bg-gray-50 rounded-xl p-6 mb-6">
+                                <h4 class="font-medium text-gray-900 mb-3">Gợi ý tìm kiếm:</h4>
+                                <ul class="text-sm text-gray-600 space-y-2">
+                                    <li>• Kiểm tra chính tả từ khóa</li>
+                                    <li>• Thử từ khóa khác hoặc từ đồng nghĩa</li>
+                                    <li>• Sử dụng từ khóa chung hơn</li>
+                                    <li>• Tìm kiếm theo SKU hoặc tên sản phẩm</li>
+                                </ul>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                                <a href="/"
+                                    class="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors font-medium">
+                                    Về trang chủ
+                                </a>
+                                <button onclick="history.back()"
                                     class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-                                Quay lại
+                                    Quay lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Search Results -->
+                    <div class="space-y-6">
+
+                        <!-- Filters & Sort Bar -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+                                <!-- Results Count -->
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-600">Hiển thị</span>
+                                    <span class="font-semibold text-gray-900">@Model.Count</span>
+                                    <span class="text-sm text-gray-600">sản phẩm</span>
+                                </div>
+
+                                <!-- Sort Options -->
+                                <div class="flex items-center gap-4">
+                                    <span class="text-sm text-gray-600">Sắp xếp theo:</span>
+                                    <select
+                                        class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                                        <option>Mặc định</option>
+                                        <option>Giá tăng dần</option>
+                                        <option>Giá giảm dần</option>
+                                        <option>Tên A-Z</option>
+                                        <option>Tên Z-A</option>
+                                        <option>Mới nhất</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            @foreach (var p in Model)
+                            {
+                                <div class="group">
+                                    @await Html.PartialAsync("_ProductCard", p)
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Load More Button -->
+                        <div class="text-center pt-8">
+                            <button
+                                class="px-8 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium shadow-sm">
+                                Xem thêm sản phẩm
                             </button>
                         </div>
                     </div>
-                </div>
-            }
-            else
-            {
-                <!-- Search Results -->
-                <div class="space-y-6">
-                    
-                    <!-- Filters & Sort Bar -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                            
-                            <!-- Results Count -->
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm text-gray-600">Hiển thị</span>
-                                <span class="font-semibold text-gray-900">@Model.Count</span>
-                                <span class="text-sm text-gray-600">sản phẩm</span>
-                            </div>
-                            
-                            <!-- Sort Options -->
-                            <div class="flex items-center gap-4">
-                                <span class="text-sm text-gray-600">Sắp xếp theo:</span>
-                                <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                                    <option>Mặc định</option>
-                                    <option>Giá tăng dần</option>
-                                    <option>Giá giảm dần</option>
-                                    <option>Tên A-Z</option>
-                                    <option>Tên Z-A</option>
-                                    <option>Mới nhất</option>
-                                </select>
-                            </div>
+                }
+            </div>
+        </main>
+
+        <!-- Search Suggestions (if no results) -->
+        @if (Model == null || !Model.Any())
+        {
+            <div class="bg-white border-t border-gray-200">
+                <div class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-8">
+                    <div class="max-w-6xl mx-auto">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Sản phẩm phổ biến</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                            <!-- Popular Categories -->
+                            <a href="/search?q=CPU"
+                                class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
+                                <div class="text-2xl mb-2">🖥️</div>
+                                <div class="text-sm font-medium text-gray-900">CPU</div>
+                            </a>
+                            <a href="/search?q=GPU"
+                                class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
+                                <div class="text-2xl mb-2">🎮</div>
+                                <div class="text-sm font-medium text-gray-900">GPU</div>
+                            </a>
+                            <a href="/search?q=RAM"
+                                class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
+                                <div class="text-2xl mb-2">💾</div>
+                                <div class="text-sm font-medium text-gray-900">RAM</div>
+                            </a>
+                            <a href="/search?q=SSD"
+                                class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
+                                <div class="text-2xl mb-2">💿</div>
+                                <div class="text-sm font-medium text-gray-900">SSD</div>
+                            </a>
+                            <a href="/search?q=Mainboard"
+                                class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
+                                <div class="text-2xl mb-2">🔧</div>
+                                <div class="text-sm font-medium text-gray-900">Mainboard</div>
+                            </a>
+                            <a href="/search?q=PSU"
+                                class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
+                                <div class="text-2xl mb-2">⚡</div>
+                                <div class="text-sm font-medium text-gray-900">PSU</div>
+                            </a>
                         </div>
-                    </div>
-
-                    <!-- Products Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        @foreach (var p in Model)
-                        {
-                            <div class="group">
-                                @await Html.PartialAsync("_ProductCard", p)
-                            </div>
-                        }
-                    </div>
-
-                    <!-- Load More Button -->
-                    <div class="text-center pt-8">
-                        <button class="px-8 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium shadow-sm">
-                            Xem thêm sản phẩm
-                        </button>
-                    </div>
-                </div>
-            }
-        </div>
-    </main>
-
-    <!-- Search Suggestions (if no results) -->
-    @if (Model == null || !Model.Any())
-    {
-        <div class="bg-white border-t border-gray-200">
-            <div class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-8">
-                <div class="max-w-6xl mx-auto">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Sản phẩm phổ biến</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        <!-- Popular Categories -->
-                        <a href="/search?q=CPU" class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
-                            <div class="text-2xl mb-2">🖥️</div>
-                            <div class="text-sm font-medium text-gray-900">CPU</div>
-                        </a>
-                        <a href="/search?q=GPU" class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
-                            <div class="text-2xl mb-2">🎮</div>
-                            <div class="text-sm font-medium text-gray-900">GPU</div>
-                        </a>
-                        <a href="/search?q=RAM" class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
-                            <div class="text-2xl mb-2">💾</div>
-                            <div class="text-sm font-medium text-gray-900">RAM</div>
-                        </a>
-                        <a href="/search?q=SSD" class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
-                            <div class="text-2xl mb-2">💿</div>
-                            <div class="text-sm font-medium text-gray-900">SSD</div>
-                        </a>
-                        <a href="/search?q=Mainboard" class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
-                            <div class="text-2xl mb-2">🔧</div>
-                            <div class="text-sm font-medium text-gray-900">Mainboard</div>
-                        </a>
-                        <a href="/search?q=PSU" class="p-4 bg-gray-50 rounded-lg hover:bg-orange-50 hover:border-orange-200 border border-transparent transition-all text-center">
-                            <div class="text-2xl mb-2">⚡</div>
-                            <div class="text-sm font-medium text-gray-900">PSU</div>
-                        </a>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
-
-<script>
-    // Search page enhancements
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add loading state to load more button
-        const loadMoreBtn = document.querySelector('button[class*="Xem thêm"]');
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', function() {
-                this.innerHTML = '<div class="flex items-center gap-2"><div class="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>Đang tải...</div>';
-                this.disabled = true;
-                
-                // Simulate loading
-                setTimeout(() => {
-                    this.innerHTML = 'Xem thêm sản phẩm';
-                    this.disabled = false;
-                }, 2000);
-            });
         }
+    </div>
 
-        // Sort functionality
-        const sortSelect = document.querySelector('select');
-        if (sortSelect) {
-            sortSelect.addEventListener('change', function() {
-                // Add loading state
-                const productsGrid = document.querySelector('.grid');
-                if (productsGrid) {
-                    productsGrid.style.opacity = '0.5';
-                    productsGrid.style.pointerEvents = 'none';
-                    
+    <script>
+        // Search page enhancements
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add loading state to load more button
+            const loadMoreBtn = document.querySelector('button[class*="Xem thêm"]');
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', function () {
+                    this.innerHTML = '<div class="flex items-center gap-2"><div class="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>Đang tải...</div>';
+                    this.disabled = true;
+
+                    // Simulate loading
                     setTimeout(() => {
-                        productsGrid.style.opacity = '1';
-                        productsGrid.style.pointerEvents = 'auto';
-                    }, 500);
-                }
-            });
-        }
-    });
-</script>
+                        this.innerHTML = 'Xem thêm sản phẩm';
+                        this.disabled = false;
+                    }, 2000);
+                });
+            }
+
+            // Sort functionality
+            const sortSelect = document.querySelector('select');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function () {
+                    // Add loading state
+                    const productsGrid = document.querySelector('.grid');
+                    if (productsGrid) {
+                        productsGrid.style.opacity = '0.5';
+                        productsGrid.style.pointerEvents = 'none';
+
+                        setTimeout(() => {
+                            productsGrid.style.opacity = '1';
+                            productsGrid.style.pointerEvents = 'auto';
+                        }, 500);
+                    }
+                });
+            }
+        });
+    </script>

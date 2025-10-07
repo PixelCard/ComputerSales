@@ -2,7 +2,10 @@
 @{
     ViewData["Title"] = "Đơn hàng của tôi";
 }
-<div class="py-4">
+
+@await Html.PartialAsync("_Header")
+
+<div class="pt-16 pb-8 px-6 md:px-8 lg:px-12">
     <div class="md:flex md:gap-6">
         <div class="md:w-1/4">
             @await Html.PartialAsync("~/Views/Shared/_ProfileNav.cshtml")
@@ -10,66 +13,76 @@
         <div class="md:w-3/4">
             <h4 class="mb-3 font-bold text-slate-800">Orders</h4>
             <div class="flex flex-wrap gap-2 mb-4">
-                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn bg-orange-500 text-white" data-filter="all">Tất cả</button>
-                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn" data-filter="ChoXacNhan">Chờ xác nhận</button>
-                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn" data-filter="DangDongGoi">Đang đóng gói</button>
-                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn" data-filter="DangGiao">Đang giao</button>
-                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn" data-filter="DaGiaoThanhCong">Giao thành công</button>
-                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn" data-filter="DaHuy">Đã hủy</button>
+                <button
+                    class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn bg-orange-500 text-white"
+                    data-filter="all">Tất cả</button>
+                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn"
+                    data-filter="ChoXacNhan">Chờ xác nhận</button>
+                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn"
+                    data-filter="DangDongGoi">Đang đóng gói</button>
+                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn"
+                    data-filter="DangGiao">Đang giao</button>
+                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn"
+                    data-filter="DaGiaoThanhCong">Giao thành công</button>
+                <button class="px-3 py-1 rounded-full text-sm font-semibold border border-slate-300 filter-btn"
+                    data-filter="DaHuy">Đã hủy</button>
             </div>
-            @if(Model.Orders.Count == 0)
+            @if (Model.Orders.Count == 0)
             {
                 <div class="rounded-lg border border-slate-200 p-4 text-slate-600">Bạn chưa có đơn hàng nào.</div>
             }
             else
             {
                 <div id="ordersAcc" class="space-y-3">
-                @for (int i = 0; i < Model.Orders.Count; i++)
-                {
-                    var o = Model.Orders[i];
-                    var cid = $"order_{o.OrderID}";
-                    <div class="rounded-xl shadow bg-white order-card" data-status="@o.Status">
-                        <button class="w-full flex items-center justify-between px-4 py-3 text-left font-semibold order-toggle" data-target="c_@cid">
-                            <span>#@o.OrderID - @o.OrderTime.ToString("dd/MM/yyyy HH:mm")</span>
-                            <span class="text-slate-500">@o.Status - @o.GrandTotal.ToString("N0") đ</span>
-                        </button>
-                        <div id="c_@cid" class="hidden px-4 pb-4">
-                            <div class="rounded-lg border border-slate-200 overflow-hidden">
-                                <table class="min-w-full text-sm">
-                                    <thead class="bg-slate-50 text-slate-500">
-                                        <tr>
-                                            <th class="text-left p-2">Sản phẩm</th>
-                                            <th class="text-right p-2">SL</th>
-                                            <th class="text-right p-2">Giá</th>
-                                            <th class="text-right p-2">Giảm</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach (var d in o.Details)
-                                    {
-                                        <tr class="border-t">
-                                            <td class="p-2">
-                                                <div class="flex items-center gap-2">
-                                                    @if(!string.IsNullOrWhiteSpace(d.ImageUrl)){
-                                                        <img src="@d.ImageUrl" class="w-12 h-12 object-cover" />
-                                                    }
-                                                    <div>
-                                                        <div class="font-medium">@d.ProductName</div>
-                                                        <div class="text-slate-500 text-xs">@d.OptionSummary</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-right p-2">@d.Quantity</td>
-                                            <td class="text-right p-2">@d.UnitPrice.ToString("N0") đ</td>
-                                            <td class="text-right p-2">@d.Discount.ToString("N0") đ</td>
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
+                    @for (int i = 0; i < Model.Orders.Count; i++)
+                    {
+                        var o = Model.Orders[i];
+                        var cid = $"order_{o.OrderID}";
+                        <div class="rounded-xl shadow bg-white order-card" data-status="@o.Status">
+                            <button
+                                class="w-full flex items-center justify-between px-4 py-3 text-left font-semibold order-toggle"
+                                data-target="c_@cid">
+                                <span>#@o.OrderID - @o.OrderTime.ToString("dd/MM/yyyy HH:mm")</span>
+                                <span class="text-slate-500">@o.Status - @o.GrandTotal.ToString("N0") đ</span>
+                            </button>
+                            <div id="c_@cid" class="hidden px-4 pb-4">
+                                <div class="rounded-lg border border-slate-200 overflow-hidden">
+                                    <table class="min-w-full text-sm">
+                                        <thead class="bg-slate-50 text-slate-500">
+                                            <tr>
+                                                <th class="text-left p-2">Sản phẩm</th>
+                                                <th class="text-right p-2">SL</th>
+                                                <th class="text-right p-2">Giá</th>
+                                                <th class="text-right p-2">Giảm</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var d in o.Details)
+                                            {
+                                                <tr class="border-t">
+                                                    <td class="p-2">
+                                                        <div class="flex items-center gap-2">
+                                                            @if (!string.IsNullOrWhiteSpace(d.ImageUrl))
+                                                            {
+                                                                <img src="@d.ImageUrl" class="w-12 h-12 object-cover" />
+                                                            }
+                                                            <div>
+                                                                <div class="font-medium">@d.ProductName</div>
+                                                                <div class="text-slate-500 text-xs">@d.OptionSummary</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-right p-2">@d.Quantity</td>
+                                                    <td class="text-right p-2">@d.UnitPrice.ToString("N0") đ</td>
+                                                    <td class="text-right p-2">@d.Discount.ToString("N0") đ</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
                 </div>
             }
         </div>
@@ -77,14 +90,14 @@
 </div>
 
 <script>
-    (function(){
+    (function () {
         const toggles = document.querySelectorAll('.order-toggle');
         toggles.forEach(btn => {
-            btn.addEventListener('click', function(e){
+            btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 const id = btn.getAttribute('data-target');
                 const panel = document.getElementById(id);
-                if(!panel) return;
+                if (!panel) return;
                 panel.classList.toggle('hidden');
             });
         });
@@ -93,18 +106,16 @@
         const filters = document.querySelectorAll('.filter-btn');
         const cards = document.querySelectorAll('.order-card');
         filters.forEach(f => {
-            f.addEventListener('click', function(){
-                filters.forEach(x => x.classList.remove('bg-orange-500','text-white'));
-                f.classList.add('bg-orange-500','text-white');
+            f.addEventListener('click', function () {
+                filters.forEach(x => x.classList.remove('bg-orange-500', 'text-white'));
+                f.classList.add('bg-orange-500', 'text-white');
                 const val = f.getAttribute('data-filter');
                 cards.forEach(c => {
-                    if(val === 'all') { c.classList.remove('hidden'); return; }
+                    if (val === 'all') { c.classList.remove('hidden'); return; }
                     const s = c.getAttribute('data-status');
-                    if(s === val) c.classList.remove('hidden'); else c.classList.add('hidden');
+                    if (s === val) c.classList.remove('hidden'); else c.classList.add('hidden');
                 });
             });
         });
     })();
 </script>
-
-

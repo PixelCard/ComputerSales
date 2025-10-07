@@ -2,7 +2,10 @@
 @{
     ViewData["Title"] = "Thông tin khách hàng";
 }
-<div class="py-4">
+
+@await Html.PartialAsync("_Header")
+
+<div class="pt-16 pb-8 px-6 md:px-8 lg:px-12">
     <div class="md:flex md:gap-6">
         <div class="md:w-1/4">
             @await Html.PartialAsync("~/Views/Shared/_ProfileNav.cshtml")
@@ -15,23 +18,28 @@
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <div class="text-slate-500 text-sm mb-1">Full name</div>
-                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">@Model.FullName</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">
+                                @Model.FullName</div>
                         </div>
                         <div>
                             <div class="text-slate-500 text-sm mb-1">Phone</div>
-                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">@Model.Phone</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">
+                                @Model.Phone</div>
                         </div>
                         <div class="md:col-span-2">
                             <div class="text-slate-500 text-sm mb-1">Address</div>
-                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">@Model.Address</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">
+                                @Model.Address</div>
                         </div>
                         <div>
                             <div class="text-slate-500 text-sm mb-1">Birth date</div>
-                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">@(Model.BirthDate?.ToString("dd/MM/yyyy") ?? "")</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">
+                                @(Model.BirthDate?.ToString("dd/MM/yyyy") ?? "")</div>
                         </div>
                         <div>
                             <div class="text-slate-500 text-sm mb-1">Gender</div>
-                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">@Model.Gender</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 font-semibold">
+                                @Model.Gender</div>
                         </div>
                     </div>
                 </div>
@@ -39,5 +47,3 @@
         </div>
     </div>
 </div>
-
-
