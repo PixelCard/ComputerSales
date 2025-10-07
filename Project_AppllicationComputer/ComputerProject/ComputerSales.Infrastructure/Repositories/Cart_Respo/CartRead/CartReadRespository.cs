@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Application.Interface.Cart_Interface;
 using ComputerSales.Domain.Entity.ECart;
+using ComputerSales.Domain.Entity.EOptional;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,13 @@ namespace ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead
             => _db.Carts.Include(c => c.Items)  // lấy Cart + Items (CartItem có Parent/Children sẵn) :                       
                     .FirstOrDefaultAsync(c => c.UserID == userId, ct);
 
+        public async Task<OptionalValue?> GetOptionalValueAsync(int id, CancellationToken ct)
+        {
+            return await _db.optionalValues
+             .Include(x => x.OptionType)   // để lấy tên loại: OptionalType.Name
+             .FirstOrDefaultAsync(x => x.Id == id, ct);
+        }
+
         public async Task<Dictionary<int, ProductVariant>> GetVariantsAsync(int[] variantIds, CancellationToken ct = default)
         {
             var list = await _db.productVariants
@@ -38,5 +46,8 @@ namespace ComputerSales.Infrastructure.Repositories.Cart_Respo.CartRead
             .ToListAsync(ct);
             return list.ToDictionary(v => v.Id);
         }
+
+
+
     }
 }

@@ -77,21 +77,26 @@
                     {
                         @foreach (var group in Model.OptionGroups)
                         {
+                            var isAddOn = string.Equals(group.Name, "Add-on", StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(group.Name, "Optional", StringComparison.OrdinalIgnoreCase);
+
                             <div class="mt-3">
                                 <div class="text-sm font-medium mb-1">@group.Name</div>
                                 <div class="flex gap-2 flex-wrap">
                                     @foreach (var item in group.Items)
                                     {
                                         <button type="button"
-                                                class="px-3 py-1 border rounded-lg text-sm hover:bg-blue-50 transition
-                                                       @(item.Disabled ? "opacity-50 cursor-not-allowed text-gray-400 border-gray-300" : "border-gray-300")
-                                                       @(item.Selected ? "border-blue-600 bg-blue-50" : "")"
-                                                data-option-group="@group.Name"
-                                                data-option-label="@item.Label"
-                                                data-option-price="@item.Price"
-                                                title="@(item.Disabled ? "Chưa có phiên bản này" : "")"
-                                                onclick="@(item.Disabled ? "" : $"selectOption(this, '{group.Name}', '{item.Label}')")">
-                                            @item.Label
+                                           class="px-3 py-1 border rounded-lg text-sm hover:bg-blue-50 transition
+                                                @(item.Disabled ? "opacity-50 cursor-not-allowed text-gray-400 border-gray-300" : "border-gray-300")
+                                                @(item.Selected ? "border-blue-600 bg-blue-50" : "")"
+                                                      data-option-group="@group.Name"
+                                                      data-option-label="@item.Label"
+                                                      data-option-price="@item.Price"
+                                                      @(group.IsAddOn
+                                                      ? new Microsoft.AspNetCore.Html.HtmlString($"data-optional-id=\"{item.Id}\"")
+                                                        : new Microsoft.AspNetCore.Html.HtmlString($"data-option-id=\"{item.Id}\""))
+                                                      onclick="@(item.Disabled ? "" : $"selectOption(this, '{group.Name}', '{item.Label}')")">
+                                               @item.Label
                                         </button>
                                     }
                                 </div>
@@ -198,96 +203,141 @@
                     </button>
                 </div>
 
-                <button class="mt-4 w-full rounded-full bg-[#f7a928] hover:bg-[#e1981e] text-[#0b2f63] font-semibold py-3 inline-flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13L5.4 5M7 13l-2 7h2l2-7m8 0l2 7h2l-2-7" /></svg>
-                    Add to cart
-                </button>
-                <button class="mt-3 w-full rounded-full border font-semibold py-3 hover:bg-gray-50 inline-flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6H8l-2-2H2v2h3l3.6 7.59-1.35 2.45A2 2 0 0 0 9 18h10v-2H9.42a.25.25 0 0 1-.22-.37L10 14h7a2 2 0 0 0 1.8-1.1l2.9-5.8V6Z" /></svg>
-                    Add to PC build list
-                </button>
+                <form id="addForm" asp-controller="Cart" asp-action="Add" method="post" class="mt-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@Model.ProductId" />
+                    <input type="hidden" id="hidVariantId" name="productVariantId" value="@Model.VariantId" />
+                    <input type="hidden" id="hidQty" name="qty" value="1" />
+                    <!-- CHỈ tạo hidden optionalValueId khi người dùng có chọn (làm ở JS) -->
+
+                    <button type="submit"
+                        class="mt-4 w-full rounded-full bg-[#f7a928] hover:bg-[#e1981e] text-[#0b2f63] font-semibold py-3 inline-flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13L5.4 5M7 13l-2 7h2l2-7m8 0l2 7h2l-2-7" /></svg>
+                        Add to cart
+                    </button>
+                </form>
             </div>
         </aside>
     </section>
 </main>
+
+
+
+
+
 <script>
     let currentVariantPrice = @Model.Price; // Giá variant cơ bản
     let currentOldPrice = @Model.OldPrice ?? 0; // Giá cũ nếu có
-    let selectedOptions = {}; // { groupName: { label: price } } - lưu option đang chọn và giá
+    let selectedOptions = {};     // variant options
+    let selectedOptionalId = null; // add-on (chỉ 1 cái)
 
-    // chọn variant -> cập nhật giá tạm từ data-attrs, sau đó gọi API để chuẩn hóa
+
+    // PHẢI có hàm này trước khi gọi trong DOMContentLoaded
     async function selectVariant(btn){
         try{
             const id = btn.getAttribute('data-variant-id');
             if(!id) return;
 
-            // tạm thời update giá cho mượt
-            const p0 = parseFloat(btn.getAttribute('data-variant-price') || "0");
-            const o0 = btn.getAttribute('data-variant-old-price');
-            currentVariantPrice = p0;
-            currentOldPrice = o0 ? parseFloat(o0) : 0;
-            updatePrice(p0 + calculateOptionTotal(), o0, '@Model.Currency');
+            // nếu bạn có hidden input trong <form>:
+            document.getElementById('hidVariantId')?.setAttribute('value', id);
 
-            const res = await fetch(`/product/variant-data/${id}`);
-            if(!res.ok) return;
-            const data = await res.json();
-
-            // Reset selected options khi đổi variant
-            selectedOptions = {};
-
-            // Ảnh
-            if (data?.images?.length){
-                document.getElementById('mainImg').src = data.images[0];
-                renderThumbs(data.images);
-            }
-
-            // SKU biến thể
-            const variantSkuSpan = document.getElementById('variantSku');
-            if(variantSkuSpan && data?.variantSku){
-                variantSkuSpan.textContent = `• Variant: ${data.variantSku}`;
-            }
-
-            // Highlight
+            // highlight nút
             document.querySelectorAll('[data-variant-id]')
                 .forEach(b => b.classList.remove('border-blue-600','ring-2','ring-blue-200','bg-blue-50'));
             btn.classList.add('border-blue-600','ring-2','ring-blue-200','bg-blue-50');
 
-            // Options
-            renderOptionGroups(data.optionGroups, data.selectedOptions, data.availableValues);
-            // Giá từ API (đã áp quy tắc hết hạn/percent/final) + options
-            const apiPrice = data.price || p0;
-            const apiOldPrice = data.oldPrice || o0;
-            currentVariantPrice = apiPrice;
-            currentOldPrice = apiOldPrice ? parseFloat(apiOldPrice) : 0;
-            updatePrice(apiPrice + calculateOptionTotal(), apiOldPrice, data.currency || '@Model.Currency');
+            // reset lựa chọn add-on khi đổi variant
+            selectedOptions = {};
+            selectedOptionalId = null;
 
+            // giá tạm từ data-attrs
+            const p0 = parseFloat(btn.getAttribute('data-variant-price') || "0");
+            const o0 = btn.getAttribute('data-variant-old-price');
+            currentVariantPrice = p0;
+            currentOldPrice = o0 ? parseFloat(o0) : 0;
+            updatePrice(p0, o0, '@Model.Currency');
+
+            // gọi API variant-data (nếu có)
+            const res = await fetch(`/product/variant-data/${id}`);
+            if(res.ok){
+                const data = await res.json();
+
+                // ảnh
+                if (data?.images?.length){
+                    document.getElementById('mainImg').src = data.images[0];
+                    renderThumbs(data.images);
+                }
+
+                // sku
+                const variantSkuSpan = document.getElementById('variantSku');
+                if (variantSkuSpan && data?.variantSku){
+                    variantSkuSpan.textContent = `• Variant: ${data.variantSku}`;
+                }
+
+                // options từ API (hãy nhớ set data-optional-id cho nhóm add-on trong renderOptionGroups)
+                renderOptionGroups(data.optionGroups, data.selectedOptions, data.availableValues);
+
+                // giá chuẩn từ API
+                const apiPrice = data.price ?? p0;
+                const apiOld  = data.oldPrice ?? o0;
+                currentVariantPrice = apiPrice;
+                currentOldPrice = apiOld ? parseFloat(apiOld) : 0;
+                updatePrice(apiPrice, apiOld, data.currency || '@Model.Currency');
+            }
         }catch(e){ console.error(e); }
     }
 
-    // Chọn option -> cộng giá option vào total
     function selectOption(btn, groupName, label) {
         const price = parseFloat(btn.getAttribute('data-option-price') || '0');
-        const isCurrentlySelected = selectedOptions[groupName] && selectedOptions[groupName].label === label;
+        const optId = btn.getAttribute('data-optional-id'); // nếu có => add-on
 
-        if (isCurrentlySelected) {
-            // Unselect nếu đã chọn
+          if (optId) {
+            // Add-on: chỉ 1 cái, toggle
+            const already = selectedOptionalId === optId;
+            const sibs = btn.parentElement.querySelectorAll('[data-optional-id]');
+            sibs.forEach(b => b.classList.remove('border-blue-600','bg-blue-50'));
+            if (already) {
+              selectedOptionalId = null;
+            } else {
+              selectedOptionalId = optId;
+              btn.classList.add('border-blue-600','bg-blue-50');
+            }
+
+            // cập nhật giá hiển thị tạm (server sẽ tính lại chuẩn)
+            const base = currentVariantPrice + calculateOptionTotal();
+            const addon = already ? 0 : price;
+            updatePrice(base + addon, currentOldPrice > 0 ? currentOldPrice + addon : null, '@Model.Currency');
+            return;
+        }
+    
+
+
+         // Variant option (không gửi server, chỉ hiển thị/tính giá tạm)
+          const isSelected = selectedOptions[groupName]?.label === label;
+          if (isSelected) {
             delete selectedOptions[groupName];
-        } else {
-            // Select mới (giả sử chỉ chọn 1 per group)
-            selectedOptions[groupName] = { label: label, price: price };
-        }
+          } else {
+            selectedOptions[groupName] = { label, price };
+          }
+          [...btn.parentElement.children].forEach(b => b.classList.remove('border-blue-600','bg-blue-50'));
+          if (!isSelected) btn.classList.add('border-blue-600','bg-blue-50');
 
-        // Update highlight cho group
-        const groupButtons = btn.parentElement.querySelectorAll('button');
-        groupButtons.forEach(b => b.classList.remove('border-blue-600', 'bg-blue-50'));
-        if (!isCurrentlySelected) {
-            btn.classList.add('border-blue-600', 'bg-blue-50');
-        }
+          const optionTotal = calculateOptionTotal();
+          updatePrice(currentVariantPrice + optionTotal, currentOldPrice > 0 ? currentOldPrice + optionTotal : null, '@Model.Currency');
+    }   
 
-        // Cập nhật giá total
-        const optionTotal = calculateOptionTotal();
-        updatePrice(currentVariantPrice + optionTotal, currentOldPrice > 0 ? currentOldPrice + optionTotal : null, '@Model.Currency');
-    }
+    // form submit: chỉ thêm hidden optionalValueId khi có chọn
+    document.getElementById('addForm')?.addEventListener('submit', function () {
+      [...this.querySelectorAll('input[name="optionalValueId"]')].forEach(n => n.remove());
+      if (selectedOptionalId) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'optionalValueId'; // khớp tham số action Add(...)
+        input.value = selectedOptionalId;
+        this.appendChild(input);
+      }
+    });
+
 
     // Tính tổng giá options đang chọn
     function calculateOptionTotal() {
@@ -414,7 +464,7 @@
             document.querySelector(`[data-variant-id="@Model.VariantId"]`) ||
             document.querySelector('[data-variant-id]');
 
-        if (activeBtn) {
+        if (activeBtn && typeof selectVariant === 'function') {
             selectVariant(activeBtn);
         } else {
             const initImages = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Images ?? new System.Collections.Generic.List<string>()));
@@ -426,5 +476,6 @@
         const el = document.getElementById('qty');
         const v = Math.max(1, (parseInt(el.value || "1") || 1) + delta);
         el.value = v;
+        document.getElementById('hidQty')?.setAttribute('value', String(v));
     }
 </script>

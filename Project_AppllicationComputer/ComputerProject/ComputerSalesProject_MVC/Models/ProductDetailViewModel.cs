@@ -50,6 +50,7 @@ namespace ComputerSalesProject_MVC.Models
     {
         public string Name { get; set; } = "";
         public List<OptionItemVM> Items { get; set; } = new();
+        public bool IsAddOn { get; set; }
     }
 
     public sealed class OptionItemVM
