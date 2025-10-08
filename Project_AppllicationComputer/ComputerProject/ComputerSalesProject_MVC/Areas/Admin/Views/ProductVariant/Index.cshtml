@@ -41,113 +41,140 @@
                     <h3 class="text-xl font-semibold text-gray-800">Thao tác</h3>
                 </div>
                 <a asp-action="Create" asp-route-productId="@Model.ProductId"
-                   class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <i class="fas fa-plus mr-2"></i>Thêm biến thể mới
+                   class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-2xl hover:from-purple-600 hover:to-pink-700 transform hover:scale-110 transition-all duration-300 shadow-xl hover:shadow-2xl border-2 border-transparent hover:border-purple-300">
+                    <i class="fas fa-plus text-xl mr-3"></i>
+                    <span class="text-lg">Thêm biến thể mới</span>
                 </a>
             </div>
         </div>
 
-        <!-- Cards Layout for Better Responsiveness -->
-        <div class="grid gap-6">
+        <!-- Table Layout -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
             @if (Model?.Items != null && Model.Items.Any())
             {
-                foreach (var item in Model.Items)
-                {
-                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-all duration-300">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-                            <!-- ID & Basic Info -->
-                            <div class="lg:col-span-2">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
-                                        <span class="text-white font-bold text-sm">@item.Id</span>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">ID: @item.Id</p>
-                                        <p class="text-xs text-gray-500">SKU: @item.SKU</p>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <!-- Table Header -->
+                        <thead class="bg-gradient-to-r from-purple-50 to-pink-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    <i class="fas fa-hashtag mr-2 text-purple-500"></i>ID
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    <i class="fas fa-barcode mr-2 text-purple-500"></i>SKU
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    <i class="fas fa-tag mr-2 text-purple-500"></i>Tên biến thể
+                                </th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    <i class="fas fa-toggle-on mr-2 text-purple-500"></i>Trạng thái
+                                </th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    <i class="fas fa-boxes mr-2 text-purple-500"></i>Số lượng
+                                </th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    <i class="fas fa-tools mr-2 text-purple-500"></i>Quản lý biến thể
+                                </th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    <i class="fas fa-cogs mr-2 text-purple-500"></i>Tùy chọn sản phẩm
+                                </th>
+                            </tr>
+                        </thead>
+                        
+                        <!-- Table Body -->
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                    <!-- ID Column -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center shadow-md">
+                                                <span class="text-white font-bold text-sm">@item.Id</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- SKU Column -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">@item.SKU</div>
+                                    </td>
+                                    
+                                    <!-- Variant Name Column -->
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-semibold text-gray-900">@item.VariantName</div>
+                                    </td>
+                                    
+                                    <!-- Status Column -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        @if (item.Status == ComputerSales.Domain.Entity.EProduct.VariantStatus.Active)
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <i class="fas fa-check-circle mr-1"></i>Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                <i class="fas fa-times-circle mr-1"></i>Inactive
+                                            </span>
+                                        }
+                                    </td>
+                                    
+                                    <!-- Quantity Column -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="text-lg font-bold text-gray-900">@item.Quantity</div>
+                                    </td>
+                                    
+                                    <!-- Management Actions Column -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex gap-2 justify-center">
+                                            <a asp-action="UpdateProductVariant" asp-route-id="@item.Id"
+                                               class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white text-xs font-medium rounded-lg hover:from-yellow-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300"
+                                               title="Chỉnh sửa biến thể">
+                                                <i class="fas fa-edit mr-1"></i>Sửa
+                                            </a>
 
-                            <!-- Variant Name -->
-                            <div class="lg:col-span-3">
-                                <div>
-                                    <p class="text-sm font-semibold text-gray-900">@item.VariantName</p>
-                                    <p class="text-xs text-gray-500">Tên biến thể</p>
-                                </div>
-                            </div>
+                                            <a asp-action="DeleteProductVariant" asp-route-id="@item.Id"
+                                               class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-medium rounded-lg hover:from-red-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa biến thể này?');"
+                                               title="Xóa biến thể">
+                                                <i class="fas fa-trash mr-1"></i>Xóa
+                                            </a>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Product Options Column -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex gap-2 justify-center">
+                                            <a asp-area="Admin" asp-controller="VariantOption" asp-action="Index" asp-route-variantId="@item.Id"
+                                               class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300"
+                                               title="Xem tùy chọn">
+                                                <i class="fas fa-cogs mr-1"></i>Option
+                                            </a>
 
-                            <!-- Status -->
-                            <div class="lg:col-span-2">
-                                @if (item.Status == ComputerSales.Domain.Entity.EProduct.VariantStatus.Active)
-                                {
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <i class="fas fa-check-circle mr-1"></i>Active
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                        <i class="fas fa-times-circle mr-1"></i>Inactive
-                                    </span>
-                                }
-                            </div>
+                                            <a asp-area="Admin" asp-controller="VariantImage" asp-action="IndexVariantImage" asp-route-variantId="@item.Id"
+                                               class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-green-500 to-teal-600 text-white text-xs font-medium rounded-lg hover:from-green-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-300"
+                                               title="Xem hình ảnh">
+                                                <i class="fas fa-images mr-1"></i>Ảnh
+                                            </a>
 
-                            <!-- Quantity -->
-                            <div class="lg:col-span-1">
-                                <div class="text-center">
-                                    <p class="text-lg font-bold text-gray-900">@item.Quantity</p>
-                                    <p class="text-xs text-gray-500">Số lượng</p>
-                                </div>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="lg:col-span-4">
-                                <div class="flex flex-wrap gap-2 justify-end">
-                                    <!-- Primary Actions Row -->
-                                    <div class="flex gap-2 w-full justify-end mb-2">
-                                        <a asp-action="UpdateProductVariant" asp-route-id="@item.Id"
-                                           class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white text-xs font-medium rounded-lg hover:from-yellow-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300"
-                                           title="Chỉnh sửa biến thể">
-                                            <i class="fas fa-edit mr-1"></i>Sửa
-                                        </a>
-
-                                        <a asp-action="DeleteProductVariant" asp-route-id="@item.Id"
-                                           class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-medium rounded-lg hover:from-red-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300"
-                                           onclick="return confirm('Bạn có chắc chắn muốn xóa biến thể này?');"
-                                           title="Xóa biến thể">
-                                            <i class="fas fa-trash mr-1"></i>Xóa
-                                        </a>
-                                    </div>
-
-                                    <!-- Secondary Actions Row -->
-                                    <div class="flex gap-2 w-full justify-end">
-                                        <a asp-area="Admin" asp-controller="VariantOption" asp-action="Index" asp-route-variantId="@item.Id"
-                                           class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-medium rounded-lg hover:from-blue-600 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300"
-                                           title="Xem tùy chọn">
-                                            <i class="fas fa-cogs mr-1"></i>Option
-                                        </a>
-
-                                        <a asp-area="Admin" asp-controller="VariantImage" asp-action="IndexVariantImage" asp-route-variantId="@item.Id"
-                                           class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-green-500 to-teal-600 text-white text-xs font-medium rounded-lg hover:from-green-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-300"
-                                           title="Xem hình ảnh">
-                                            <i class="fas fa-images mr-1"></i>Ảnh
-                                        </a>
-
-                                        <a asp-area="Admin" asp-controller="VariantPrice" asp-action="IndexVariantPrice" asp-route-variantId="@item.Id"
-                                           class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-xs font-medium rounded-lg hover:from-purple-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300"
-                                           title="Xem giá">
-                                            <i class="fas fa-dollar-sign mr-1"></i>Giá
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
+                                            <a asp-area="Admin" asp-controller="VariantPrice" asp-action="IndexVariantPrice" asp-route-variantId="@item.Id"
+                                               class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-xs font-medium rounded-lg hover:from-purple-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300"
+                                               title="Xem giá">
+                                                <i class="fas fa-dollar-sign mr-1"></i>Giá
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             }
             else
             {
-                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-12 text-center">
+                <div class="p-12 text-center">
                     <div class="flex flex-col items-center">
                         <div class="w-20 h-20 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full flex items-center justify-center mb-6">
                             <i class="fas fa-layer-group text-purple-500 text-3xl"></i>

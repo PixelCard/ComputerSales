@@ -30,7 +30,7 @@ builder.Services.ConfigureAutoMapper();
 // Middleware pipeline
 // ====================================================
 var app = builder.Build();
-
+app.UseStatusCodePages();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

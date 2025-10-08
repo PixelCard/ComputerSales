@@ -46,10 +46,14 @@
             <button type="submit" class="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg hover:from-yellow-600 hover:to-orange-700">
                 💾 Lưu thay đổi
             </button>
-            <a asp-action="Index" asp-route-productId="@Model.ProductId"
-               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
-                ⬅ Quay lại
+            <a asp-area="Admin"
+               asp-controller="ProductVariant"
+               asp-action="Index"
+               asp-route-productId="@Model.ProductId"
+               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                ⬅ Quay lại danh sách biến thể
             </a>
+
         </div>
     </form>
 </div>
