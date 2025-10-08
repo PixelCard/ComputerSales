@@ -144,11 +144,10 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 
 
 
-
-        [HttpGet("{id:long}")]
-        public async Task<IActionResult> DeleteProductVariant(int id, CancellationToken ct)
+        [HttpGet("Delete/{id:long}")]
+        public async Task<IActionResult> DeleteProductVariant(long id, CancellationToken ct)
         {
-            var rs = await _get.HandleAsync(new GetById_ProductVariant_DTOcs(id), ct);
+            var rs = await _get.HandleAsync(new GetById_ProductVariant_DTOcs((int)id), ct);
             if (rs == null) return NotFound();
 
             var vm = new ProductVariantDetailVM
@@ -162,6 +161,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 
             return View(vm);
         }
+
 
 
         [HttpPost, ActionName("DeleteConfirmed")]

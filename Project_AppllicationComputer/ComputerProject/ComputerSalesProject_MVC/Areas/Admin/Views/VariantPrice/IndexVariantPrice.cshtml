@@ -23,6 +23,7 @@
                 </div>
                 <div class="flex items-center space-x-3">
                     <a asp-area="Admin" asp-controller="ProductVariant" asp-action="Index"
+                        asp-route-productId="@Model.ProductId"
                         class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white text-sm font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg">
                         <i class="fas fa-arrow-left mr-2"></i>Quay lại Variants
                     </a>
@@ -66,7 +67,7 @@
 
                 <!-- Price Details -->
                 <div class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <!-- Currency -->
                         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
                             <div class="flex items-center justify-between">
@@ -85,7 +86,8 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-semibold text-green-800 mb-1">Giá gốc</p>
-                                    <p class="text-2xl font-bold text-green-900">@price.Price.ToString("N0")</p>
+                                    <p class="text-2xl font-bold text-green-900">@price.Price.ToString("N0") @price.Currency
+                                    </p>
                                 </div>
                                 <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                                     <i class="fas fa-money-bill text-green-600"></i>
@@ -98,10 +100,25 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-semibold text-red-800 mb-1">Giá khuyến mãi</p>
-                                    <p class="text-2xl font-bold text-red-900">@price.DiscountPrice.ToString("N0")</p>
+                                    <p class="text-2xl font-bold text-red-900">@price.DiscountPrice.ToString("N0")
+                                        @price.Currency</p>
                                 </div>
                                 <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                                     <i class="fas fa-percentage text-red-600"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selling Price -->
+                        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-semibold text-purple-800 mb-1">Giá bán</p>
+                                    <p class="text-2xl font-bold text-purple-900">@((price.Price -
+                                                                            price.DiscountPrice).ToString("N0")) @price.Currency</p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-calculator text-purple-600"></i>
                                 </div>
                             </div>
                         </div>
@@ -158,12 +175,55 @@
                 </div>
             </div>
 
-            <!-- Price History Card (Optional Enhancement) -->
+            <!-- Price Formula Card -->
+            <div class="mt-8 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-200">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-calculator text-purple-600"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-purple-900 mb-4">Công thức tính giá</h3>
+                        <div class="bg-white rounded-lg p-4 border border-purple-200">
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-center">
+                                    <span class="text-sm text-gray-600">Giá bán</span>
+                                    <div class="text-2xl font-bold text-purple-600">=</div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-sm text-gray-600">Giá gốc</span>
+                                    <div class="text-2xl font-bold text-green-600">@price.Price.ToString("N0")</div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-sm text-gray-600">-</span>
+                                    <div class="text-2xl font-bold text-gray-400">-</div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-sm text-gray-600">Giá khuyến mãi</span>
+                                    <div class="text-2xl font-bold text-red-600">@price.DiscountPrice.ToString("N0")</div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-sm text-gray-600">=</span>
+                                    <div class="text-2xl font-bold text-purple-600">=</div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-sm text-gray-600">Kết quả</span>
+                                    <div class="text-2xl font-bold text-purple-600">@((price.Price -
+                                                                            price.DiscountPrice).ToString("N0"))</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information Card -->
             <div class="mt-8 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-6 border border-indigo-200">
                 <div class="flex items-start space-x-4">
                     <div class="flex-shrink-0">
                         <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-chart-line text-indigo-600"></i>
+                            <i class="fas fa-info-circle text-indigo-600"></i>
                         </div>
                     </div>
                     <div>
@@ -172,9 +232,11 @@
                             <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Giá được
                                 cập nhật tự động trên website</li>
                             <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Khuyến mãi
-                                sẽ hiển thị khi giá khuyến mãi> giá gốc</li>
+                                sẽ hiển thị khi giá khuyến mãi > 0</li>
                             <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Thời gian
                                 hiệu lực giúp quản lý khuyến mãi theo thời gian</li>
+                            <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>Giá bán
+                                cuối cùng = Giá gốc - Giá khuyến mãi</li>
                         </ul>
                     </div>
                 </div>
