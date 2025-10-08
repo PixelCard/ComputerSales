@@ -118,6 +118,21 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Commands.AddCart
                     CreatedAt = now,
                     IsSelected = true
                 };
+
+                if (cmd.OptionalValueId is int ovId)
+                {
+                    var ov = await _read.GetOptionalValueAsync(ovId, ct); // tự implement đọc DB
+                    if (ov != null)
+                    {
+                        item.UnitPrice += (ov.Price);
+
+                        var optSummary = $"{ov.OptionType?.Name}: {ov.Value}";
+                        item.OptionSummary = string.IsNullOrWhiteSpace(item.OptionSummary)
+                            ? optSummary
+                            : $"{item.OptionSummary} / {optSummary}";
+                    }
+                }
+
                 cart.Items.Add(item);
             }
             else

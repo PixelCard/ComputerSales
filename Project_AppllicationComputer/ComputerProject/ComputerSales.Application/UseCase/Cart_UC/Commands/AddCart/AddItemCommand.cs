@@ -2,6 +2,6 @@
 {
     public sealed record AddItemCommand
     (
-        int UserId, int ProductId, int? ProductVariantId, int Quantity
+        int UserId, int ProductId, int? ProductVariantId, int Quantity, int? OptionalValueId = null
     );
 }

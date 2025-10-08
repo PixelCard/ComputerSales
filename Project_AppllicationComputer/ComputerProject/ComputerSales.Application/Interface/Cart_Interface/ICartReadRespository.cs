@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Application.UseCaseDTO.Cart_DTO.Cart_Page;
 using ComputerSales.Domain.Entity.ECart;
+using ComputerSales.Domain.Entity.EOptional;
 using ComputerSales.Domain.Entity.EProduct;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,7 @@ namespace ComputerSales.Application.Interface.Cart_Interface
         Task ClearAsync(int userId, CancellationToken ct);
         Task<Cart?> GetByUserAsync(int userId, CancellationToken ct = default);
         Task<Dictionary<int, ProductVariant>> GetVariantsAsync(int[] variantIds, CancellationToken ct = default);
+
+        Task<OptionalValue?> GetOptionalValueAsync(int id, CancellationToken ct);
     }
 }

@@ -38,7 +38,27 @@
         // Logic tính lại grand total
         public void RecalculateTotals()
         {
-            GrandTotal = (Subtotal - DiscountTotal) + ShippingFee;
+            // Chốt lại số dương
+            Subtotal = Math.Max(0m, Subtotal);
+            ShippingFee = Math.Max(0m, ShippingFee);
+
+            // Discount không được âm và không vượt Subtotal
+            if (DiscountTotal < 0m) DiscountTotal = 0m;
+            if (DiscountTotal > Subtotal) DiscountTotal = Subtotal;
+
+            // (tuỳ) Nếu giỏ trống thì reset hết
+            if (Items != null && Items.Count == 0)
+            {
+                Subtotal = 0m;
+                DiscountTotal = 0m;
+                ShippingFee = 0m;        // nếu muốn miễn phí khi trống
+            }
+
+            GrandTotal = Subtotal - DiscountTotal + ShippingFee;
+
+            // Không cho âm tổng cuối
+            if (GrandTotal < 0m) GrandTotal = 0m;
+
             UpdateAt = DateTime.UtcNow;
         }
     }
