@@ -29,12 +29,15 @@ using ComputerSales.Application.UseCase.OptionalType_UC;
 using ComputerSales.Application.UseCase.OptionalValue_UC;
 using ComputerSales.Application.UseCase.Order_UC;
 using ComputerSales.Application.UseCase.Product_UC;
+using ComputerSales.Application.UseCase.ProductOptionalType_UC;
 using ComputerSales.Application.UseCase.ProductOvetView_UC;
 using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCase.Provider_UC;
 using ComputerSales.Application.UseCase.Role_UC;
 using ComputerSales.Application.UseCase.VariantImage_UC;
+using ComputerSales.Application.UseCase.VariantOptionValue_UC;
+using ComputerSales.Application.UseCase.VariantPrice_UC;
 using ComputerSales.Application.UseCase.VariantPrice_UC.variantGetPriceByVariantID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
@@ -62,16 +65,6 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ComputerSales.Infrastructure.Repositories.ForgetPassRespo;
-using ComputerSales.Application.Interface.Interface_ForgetPassword;
-using ComputerSales.Application.UseCase.ForgetPass_UC;
-using ComputerSales.Application.Payment.Interface;
-using ComputerSales.Application.Payment.VNPAY.Respository;
-using ComputerSales.Application.Interface.InterfaceVNPAYMENT;
-using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
-using ComputerSales.Application.UseCase.VariantPrice_UC;
-using ComputerSales.Application.UseCase.VariantOptionValue_UC;
-using ComputerSales.Application.UseCase.ProductOptionalType_UC;
 
 
 namespace ComputerSales.Infrastructure
