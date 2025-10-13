@@ -86,7 +86,7 @@ namespace ComputerSales.Application.Sercurity.JWT.Extensions
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
-                options.AddPolicy("StaffOrManager", p => p.RequireRole("Staff", "Manager"));
+                options.AddPolicy("StaffOnly", p => p.RequireRole("Staff"));
             });
             return services;
         }

@@ -73,17 +73,13 @@ namespace ComputerSalesProject_MVC.Controllers
         {
             var acc = await _accountService.GetAccountByEmail(vm.email, ct);
 
-            //var hash = BCrypt.Net.BCrypt.HashPassword(vm.pass); 
-            
-            //Không nên hash pass rồi so sánh vs pass ma lấy ra từ account 
-
-            //Bởi vì nó sẽ làm ra các trường id khác nhau làm cho dù nó có cùng mã hash nhưng khác salt(id  hash) khác nên sẽ khác
 
             if (acc == null || !BCrypt.Net.BCrypt.Verify(vm.pass, acc.Pass))
             {
                 ModelState.AddModelError("", "Sai tài khoản/mật khẩu");
                 return View(vm);
             }
+
 
             if (acc.Role == null) acc.Role = await _roleService.GetRole(acc.IDRole, ct);
 
@@ -112,6 +108,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 return RedirectToAction("PendingVerify", new { uid = acc.IDAccount });
             }
 
+
             var token = _jwt.Generate(acc);
 
                
@@ -125,8 +122,10 @@ namespace ComputerSalesProject_MVC.Controllers
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
             });
 
+
             // Refresh token (dài hạn) -> lưu DB 
             var rt = await _refresh.IssueAsync(acc, ct);
+
 
             // Lưu Resfresh Token vào cookie (HTTP-only)
             Response.Cookies.Append("refresh_token", rt.Token, new CookieOptions
@@ -137,6 +136,16 @@ namespace ComputerSalesProject_MVC.Controllers
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTimeOffset.UtcNow.AddDays(15)
             });
+
+
+            var Role= await _roleService.GetRole(acc.IDRole,ct);
+
+
+            if (Role.TenRole == "admin")
+            {
+                return RedirectToAction("AdminLayout", "AdminHome", new { Area = "Admin" });
+            }
+
 
 
             return RedirectToAction("Index", "Home");
