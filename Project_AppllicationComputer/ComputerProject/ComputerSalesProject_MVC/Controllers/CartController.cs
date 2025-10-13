@@ -36,7 +36,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 return Json(new { count = 0 });
             }
 
-            var vm = await _get.Handle(new GetCartPageQuery(userId), ct);
+          var vm = await _get.Handle(new GetCartPageQuery(userId), ct);
             return Json(new { count = vm.ItemsCount });
         }
 
@@ -88,8 +88,10 @@ namespace ComputerSalesProject_MVC.Controllers
             if (userId == 0) return RedirectToAction("Login", "Account");
 
             await _addItem.Handle(
-                new AddItemCommand(userId, productId, productVariantId, qty, optionalValueId),
-                ct);
+             new AddItemCommand(userId, productId, productVariantId, qty)
+             {
+                 OptionalValueId = optionalValueId   
+             }, ct);
 
             return RedirectToAction(nameof(CartHome));
         }

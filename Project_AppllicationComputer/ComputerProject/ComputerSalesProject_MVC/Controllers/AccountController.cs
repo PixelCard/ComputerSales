@@ -100,7 +100,7 @@ namespace ComputerSalesProject_MVC.Controllers
                     return View(vm);
                 }
 
-                // ✅ GỬI LẠI EMAIL Ở ĐÂY 
+                // GỬI LẠI EMAIL Ở ĐÂY 
                 await _resend.Handle(new ResendVerifyEmailDTO(acc.IDAccount), ct);
 
                 // Lấy hạn mới (nếu UC có cập nhật)
@@ -120,13 +120,24 @@ namespace ComputerSalesProject_MVC.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                Path="/",
+                SameSite = SameSiteMode.Lax,
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
             });
 
-
             // Refresh token (dài hạn) -> lưu DB 
             var rt = await _refresh.IssueAsync(acc, ct);
+
+            // Lưu Resfresh Token vào cookie (HTTP-only)
+            Response.Cookies.Append("refresh_token", rt.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                Path = "/",
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddDays(15)
+            });
+
 
             return RedirectToAction("Index", "Home");
         }
@@ -300,63 +311,6 @@ namespace ComputerSalesProject_MVC.Controllers
                 return BadRequest(new { ok = false, message = ex.Message });
             }
         }
-
-
-
-        // ====== Refresh (MVC) ======
-        // Gọi khi access token hết hạn (ví dụ Ajax POST tới /Account/Refresh)
-        [HttpPost("Refresh")]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Refresh(string? returnUrl, CancellationToken ct)
-        {
-            var refreshToken = Request.Cookies["refresh_token"];
-            if (string.IsNullOrEmpty(refreshToken))
-                return Unauthorized("Missing refresh token");
-
-            var active = await _refresh.GetActiveAsync(refreshToken, ct);
-            if (active == null)
-                return Unauthorized("Invalid/expired refresh token");
-
-            // phát access token mới từ account của refresh token
-            var newAccess = _jwt.Generate(active.Account);
-
-            Response.Cookies.Append("access_token", newAccess, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(1)
-            });
-
-
-            // --- chọn nơi để quay lại ---
-            string? target = null;
-
-
-            // 1) ưu tiên returnUrl nếu hợp lệ (local)
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                target = returnUrl;
-
-
-            // 2) fallback: dùng Referer (trang trước đó)
-            if (target == null)
-            {
-                var referer = Request.Headers["Referer"].ToString();
-                if (Uri.TryCreate(referer, UriKind.Absolute, out var uri))
-                {
-                    var path = uri.PathAndQuery;
-                    if (Url.IsLocalUrl(path) && !path.StartsWith("/Account", StringComparison.OrdinalIgnoreCase))
-                        target = path;
-                }
-            }
-
-            // 3) cuối cùng: về Home
-            return target != null
-                ? LocalRedirect(target)
-                : RedirectToAction("Index", "Home");
-        }
-
 
         // ====== Logout (MVC) ======
         [HttpPost("Logout")]

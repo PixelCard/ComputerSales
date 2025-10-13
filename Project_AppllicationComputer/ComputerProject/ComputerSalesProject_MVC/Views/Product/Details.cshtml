@@ -1,6 +1,11 @@
-﻿@model ProductDetailViewModel
+﻿@using System.Text.RegularExpressions
+@using System.Globalization
+@using Microsoft.AspNetCore.Html
+@model ProductDetailViewModel
 @{
     ViewData["Title"] = Model.Title;
+
+    var inv = CultureInfo.InvariantCulture; 
 
     var bullets = (Model.OverviewText ?? "")
         .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
@@ -77,8 +82,9 @@
                     {
                         @foreach (var group in Model.OptionGroups)
                         {
-                            var isAddOn = string.Equals(group.Name, "Add-on", StringComparison.OrdinalIgnoreCase)
-                            || string.Equals(group.Name, "Optional", StringComparison.OrdinalIgnoreCase);
+                            var isAddOn =
+                                group.Items.Any(x => x.Price > 0) ||
+                                Regex.IsMatch(group.Name ?? "", "(?i)add[- ]?on|optional");
 
                             <div class="mt-3">
                                 <div class="text-sm font-medium mb-1">@group.Name</div>
@@ -86,22 +92,18 @@
                                     @foreach (var item in group.Items)
                                     {
                                         <button type="button"
-                                           class="px-3 py-1 border rounded-lg text-sm hover:bg-blue-50 transition
-                                                @(item.Disabled ? "opacity-50 cursor-not-allowed text-gray-400 border-gray-300" : "border-gray-300")
-                                                @(item.Selected ? "border-blue-600 bg-blue-50" : "")"
-                                                      data-option-group="@group.Name"
-                                                      data-option-label="@item.Label"
-                                                      data-option-price="@item.Price"
-                                                      @(group.IsAddOn
-                                                      ? new Microsoft.AspNetCore.Html.HtmlString($"data-optional-id=\"{item.Id}\"")
-                                                        : new Microsoft.AspNetCore.Html.HtmlString($"data-option-id=\"{item.Id}\""))
-                                                      onclick="@(item.Disabled ? "" : $"selectOption(this, '{group.Name}', '{item.Label}')")">
-                                               @item.Label
+                                                class="px-3 py-1 border rounded-lg text-sm hover:bg-blue-50 transition-colors"
+                                                data-option-price="@item.Price"
+                                                @(isAddOn
+                                                  ? new HtmlString($"data-optional-id=\"{item.Id}\"")
+                                                  : new HtmlString($"data-option-id=\"{item.Id}\""))
+                                                onclick="selectOption(this, '@group.Name', '@item.Label')">
+                                          @item.Label
                                         </button>
                                     }
                                 </div>
                             </div>
-                        }
+                        }  
                     }
                 </div>
 
@@ -208,7 +210,7 @@
                     <input type="hidden" name="productId" value="@Model.ProductId" />
                     <input type="hidden" id="hidVariantId" name="productVariantId" value="@Model.VariantId" />
                     <input type="hidden" id="hidQty" name="qty" value="1" />
-                    <!-- CHỈ tạo hidden optionalValueId khi người dùng có chọn (làm ở JS) -->
+                    <input type="hidden" id="hidOptionalValueId" name="optionalValueId" value="">
 
                     <button type="submit"
                         class="mt-4 w-full rounded-full bg-[#f7a928] hover:bg-[#e1981e] text-[#0b2f63] font-semibold py-3 inline-flex items-center justify-center gap-2">
@@ -222,260 +224,105 @@
 </main>
 
 
-
-
-
 <script>
-    let currentVariantPrice = @Model.Price; // Giá variant cơ bản
-    let currentOldPrice = @Model.OldPrice ?? 0; // Giá cũ nếu có
-    let selectedOptions = {};     // variant options
-    let selectedOptionalId = null; // add-on (chỉ 1 cái)
+  let currentVariantPrice = @Model.Price;
+  let currentOldPrice = @Model.OldPrice ?? 0;
+
+  let selectedOptions = {};               
+  let selectedAddon = { id: null, price: 0 }; 
 
 
-    // PHẢI có hàm này trước khi gọi trong DOMContentLoaded
-    async function selectVariant(btn){
-        try{
-            const id = btn.getAttribute('data-variant-id');
-            if(!id) return;
+  function selectVariant(btn){
+    const id = btn.getAttribute('data-variant-id');
+    if(!id) return;
 
-            // nếu bạn có hidden input trong <form>:
-            document.getElementById('hidVariantId')?.setAttribute('value', id);
+    document.getElementById('hidVariantId').value = id;
 
-            // highlight nút
-            document.querySelectorAll('[data-variant-id]')
-                .forEach(b => b.classList.remove('border-blue-600','ring-2','ring-blue-200','bg-blue-50'));
-            btn.classList.add('border-blue-600','ring-2','ring-blue-200','bg-blue-50');
+    // reset highlight
+    document.querySelectorAll('[data-variant-id]')
+      .forEach(b => b.classList.remove('border-blue-600','ring-2','ring-blue-200','bg-blue-50'));
+    btn.classList.add('border-blue-600','ring-2','ring-blue-200','bg-blue-50');
 
-            // reset lựa chọn add-on khi đổi variant
-            selectedOptions = {};
-            selectedOptionalId = null;
+    // reset state khi đổi variant
+    selectedOptions = {};
+    selectedAddon = { id: null, price: 0 };
+    document.getElementById('hidOptionalValueId').value = "";
 
-            // giá tạm từ data-attrs
-            const p0 = parseFloat(btn.getAttribute('data-variant-price') || "0");
-            const o0 = btn.getAttribute('data-variant-old-price');
-            currentVariantPrice = p0;
-            currentOldPrice = o0 ? parseFloat(o0) : 0;
-            updatePrice(p0, o0, '@Model.Currency');
+    // giá tạm/chuẩn
+    const p0 = parseFloat(btn.getAttribute('data-variant-price') || "0");
+    const o0 = btn.getAttribute('data-variant-old-price');
+    currentVariantPrice = p0;
+    currentOldPrice = o0 ? parseFloat(o0) : 0;
 
-            // gọi API variant-data (nếu có)
-            const res = await fetch(`/product/variant-data/${id}`);
-            if(res.ok){
-                const data = await res.json();
-
-                // ảnh
-                if (data?.images?.length){
-                    document.getElementById('mainImg').src = data.images[0];
-                    renderThumbs(data.images);
-                }
-
-                // sku
-                const variantSkuSpan = document.getElementById('variantSku');
-                if (variantSkuSpan && data?.variantSku){
-                    variantSkuSpan.textContent = `• Variant: ${data.variantSku}`;
-                }
-
-                // options từ API (hãy nhớ set data-optional-id cho nhóm add-on trong renderOptionGroups)
-                renderOptionGroups(data.optionGroups, data.selectedOptions, data.availableValues);
-
-                // giá chuẩn từ API
-                const apiPrice = data.price ?? p0;
-                const apiOld  = data.oldPrice ?? o0;
-                currentVariantPrice = apiPrice;
-                currentOldPrice = apiOld ? parseFloat(apiOld) : 0;
-                updatePrice(apiPrice, apiOld, data.currency || '@Model.Currency');
-            }
-        }catch(e){ console.error(e); }
-    }
-
-    function selectOption(btn, groupName, label) {
-        const price = parseFloat(btn.getAttribute('data-option-price') || '0');
-        const optId = btn.getAttribute('data-optional-id'); // nếu có => add-on
-
-          if (optId) {
-            // Add-on: chỉ 1 cái, toggle
-            const already = selectedOptionalId === optId;
-            const sibs = btn.parentElement.querySelectorAll('[data-optional-id]');
-            sibs.forEach(b => b.classList.remove('border-blue-600','bg-blue-50'));
-            if (already) {
-              selectedOptionalId = null;
-            } else {
-              selectedOptionalId = optId;
-              btn.classList.add('border-blue-600','bg-blue-50');
-            }
-
-            // cập nhật giá hiển thị tạm (server sẽ tính lại chuẩn)
-            const base = currentVariantPrice + calculateOptionTotal();
-            const addon = already ? 0 : price;
-            updatePrice(base + addon, currentOldPrice > 0 ? currentOldPrice + addon : null, '@Model.Currency');
-            return;
-        }
-    
+    const total = currentVariantPrice + calculateOptionTotal() + selectedAddon.price;
+    const oldTotal = currentOldPrice > 0 ? currentOldPrice + selectedAddon.price : null;
+    updatePrice(total, oldTotal, '@Model.Currency');
+  }
 
 
-         // Variant option (không gửi server, chỉ hiển thị/tính giá tạm)
-          const isSelected = selectedOptions[groupName]?.label === label;
-          if (isSelected) {
-            delete selectedOptions[groupName];
-          } else {
-            selectedOptions[groupName] = { label, price };
-          }
-          [...btn.parentElement.children].forEach(b => b.classList.remove('border-blue-600','bg-blue-50'));
-          if (!isSelected) btn.classList.add('border-blue-600','bg-blue-50');
 
-          const optionTotal = calculateOptionTotal();
-          updatePrice(currentVariantPrice + optionTotal, currentOldPrice > 0 ? currentOldPrice + optionTotal : null, '@Model.Currency');
-    }   
+  function selectOption(btn, groupName, label){
+    const price = parseFloat(btn.getAttribute('data-option-price') || '0');
+    const optId = btn.getAttribute('data-optional-id'); // nếu có -> add-on
 
-    // form submit: chỉ thêm hidden optionalValueId khi có chọn
-    document.getElementById('addForm')?.addEventListener('submit', function () {
-      [...this.querySelectorAll('input[name="optionalValueId"]')].forEach(n => n.remove());
-      if (selectedOptionalId) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'optionalValueId'; // khớp tham số action Add(...)
-        input.value = selectedOptionalId;
-        this.appendChild(input);
+    if (optId) {
+      // toggle add-on
+      const isSame = selectedAddon.id === optId;
+
+      // unhighlight siblings
+      btn.parentElement.querySelectorAll('[data-optional-id]')
+        .forEach(b => b.classList.remove('border-blue-600','bg-blue-50'));
+
+      if (isSame) {
+        selectedAddon = { id: null, price: 0 };
+        document.getElementById('hidOptionalValueId').value = "";
+      } else {
+        selectedAddon = { id: optId, price: price };
+        document.getElementById('hidOptionalValueId').value = optId;
+        btn.classList.add('border-blue-600','bg-blue-50');
       }
+
+      const total = currentVariantPrice + calculateOptionTotal() + selectedAddon.price;
+      const oldTotal = currentOldPrice > 0 ? currentOldPrice + selectedAddon.price : null;
+      updatePrice(total, oldTotal, '@Model.Currency');
+      return;
+    }
+
+    // option cấu hình
+    const isSelected = selectedOptions[groupName]?.label === label;
+    if (isSelected) delete selectedOptions[groupName];
+    else selectedOptions[groupName] = { label, price };
+
+    // highlight trong nhóm
+    [...btn.parentElement.children].forEach(b => b.classList.remove('border-blue-600','bg-blue-50'));
+    if (!isSelected) btn.classList.add('border-blue-600','bg-blue-50');
+
+    const total = currentVariantPrice + calculateOptionTotal() + selectedAddon.price;
+    const oldTotal = currentOldPrice > 0 ? currentOldPrice + selectedAddon.price : null;
+    updatePrice(total, oldTotal, '@Model.Currency');
+  }
+
+  function calculateOptionTotal(){
+    return Object.values(selectedOptions).reduce((s, o) => s + (o.price || 0), 0);
+  }
+
+  function updatePrice(price, oldPrice, currency){ /* … giữ nguyên hàm bạn đang có … */ }
+
+  // qty
+  function chgQty(delta){
+    const el = document.getElementById('qty');
+    const v = Math.max(1, (parseInt(el.value || "1") || 1) + delta);
+    el.value = v;
+    document.getElementById('hidQty').value = String(v);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+      const activeBtn =
+        document.querySelector('[data-variant-id].ring-2') ||
+        document.querySelector(`[data-variant-id="@Model.VariantId"]`) ||
+        document.querySelector('[data-variant-id]');
+      if (activeBtn) selectVariant(activeBtn);
     });
-
-
-    // Tính tổng giá options đang chọn
-    function calculateOptionTotal() {
-        return Object.values(selectedOptions).reduce((sum, opt) => sum + (opt.price || 0), 0);
-    }
-
-    function updatePrice(price, oldPrice, currency){
-        const cur = currency || '@Model.Currency';
-        const el = document.getElementById('currentPrice');
-        const oldEl = document.getElementById('oldPrice');
-
-        const p = Number(price || 0);
-        const whole = Math.trunc(p);
-        const dec = (p - whole).toFixed(2).substring(2).padEnd(2, '0');
-
-        if(el){
-            el.innerHTML = `
-                <svg class="w-6 h-6 mt-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a2 2 0 0 1 2 2v1h1a3 3 0 0 1 0 6h-3v2h3a3 3 0 1 1 0 6h-1v1a2 2 0 1 1-4 0v-1H9a3 3 0 0 1 0-6h3v-2H9a3 3 0 0 1 0-6h1V3a2 2 0 0 1 2-2Z"/></svg>
-                ${cur}${whole}<span class="text-base align-super">.${dec}</span>`;
-        }
-
-        if(oldEl){
-            if(oldPrice && Number(oldPrice) > 0){
-                const oldP = Number(oldPrice);
-                const oldWhole = Math.trunc(oldP);
-                const oldDec = (oldP - oldWhole).toFixed(2).substring(2).padEnd(2, '0');
-                oldEl.innerHTML = `${cur}${oldWhole}.<span class="text-sm">${oldDec}</span>`;
-                oldEl.style.display = 'block';
-            } else {
-                oldEl.style.display = 'none';
-            }
-        }
-
-        const fin = document.querySelector('.financing-info');
-        if (fin) {
-            const finP = p / 4;
-            const finWhole = Math.trunc(finP);
-            const finDec = (finP - finWhole).toFixed(2).substring(2).padEnd(2, '0');
-            fin.innerHTML = `Pay in 4 interest-free payments of <span class="font-semibold">${cur}${finWhole}.<span class="text-xs">${finDec}</span></span>`;
-        }
-    }
-
-    function renderThumbs(items){
-        const wrap = document.getElementById('thumbs');
-        if(!wrap) return;
-        wrap.innerHTML = '';
-
-        items.forEach((url, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'rounded-lg border border-gray-200 bg-white hover:border-blue-500 p-1';
-            btn.onclick = () => { const main = document.getElementById('mainImg'); if(main){ main.src = url; } };
-
-            const img = document.createElement('img');
-            img.src = url; img.alt = 'thumb ' + idx;
-            img.className = 'w-20 h-14 object-cover rounded border border-gray-200';
-
-            btn.appendChild(img);
-            wrap.appendChild(btn);
-        });
-    }
-
-    function renderOptionGroups(groups, selected, availableValues) {
-        const wrap = document.getElementById("optionsWrap");
-        wrap.innerHTML = "";
-        if (!groups || !groups.length) return;
-
-        groups.forEach(g => {
-            const div = document.createElement("div");
-            div.className = "mt-3";
-            div.innerHTML = `<div class="font-medium text-sm mb-1">${g.name}</div>`;
-
-            const list = document.createElement("div");
-            list.className = "flex gap-2 flex-wrap";
-
-            (g.values || []).forEach(valObj => {
-                // Giả sử g.values là array of {label: string, price: number}
-                const val = valObj.label || valObj; // Backward compat nếu chỉ string
-                const price = valObj.price || 0;
-                const btn = document.createElement("button");
-                btn.className = "px-3 py-1 border rounded-lg text-sm hover:bg-blue-50 transition border-gray-300";
-                btn.innerText = val;
-                btn.setAttribute('data-option-group', g.name);
-                btn.setAttribute('data-option-label', val);
-                btn.setAttribute('data-option-price', price.toString());
-
-                // highlight value đang được chọn của biến thể
-                const isSelected = selected && selected[g.name] === val;
-                if (isSelected) {
-                    btn.classList.add("border-blue-600", "bg-blue-50");
-                    selectedOptions[g.name] = { label: val, price: price };
-                }
-
-                // Disable nếu không available (chưa assign variant)
-                const availForType = availableValues?.[g.name] || [];
-                const isAvailable = availForType.includes(val);
-                if (!isAvailable) {
-                    btn.disabled = true;
-                    btn.classList.add("opacity-50", "cursor-not-allowed", "text-gray-400");
-                    btn.title = "Chưa có phiên bản này";
-                }
-
-                btn.onclick = () => {
-                    if (btn.disabled) return;
-                    // chỉ highlight tại group hiện tại (không gọi API lọc biến thể ở đây)
-                    [...list.children].forEach(b => b.classList.remove("border-blue-600","bg-blue-50"));
-                    if (selectedOptions[g.name]?.label !== val) {
-                        btn.classList.add("border-blue-600", "bg-blue-50");
-                    }
-                    selectOption(btn, g.name, val);
-                };
-
-                list.appendChild(btn);
-            });
-
-            div.appendChild(list);
-            wrap.appendChild(div);
-        });
-    }
-
-    // Auto-load variant đang chọn
-    document.addEventListener("DOMContentLoaded", () => {
-        const activeBtn =
-            document.querySelector('[data-variant-id].ring-2') ||
-            document.querySelector(`[data-variant-id="@Model.VariantId"]`) ||
-            document.querySelector('[data-variant-id]');
-
-        if (activeBtn && typeof selectVariant === 'function') {
-            selectVariant(activeBtn);
-        } else {
-            const initImages = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Images ?? new System.Collections.Generic.List<string>()));
-            if(initImages.length){ renderThumbs(initImages); }
-        }
-    });
-
-    function chgQty(delta){
-        const el = document.getElementById('qty');
-        const v = Math.max(1, (parseInt(el.value || "1") || 1) + delta);
-        el.value = v;
-        document.getElementById('hidQty')?.setAttribute('value', String(v));
-    }
 </script>
+
+

@@ -54,6 +54,7 @@ namespace ComputerSales.Application.Sercurity.JWT.Extensions
                         ClockSkew = TimeSpan.Zero          // bỏ lệch mặc định 5 phút
                     };
 
+                    //Nhận 1 key từ Cookie sau đó gắn vào cho JWT
                     o.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = ctx =>
