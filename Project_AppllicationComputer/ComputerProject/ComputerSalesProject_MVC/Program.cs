@@ -24,10 +24,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplicationUseCase();
 
 
-//VNPAY
-builder.Services.Configure<VnpayOptions>(builder.Configuration.GetSection("Vnpay"));
-
-
 // AutoMapper
 builder.Services.ConfigureAutoMapper();
 
