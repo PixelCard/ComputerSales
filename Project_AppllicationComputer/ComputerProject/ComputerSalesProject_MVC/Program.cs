@@ -1,3 +1,4 @@
+using ComputerSales.Application.Payment.VNPAY.Entity;
 using ComputerSales.Application.Sercurity.JWT.Extensions;
 using ComputerSales.Infrastructure;
 using ComputerSalesProject_MVC.Extensions;
@@ -21,6 +22,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 
 builder.Services.AddApplicationUseCase();
+
+
+//VNPAY
+builder.Services.Configure<VnpayOptions>(builder.Configuration.GetSection("Vnpay"));
 
 
 // AutoMapper
