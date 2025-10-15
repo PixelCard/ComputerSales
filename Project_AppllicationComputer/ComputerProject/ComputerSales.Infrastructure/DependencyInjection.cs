@@ -72,6 +72,7 @@ using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
 using ComputerSales.Application.UseCase.VariantPrice_UC;
 using ComputerSales.Application.UseCase.VariantOptionValue_UC;
 using ComputerSales.Application.UseCase.ProductOptionalType_UC;
+using ComputerSales.Application.AccountBlockDTO;
 
 
 namespace ComputerSales.Infrastructure
@@ -279,6 +280,8 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<GetByIdProvider_UC>();
             services.AddScoped<UpdateProvider_UC>();
 
+            //================= Account Block ==============//
+            services.AddScoped<CheckAccountBlock_UC>();
 
             return services;
         }
@@ -309,5 +312,8 @@ dotnet ef database update -p ComputerSales.Infrastructure -s API_ComputerProject
 -> git changes -> view all commmits -> incomming -> fetch -> full
 
  */
+
+
+
 
 

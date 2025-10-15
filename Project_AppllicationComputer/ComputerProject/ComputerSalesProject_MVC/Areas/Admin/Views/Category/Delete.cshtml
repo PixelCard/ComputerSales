@@ -1,60 +1,114 @@
-﻿@model ComputerSales.Application.UseCaseDTO.Category_DTO.CategoryOutput
-<script src="https://cdn.tailwindcss.com"></script>
-@{
-    ViewData["Title"] = "Delete Category";
+﻿@{
+    ViewData["Title"] = "Xóa danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-gray-900">Xoá Category</h1>
-        <p class="text-sm text-gray-500 mt-1">Hành động này không thể hoàn tác.</p>
-    </div>
+@model ComputerSales.Application.UseCaseDTO.Category_DTO.CategoryOutput
 
-    <div class="mb-4 rounded-md border border-rose-200 bg-rose-50 p-4 text-rose-800">
-        <div class="font-medium">Bạn có chắc chắn muốn xoá mục sau?</div>
-        <ul class="mt-2 list-disc pl-5 text-sm">
-            <li><span class="font-medium">ID:</span> @Model.id</li>
-            <li><span class="font-medium">Tên:</span> @Model.name</li>
-        </ul>
-    </div>
-
-    <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
-        <div class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div class="text-sm font-medium text-gray-500">ID</div>
-            <div class="sm:col-span-2 text-sm text-gray-900">@Model.id</div>
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-red-50 to-white">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-red-100 rounded-lg">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">Xóa danh mục</h1>
+                        <p class="text-sm text-gray-500">Hành động này không thể hoàn tác</p>
+                    </div>
+                </div>
+                <a asp-area="Admin" asp-controller="Category" asp-action="Details" asp-route-id="@Model.id"
+                   class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Quay lại
+                </a>
+            </div>
         </div>
-        <div class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div class="text-sm font-medium text-gray-500">Tên</div>
-            <div class="sm:col-span-2 text-sm text-gray-900">@Model.name</div>
+
+        <!-- Warning Message -->
+        <div class="px-6 py-4 bg-red-50 border-l-4 border-red-400">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">
+                        Bạn có chắc chắn muốn xóa danh mục này?
+                    </h3>
+                    <div class="mt-2 text-sm text-red-700">
+                        <p>Hành động này sẽ xóa vĩnh viễn danh mục và không thể hoàn tác.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6">
+            <div class="space-y-6">
+                <!-- ID Field -->
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-hashtag text-blue-600"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-500">ID Danh mục</div>
+                        <div class="text-lg font-semibold text-gray-900">@Model.id</div>
+                    </div>
+                </div>
+
+                <!-- Name Field -->
+                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-tag text-blue-600"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-500">Tên danh mục</div>
+                        <div class="text-lg font-semibold text-gray-900">@Model.name</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <form asp-area="Admin"
+                  asp-controller="Category"
+                  asp-action="ConfirmDelete"
+                  asp-route-id="@Model.id"
+                  method="post"
+                  class="mt-8 flex items-center justify-between pt-6 border-t border-gray-200">
+                @Html.AntiForgeryToken()
+
+                <div class="flex space-x-3">
+                    <a asp-area="Admin" asp-controller="Category" asp-action="Details" asp-route-id="@Model.id"
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                        <i class="fas fa-times mr-2"></i>
+                        Hủy
+                    </a>
+                    <a asp-area="Admin" asp-controller="Category" asp-action="Index"
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Quay lại danh sách
+                    </a>
+                </div>
+
+                <button type="submit"
+                        onclick="return confirmDelete('@Model.name')"
+                        class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 shadow-sm">
+                    <i class="fas fa-trash mr-2"></i>
+                    Xóa danh mục
+                </button>
+            </form>
         </div>
     </div>
-
-    <form asp-area="Admin"
-          asp-controller="Category"
-          asp-action="ConfirmDelete"
-          asp-route-id="@Model.id"
-          method="post"
-          class="mt-6 flex items-center gap-3">
-        @Html.AntiForgeryToken()
-
-        <button type="submit"
-                class="inline-flex items-center rounded-md bg-rose-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-rose-600 focus:ring-offset-2">
-            Xoá
-        </button>
-
-        <a asp-area="Admin"
-           asp-controller="Category"
-           asp-action="Details"
-           asp-route-id="@Model.id"
-           class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-            Huỷ
-        </a>
-
-        <a asp-area="Admin"
-           asp-controller="Category"
-           asp-action="Index"
-           class="ml-auto text-sm text-gray-600 hover:text-gray-900">
-            ← Quay lại danh sách
-        </a>
-    </form>
 </div>
+
+<script>
+function confirmDelete(categoryName) {
+    return confirm(`Bạn có chắc chắn muốn xóa danh mục "${categoryName}"?\n\nHành động này không thể hoàn tác!`);
+}
+</script>
