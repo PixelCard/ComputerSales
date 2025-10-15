@@ -210,7 +210,7 @@ namespace ComputerSalesProject_MVC.Controllers
 
             await _addOrder.MarkPaidAsync(newOrderId, PaymentKind.VNPAY, resp.TransactionId, resp.VnPayResponseCode, ct);
 
-            await _vnPaySession.CompleteAsync(txnRef, newOrderId, new VnPayCallbackDataDTO
+            await _vnPaySession.CompleteAsync(session.Id, newOrderId, new VnPayCallbackDataDTO
             {
                 TransactionId = resp.TransactionId,
                 ResponseCode = resp.VnPayResponseCode,

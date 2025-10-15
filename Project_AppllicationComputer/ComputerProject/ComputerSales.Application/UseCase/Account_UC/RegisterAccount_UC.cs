@@ -39,32 +39,36 @@ namespace ComputerSales.Application.UseCase.Account_UC
             var acc = Account.Create(emailNorm, hash, cmd.RoleId ?? 1,DateTime.Now);
 
             // map Customer nếu cần…
-
             await _uow.BeginTransactionAsync(ct);
+            try
+            {
+                await _accounts.AddAccount(acc, ct);
 
-            await _accounts.AddAccount(acc, ct);
+                await _uow.SaveChangesAsync(ct);
 
-            await _uow.SaveChangesAsync(ct);
+                var customer = Customer.create(null, cmd.UserName, cmd.Description_User, cmd.address, cmd.phone, DateTime.Now, acc.IDAccount);
 
-            var customer = Customer.create(null, cmd.UserName, cmd.Description_User, cmd.address, cmd.phone, DateTime.Now, acc.IDAccount);
+                await _customer.AddAsync(customer, ct);
 
-            await _customer.AddAsync(customer,ct);
+                await _uow.SaveChangesAsync(ct);
 
-            await _uow.SaveChangesAsync(ct);
+                // tạo verify key 60s
+                var (rawKey, rec, expireAt) = CreateVerifyKey(acc.IDAccount, seconds: 60);
+                acc.MarkVerifyWindow(expireAt);
+                await _keys.AddAsync(rec, ct);
+                await _accounts.UpdateAccount(acc, ct);
+                await _uow.SaveChangesAsync(ct);
 
-            // tạo verify key 60s
-            var (rawKey, rec, expireAt) = CreateVerifyKey(acc.IDAccount, seconds: 60);
-            acc.MarkVerifyWindow(expireAt);
-            await _keys.AddAsync(rec, ct);
-            await _accounts.UpdateAccount(acc, ct);
-            await _uow.SaveChangesAsync(ct);
+                // gửi email
+                var link = $"{_cfg["Frontend:BaseUrl"]}/Account/Verify?uid={acc.IDAccount}&key={Uri.EscapeDataString(rawKey)}";
+                var html = $@"<p>Nhấn để xác thực (hết hạn sau 60 giây): <a href=""{link}"">Xác thực email</a></p>";
+                await _email.SendAsync(acc.Email, "Xác nhận email", html, ct);
 
-            // gửi email
-            var link = $"{_cfg["Frontend:BaseUrl"]}/Account/Verify?uid={acc.IDAccount}&key={Uri.EscapeDataString(rawKey)}";
-            var html = $@"<p>Nhấn để xác thực (hết hạn sau 60 giây): <a href=""{link}"">Xác thực email</a></p>";
-            await _email.SendAsync(acc.Email, "Xác nhận email", html, ct);
-
-            await _uow.CommitAsync(ct);
+                await _uow.CommitAsync(ct);
+            }catch (Exception ex)
+            {
+                await _uow.RollbackAsync(ct);
+            }
         }
 
         private static (string raw, EmailVerifyKey rec, DateTime expireAt) CreateVerifyKey(int accountId, int seconds)

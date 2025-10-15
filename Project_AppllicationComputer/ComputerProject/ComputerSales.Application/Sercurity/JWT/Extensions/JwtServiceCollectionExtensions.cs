@@ -1,8 +1,11 @@
 ﻿using ComputerSales.Application.Sercurity.JWT.Enity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 namespace ComputerSales.Application.Sercurity.JWT.Extensions
@@ -37,10 +40,14 @@ namespace ComputerSales.Application.Sercurity.JWT.Extensions
                     o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
+
+
                 .AddJwtBearer(o =>
                 {
                     o.RequireHttpsMetadata = requireHttps; //khi true middleware sẽ yêu cầu metadata qua HTTPS(bật ở prod)
                     o.SaveToken = true; // lưu token đã validated vào HttpContext
+
+                    o.MapInboundClaims = false;
 
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -51,9 +58,14 @@ namespace ComputerSales.Application.Sercurity.JWT.Extensions
                         ValidIssuer = jwt.Issuer,
                         ValidAudience = jwt.Audience,
                         IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-                        ClockSkew = TimeSpan.Zero          // bỏ lệch mặc định 5 phút
+                        ClockSkew = TimeSpan.FromSeconds(30),
+
+                        //map đúng role & name 
+                        RoleClaimType = ClaimTypes.Role,
+                        NameClaimType = ClaimTypes.NameIdentifier
                     };
 
+                    //Nhận 1 key từ Cookie sau đó gắn vào cho JWT
                     o.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = ctx =>
@@ -71,8 +83,11 @@ namespace ComputerSales.Application.Sercurity.JWT.Extensions
                     extra?.Invoke(o);
                 });
 
-            services.AddAuthorization(); // có thể AddPolicy ở đây nếu muốn
-
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
+                options.AddPolicy("StaffOnly", p => p.RequireRole("Staff"));
+            });
             return services;
         }
     }

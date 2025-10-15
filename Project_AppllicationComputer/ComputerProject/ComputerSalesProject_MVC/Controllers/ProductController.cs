@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ComputerSales.Application.UseCase.Product_UC;
+﻿using ComputerSales.Application.UseCase.Product_UC;
+using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCaseDTO.Product_DTO;
 using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence;
@@ -16,11 +13,16 @@ namespace ComputerSalesProject_MVC.Controllers
     {
         private readonly AppDbContext _context;
         private readonly CreateProduct_UC _createUC;
+        private readonly GetByIdProductVariant_UC getByIdProductVariant_UC;
 
-        public ProductController(CreateProduct_UC createUC, AppDbContext context)
+        public ProductController(
+            CreateProduct_UC createUC, 
+            AppDbContext context, 
+            GetByIdProductVariant_UC getByIdProductVariant_UC)
         {
             _createUC = createUC;
             _context = context;
+            this.getByIdProductVariant_UC= getByIdProductVariant_UC;
         }
 
         // ======================== PRODUCT DETAILS ======================== //
@@ -196,132 +198,6 @@ namespace ComputerSalesProject_MVC.Controllers
                 .ToListAsync(ct);
 
             return View("Details", vm);
-        }
-
-        // ======================== CREATE (demo) ======================== //
-        [HttpGet("/product/create")]
-        public IActionResult Create()
-        {
-            // demo view; nếu bạn có view riêng thì dùng đúng view đó
-            return View(new ProductDTOInput("", 1, 0, 0, "", ""));
-        }
-
-        [HttpPost("/product/create")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductDTOInput input, CancellationToken ct)
-        {
-            if (!ModelState.IsValid) return View(input);
-            try
-            {
-                var result = await _createUC.HandleAsync(input, ct);
-                TempData["SuccessMessage"] = $"Đã tạo sản phẩm {result.SKU} thành công!";
-                return RedirectToAction(nameof(Create));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(input);
-            }
-        }
-
-        [HttpGet("/product/variant-data/{id:int}")]
-        public async Task<IActionResult> VariantData(int id)
-        {
-            var now = DateTime.UtcNow;
-
-            // 1) Lấy thông tin cơ bản của biến thể + 1 hàng giá đang hiệu lực (mới nhất)
-            var v = await _context.productVariants
-                .AsNoTracking()
-                .Where(x => x.Id == id)
-                .Select(x => new
-                {
-                    x.Id,
-                    x.SKU,
-                    x.Quantity,
-                    x.ProductId,
-
-                    // hàng giá mới nhất (nếu hợp lệ)
-                    PriceRow = x.VariantPrices
-                        .OrderByDescending(p => p.ValidFrom ?? DateTime.MinValue)
-                        .FirstOrDefault(),
-
-                    Images = x.VariantImages
-                        .OrderBy(i => i.SortOrder)
-                        .Select(i => i.Url)
-                        .ToList(),
-
-                    // các option/value của chính biến thể này (để biết value đang chọn)
-                    Selected = x.VariantOptionValues.Select(vo => new
-                    {
-                        TypeName = vo.OptionalValue.OptionType.Name,
-                        Value = vo.OptionalValue.Value
-                    }).ToList()
-                })
-                .FirstOrDefaultAsync();
-
-            if (v == null) return NotFound();
-
-            // 2) Lấy toàn bộ OptionType gán cho Product (qua bảng ProductOptionType)
-            var typeList = await _context.productOptionTypes
-                .AsNoTracking()
-                .Where(pot => pot.ProductId == v.ProductId)
-                .Select(pot => new { pot.OptionTypeId, pot.OptionType.Name })
-                .ToListAsync();
-
-            var optionTypeIds = typeList.Select(t => t.OptionTypeId).ToList();
-
-            // 3) Lấy TẤT CẢ OptionalValue cho mỗi OptionType của Product (KHÔNG qua VariantOptionValue)
-            var allValuesByType = await _context.optionalValues
-                .AsNoTracking()
-                .Where(ov => optionTypeIds.Contains(ov.OptionTypeId))
-                .Select(ov => new { ov.OptionTypeId, ov.Value, ov.SortOrder, ov.Price })
-                .OrderBy(x => x.SortOrder)
-                .ToListAsync();
-
-            var optionGroups = typeList.Select(t => new
-            {
-                Name = t.Name,
-                Values = allValuesByType
-                    .Where(val => val.OptionTypeId == t.OptionTypeId)
-                    .OrderBy(val => val.SortOrder)
-                    .Select(val => new { label = val.Value, price = val.Price })
-                    .ToList()
-            }).ToList();
-
-            // 4) Tính giá hiển thị
-            var (price, oldPrice, currency) = ResolveDisplayPrice(v.PriceRow, now);
-
-            // 5) Map selected -> dictionary để client highlight
-            var selectedDict = v.Selected
-                .GroupBy(s => s.TypeName)
-                .ToDictionary(g => g.Key, g => g.First().Value);
-
-            // 6) Thêm info cho available (value nào có variant) - group by TypeName
-            var availableValuesByType = await _context.variantOptionValues
-                .AsNoTracking()
-                .Where(vo => vo.Variant.ProductId == v.ProductId)
-                .Select(vo => new { TypeName = vo.OptionalValue.OptionType.Name, Value = vo.OptionalValue.Value })
-                .Distinct()
-                .ToListAsync();
-
-            return Json(new
-            {
-                variantId = v.Id,
-                variantSku = v.SKU,
-                quantity = v.Quantity,
-                images = v.Images,
-
-                currency,
-                price,
-                oldPrice,
-
-                // *** toàn bộ OptionType + value của Product ***
-                optionGroups,
-                // *** giá trị đang chọn của biến thể ***
-                selectedOptions = selectedDict,
-                // *** available values per TypeName ***
-                availableValues = availableValuesByType.GroupBy(x => x.TypeName).ToDictionary(g => g.Key, g => g.Select(vv => vv.Value).ToList())
-            });
         }
 
         /// <summary>
