@@ -1,51 +1,80 @@
-@model List<ComputerSales.Application.UseCaseDTO.Provider_DTO.ProviderOutput>
-<script src="https://cdn.tailwindcss.com"></script>
+@{
+    ViewData["Title"] = "Quản lý nhà cung cấp";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
 
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-12 px-4 flex items-start justify-center relative">
-    <div class="pointer-events-none absolute inset-0 [background:radial-gradient(520px_220px_at_15%_0%,rgba(99,102,241,0.08),transparent_60%),radial-gradient(620px_260px_at_100%_12%,rgba(16,185,129,0.08),transparent_60%)]"></div>
-<div class="relative w-full max-w-4xl bg-white/90 backdrop-blur rounded-2xl shadow-xl ring-1 ring-gray-200">
-        <div class="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-emerald-500"></div>
-                <h1 class="text-lg md:text-xl font-semibold text-gray-900">Nhà cung cấp</h1>
+@model List<ComputerSales.Application.UseCaseDTO.Provider_DTO.ProviderOutput>
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-blue-100 rounded-lg">
+                    <i class="fas fa-truck text-blue-600 text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-semibold text-gray-900">Quản lý nhà cung cấp</h1>
+                    <p class="text-sm text-gray-500">Danh sách các nhà cung cấp trong hệ thống</p>
+                </div>
             </div>
-            <a href="@Url.Action("Create")" class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-indigo-700">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10 3a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H4a1 1 0 1 1 0-2h5V4a1 1 0 0 1 1-1Z"/></svg>
-                Thêm
+            <a href="@Url.Action("Create")" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-sm">
+                <i class="fas fa-plus mr-2"></i>
+                Thêm nhà cung cấp
             </a>
         </div>
-        <div class="h-1 bg-gradient-to-r from-indigo-500 via-transparent to-emerald-500 opacity-30"></div>
-        <div class="p-4 sm:p-6">
-            <div class="overflow-x-auto">
+    </div>
+
+    <!-- Content -->
+    <div class="p-6">
+        <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-blue-50">
                     <tr>
-                        <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">ID</th>
-                        <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600">Tên NCC</th>
-                        <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600">Hành động</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">
+                            <i class="fas fa-hashtag mr-2"></i>ID
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-700 uppercase tracking-wider">
+                            <i class="fas fa-building mr-2"></i>Tên nhà cung cấp
+                        </th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-blue-700 uppercase tracking-wider">
+                            <i class="fas fa-cogs mr-2"></i>Hành động
+                        </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 bg-white">
+                <tbody class="bg-white divide-y divide-gray-200">
                     @foreach (var p in Model)
                     {
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-2 text-base md:text-sm text-gray-700">@p.ProviderID</td>
-                            <td class="px-4 py-2 text-base md:text-sm text-gray-900">
-                                <span class="inline-flex items-center gap-2">
-                                    <span class="h-2 w-2 rounded-full bg-indigo-500"></span>
-                                    @p.ProviderName
+                        <tr class="hover:bg-blue-50 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    @p.ProviderID
                                 </span>
                             </td>
-                            <td class="px-4 py-2 whitespace-nowrap">
-                                <div class="flex justify-end gap-2 flex-wrap">
-                                    <a href="@Url.Action("Edit", new { id = p.ProviderID })" class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm md:text-[13px] font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M12.316 3.051a1.5 1.5 0 0 1 2.122 0l2.511 2.511a1.5 1.5 0 0 1 0 2.122l-7.15 7.15a2 2 0 0 1-.894.516l-3.3.943a.75.75 0 0 1-.927-.927l.943-3.3a2 2 0 0 1 .516-.894l7.179-7.12Z"/></svg>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-8 w-8">
+                                        <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                            <i class="fas fa-truck text-blue-600 text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">@p.ProviderName</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex justify-end space-x-2">
+                                    <a href="@Url.Action("Edit", new { id = p.ProviderID })" 
+                                       class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                                        <i class="fas fa-edit mr-1"></i>
                                         Sửa
                                     </a>
-                                    <form method="post" action="@Url.Action("Delete")" onsubmit="return confirm('Xóa nhà cung cấp này?');">
+                                    <form method="post" action="@Url.Action("Delete")" onsubmit="return confirmDelete('@p.ProviderName')" class="inline">
                                         <input type="hidden" name="id" value="@p.ProviderID" />
-                                        <button class="inline-flex items-center gap-1 rounded-md bg-rose-600 px-3 py-2 text-sm md:text-[13px] font-medium text-white shadow hover:bg-rose-700">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 2a1 1 0 0 0-.894.553L7.382 4H4a1 1 0 1 0 0 2h12a1 1 0 1 0 0-2h-3.382l-.724-1.447A1 1 0 0 0 11 2H9Zm-3 6a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V9a1 1 0 0 1 1-1Zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V9a1 1 0 0 1 1-1Zm5 1a1 1 0 0 0-2 0v6a1 1 0 1 0 2 0V9Z" clip-rule="evenodd"/></svg>
+                                        <button type="submit" 
+                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                                            <i class="fas fa-trash mr-1"></i>
                                             Xóa
                                         </button>
                                     </form>
@@ -55,9 +84,14 @@
                     }
                 </tbody>
             </table>
-            </div>
         </div>
     </div>
 </div>
+
+<script>
+function confirmDelete(providerName) {
+    return confirm(`Bạn có chắc chắn muốn xóa nhà cung cấp "${providerName}"?\n\nHành động này không thể hoàn tác!`);
+}
+</script>
 
 

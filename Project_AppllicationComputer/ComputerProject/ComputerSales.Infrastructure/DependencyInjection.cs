@@ -65,6 +65,17 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ComputerSales.Infrastructure.Repositories.ForgetPassRespo;
+using ComputerSales.Application.Interface.Interface_ForgetPassword;
+using ComputerSales.Application.UseCase.ForgetPass_UC;
+using ComputerSales.Application.Payment.Interface;
+using ComputerSales.Application.Payment.VNPAY.Respository;
+using ComputerSales.Application.Interface.InterfaceVNPAYMENT;
+using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
+using ComputerSales.Application.UseCase.VariantPrice_UC;
+using ComputerSales.Application.UseCase.VariantOptionValue_UC;
+using ComputerSales.Application.UseCase.ProductOptionalType_UC;
+using ComputerSales.Application.AccountBlockDTO;
 
 
 namespace ComputerSales.Infrastructure
@@ -272,6 +283,8 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<GetByIdProvider_UC>();
             services.AddScoped<UpdateProvider_UC>();
 
+            //================= Account Block ==============//
+            services.AddScoped<CheckAccountBlock_UC>();
 
             return services;
         }
@@ -302,5 +315,8 @@ dotnet ef database update -p ComputerSales.Infrastructure -s API_ComputerProject
 -> git changes -> view all commmits -> incomming -> fetch -> full
 
  */
+
+
+
 
 

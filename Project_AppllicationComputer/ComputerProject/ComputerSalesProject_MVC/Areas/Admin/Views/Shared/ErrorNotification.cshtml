@@ -1,0 +1,89 @@
+@{
+    var errorMessage = ViewBag.ErrorMessage as string ?? TempData["ErrorMessage"] as string;
+    var errorTitle = ViewBag.ErrorTitle as string ?? TempData["ErrorTitle"] as string ?? "Thông báo lỗi";
+    var showError = !string.IsNullOrEmpty(errorMessage);
+}
+
+@if (showError)
+{
+    <!-- Error Notification Modal -->
+    <div id="errorNotificationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform transition-all duration-300 scale-100 opacity-100">
+            <!-- Header with close button -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                    @errorTitle
+                </h3>
+                <button onclick="closeErrorNotification()" 
+                        class="text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full p-2 transition-all duration-200 group">
+                    <i class="fas fa-times text-lg group-hover:scale-110"></i>
+                </button>
+            </div>
+            
+            <!-- Error Message Content -->
+            <div class="p-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-ban text-red-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p class="text-gray-700 text-sm leading-relaxed">@errorMessage</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer with action buttons -->
+            <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+                <button onclick="closeErrorNotification()" 
+                        class="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-times mr-1"></i>
+                    Đóng
+                </button>
+                <button onclick="closeErrorNotification()" 
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    <i class="fas fa-check mr-1"></i>
+                    Đã hiểu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Close modal function
+        function closeErrorNotification() {
+            const modal = document.getElementById('errorNotificationModal');
+            if (modal) {
+                modal.style.transform = 'scale(95%)';
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('errorNotificationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeErrorNotification();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeErrorNotification();
+            }
+        });
+
+        // Auto close after 10 seconds (optional)
+        setTimeout(() => {
+            const modal = document.getElementById('errorNotificationModal');
+            if (modal && modal.style.display !== 'none') {
+                closeErrorNotification();
+            }
+        }, 10000);
+    </script>
+}

@@ -6,21 +6,332 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Admin</title>
 
-    <!-- Tailwind + FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        /* Navigation Styles */
+        .nav-item {
+            color: rgba(255,255,255,0.8);
+            position: relative;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(4px);
+        }
+        
+        .nav-item.active {
+            background-color: rgba(255,255,255,0.15);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background-color: white;
+            border-radius: 0 2px 2px 0;
+        }
+        
+        .nav-item .icon-container {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item:hover .icon-container {
+            transform: scale(1.1);
+        }
+        
+        .nav-item.active .icon-container {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 text-gray-900">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="text-white w-64 sidebar-transition fixed inset-y-0 left-0 z-50 lg:translate-x-0 -translate-x-full flex flex-col" style="background-color: #002D6A;">
+            <!-- Profile Section -->
+            <div class="p-6 border-b" style="border-color: rgba(255,255,255,0.2);">
+                <div class="flex flex-col items-center">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-3">
+                        <i class="fas fa-user text-2xl" style="color: #002D6A;"></i>
+                    </div>
+
+@*                     Role Login Admin*@
+                    <h3 class="text-lg font-normal">Admin</h3>
+
+                    @* Email Admin Login *@
+                    <p class="text-sm" style="color: rgba(255,255,255,0.7);">Nơi đây sẽ đặt email Admin</p>
+
+                    @* Edit Profile Admin *@
+                    <a href="#" class="text-sm hover:text-white flex items-center mt-1" style="color: rgba(255,255,255,0.7);">
+                        <i class="fas fa-edit mr-1"></i>
+                        Chỉnh sửa thông tin
+                    </a>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="mt-6 flex-1">
+                <ul class="space-y-1 px-4">
+
+                    <!-- Product Management -->
+                    <li>
+                          <a asp-area="Admin" asp-controller="Product" asp-action="Index"
+                               class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
+                                <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
+                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                </div>
+                                <span class="font-medium">Products</span>
+                            </a>
+                    </li>
+
+                    @* Danh sách sản phẩm có Status IsDelete = true *@
+                      <li>
+                          <a asp-area="Admin" asp-controller="Product" asp-action="DanhSachSanPhamXoa"
+                               class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
+                                <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
+                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                </div>
+                                <span class="font-medium">Delete Product</span>
+                            </a>
+                    </li>
 
 
-  
+                    @* Chưa có  Controller nào cho accessories --> tạm thời bỏ qua *@
+                    <!-- Accessories -->
+                    <li>
+                        <a asp-area="Admin" asp-controller="Provider" asp-action="Index"
+                               class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
+                                <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
+                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                </div>
+                                <span class="font-medium">Accessories</span>
+                            </a>
+                    </li>
+
+                    <!-- Providers -->
+                    <li>
+                         <a asp-area="Admin" asp-controller="Provider" asp-action="Index"
+                               class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
+                                <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
+                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                </div>
+                                <span class="font-medium">Providers</span>
+                            </a>
+                    </li>
 
 
-    <!-- Main content -->
-    <main class="max-w-7xl mx-auto p-6">
-        @RenderBody()
-    </main>
+                    <!-- Orders -->
+                    <li>
+                            <a asp-area="Admin" asp-controller="Order" asp-action="OrderAdminHome"
+                               class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
+                                <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
+                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                </div>
+                                <span class="font-medium">Orders</span>
+                            </a>
+
+                    </li>
+
+                    <!-- Accounts -->
+                    <li>
+                          <a asp-area="Admin" asp-controller="Accounts" asp-action="Index"
+                               class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
+                                <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
+                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                </div>
+                                <span class="font-medium">Accouns</span>
+                            </a>
+                    </li>
+
+                    <!-- Account Block Management -->
+                    <li>
+                        <a asp-area="Admin" asp-controller="AccountBlock" asp-action="Index"
+                           class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="accountblock">
+                            <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
+                                <i class="fas fa-ban text-lg"></i>
+                            </div>
+                            <span class="font-medium">Account Block</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Logout Section -->
+            <div class="p-4 border-t" style="border-color: rgba(255,255,255,0.2);">
+                <a href="/Account/Logout" class="flex items-center px-4 py-3 text-white rounded-lg transition-colors" style="color: rgba(255,255,255,0.8);" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 lg:ml-64">
+            <!-- Admin Header -->
+            <header class="text-white shadow-lg" style="background-color: #002D6A;">
+                <div class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
+                    <!-- Top Row: Logo, Search, Admin Actions -->
+                    <div class="flex items-center justify-between h-16 gap-2 sm:gap-4">
+                        <!-- Mobile menu button -->
+                        <button id="mobile-menu-btn" class="lg:hidden text-white" style="color: rgba(255,255,255,0.8);" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+
+                        <div class="flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0">
+                            <!-- Logo -->
+                            <a asp-area="Admin" asp-controller="AdminHome" asp-action="AdminLayout"
+                                class="flex items-center gap-1 hover:opacity-90 transition">
+                                <div
+                                    class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center">
+                                    <span class="font-normal text-sm sm:text-base" style="color: #002D6A;">A</span>
+                                </div>
+                              
+                            </a>
+
+                        </div>
+
+                        <!-- CENTER: Quick Search -->
+                        <div class="flex-1 max-w-2xl mx-6 sm:mx-8">
+                            <div class="relative flex items-center bg-white rounded-lg shadow-sm border border-gray-200">
+                                <input type="text" placeholder="Quick search products, orders, customers..."
+                                    class="flex-1 px-3 py-2 text-gray-900 placeholder-gray-500 outline-none text-sm sm:text-base" />
+                                <button
+                                    class="px-4 py-2 text-white rounded-r-lg transition-colors" style="background-color: #002D6A;" onmouseover="this.style.backgroundColor='#003d7a'" onmouseout="this.style.backgroundColor='#002D6A'">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M10 2a8 8 0 1 1 5.3 14l4.4 4.4-1.4 1.4-4.4-4.4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: Admin Actions -->
+                        <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                            <!-- Notifications -->
+                            <button class="relative flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 transition">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+                                </svg>
+                                <span
+                                    class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">3</span>
+                            </button>
+
+                            <!-- Admin Profile -->
+                            <div class="flex items-center gap-2 px-3 py-2 rounded transition cursor-pointer" style="color: rgba(255,255,255,0.8);" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+                                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                                    <span class="font-normal text-sm" style="color: #002D6A;">AD</span>
+                                </div>
+
+                            </div>
+
+                            <!-- Logout -->
+                            <a asp-controller="Account" asp-action="Logout" class="px-3 py-2 rounded transition" style="color: rgba(255,255,255,0.8);" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Row: Admin Navigation -->
+                    <div class="flex items-center justify-between py-2 border-t" style="border-color: rgba(255,255,255,0.2);">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="p-6">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- Mobile overlay -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"></div>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            mobileOverlay.classList.toggle('hidden');
+        });
+
+        mobileOverlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            mobileOverlay.classList.add('hidden');
+        });
+
+        // Close sidebar on window resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('-translate-x-full');
+                mobileOverlay.classList.add('hidden');
+            }
+        });
+
+        // Quick search functionality
+        const quickSearch = document.querySelector('input[placeholder*="Quick search"]');
+        if (quickSearch) {
+            quickSearch.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query) {
+                        // Redirect to product search results
+                        window.location.href = `/Admin/Product/Index?q=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+        }
+
+        // Active navigation state
+        function setActiveNavigation() {
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // Remove active class from all items
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Set active class based on current path
+            navItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href && currentPath.includes(href.replace('/Admin', ''))) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Special cases for exact matches
+            if (currentPath === '/Admin/AdminHome/AdminLayout' || currentPath === '/Admin') {
+                const dashboardItem = document.querySelector('[data-page="dashboard"]');
+                if (dashboardItem) dashboardItem.classList.add('active');
+            }
+        }
+
+        // Set active navigation on page load
+        setActiveNavigation();
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>
