@@ -75,7 +75,6 @@ using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
 using ComputerSales.Application.UseCase.VariantPrice_UC;
 using ComputerSales.Application.UseCase.VariantOptionValue_UC;
 using ComputerSales.Application.UseCase.ProductOptionalType_UC;
-using ComputerSales.Application.AccountBlockDTO;
 
 
 namespace ComputerSales.Infrastructure
@@ -284,7 +283,6 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<UpdateProvider_UC>();
 
             //================= Account Block ==============//
-            services.AddScoped<CheckAccountBlock_UC>();
 
             return services;
         }
