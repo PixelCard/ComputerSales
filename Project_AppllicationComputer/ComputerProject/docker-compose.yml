@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  computersales.mvc:
+    image: "${DOCKER_REGISTRY-}computersales-mvc:${PLATFORM:-linux}-${TAG:-latest}"
+    build:
+      context: .
+      dockerfile: "ComputerSalesProject_MVC/Dockerfile"
+    

@@ -30,10 +30,10 @@ namespace ComputerSales.Application.Payment.VNPAY.Respository
             pay.AddRequestData("vnp_Amount", amount100.ToString());
             pay.AddRequestData("vnp_CreateDate", now.ToString("yyyyMMddHHmmss"));
             pay.AddRequestData("vnp_CurrCode", _configuration["Vnpay:CurrCode"]);
-            pay.AddRequestData("vnp_IpAddr", pay.GetIpAddress(context));
             pay.AddRequestData("vnp_Locale", _configuration["Vnpay:Locale"]);
             pay.AddRequestData("vnp_OrderInfo", model.OrderDescription ?? "");
             pay.AddRequestData("vnp_OrderType", model.OrderType ?? "other");
+            pay.AddRequestData("vnp_IpAddr", "127.0.0.1");
             pay.AddRequestData("vnp_ReturnUrl", urlBack);
 
             // dùng session.Id làm TxnRef
