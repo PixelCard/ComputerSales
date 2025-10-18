@@ -204,6 +204,7 @@ namespace ComputerSalesProject_MVC.Controllers
 
                 // tạo Order
                 var customer = await getCustomerByUserID.HandleAsync(new CustomerGetCustomerByUserID_Request(session.UserId), ct);
+
                 var account = await getAccount_UC.HandleAsync(new getAccountByID(session.UserId), ct);
 
                 var newOrderId = await _addOrder.CreateFromCartAsync(
