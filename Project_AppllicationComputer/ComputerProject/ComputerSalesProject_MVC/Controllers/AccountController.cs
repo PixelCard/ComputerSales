@@ -71,84 +71,89 @@ namespace ComputerSalesProject_MVC.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel vm, CancellationToken ct)
         {
-            var acc = await _accountService.GetAccountByEmail(vm.email, ct);
-
-
-            if (acc == null || !BCrypt.Net.BCrypt.Verify(vm.pass, acc.Pass))
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Sai tài khoản/mật khẩu");
-                return View(vm);
-            }
+                var acc = await _accountService.GetAccountByEmail(vm.email, ct);
 
 
-            if (acc.Role == null) acc.Role = await _roleService.GetRole(acc.IDRole, ct);
-
-
-            // Kiểm tra xem tài khoản đã xác thực email chưa
-            // Chưa xác thực email
-            if (!acc.EmailConfirmed)
-            {
-                // Hết hạn 15 ngày
-                if (acc.CreatedAt.AddDays(15) < DateTime.UtcNow)
+                if (acc == null || !BCrypt.Net.BCrypt.Verify(vm.pass, acc.Pass))
                 {
-                    await _accountService.DeleteAccountAsync(acc.IDAccount, ct);
-                    ModelState.AddModelError("", "Tài khoản đã hết hạn vì chưa xác thực email. Vui lòng đăng ký lại.");
+                    ModelState.AddModelError("", "Sai tài khoản/mật khẩu");
                     return View(vm);
                 }
 
-                // GỬI LẠI EMAIL Ở ĐÂY 
-                await _resend.Handle(new ResendVerifyEmailDTO(acc.IDAccount), ct);
 
-                // Lấy hạn mới (nếu UC có cập nhật)
-                var fresh = await _accountService.GetAccountByID(acc.IDAccount, ct);
-                TempData["Info"] = "Tài khoản chưa xác thực. Chúng tôi vừa gửi lại email xác thực.";
-                TempData["ExpUtc"] = fresh?.VerifyKeyExpiresAt?.ToString("o");
+                if (acc.Role == null) acc.Role = await _roleService.GetRole(acc.IDRole, ct);
 
-                // Điều hướng sang trang thông báo
-                return RedirectToAction("PendingVerify", new { uid = acc.IDAccount });
+
+                // Kiểm tra xem tài khoản đã xác thực email chưa
+                // Chưa xác thực email
+                if (!acc.EmailConfirmed)
+                {
+                    // Hết hạn 15 ngày
+                    if (acc.CreatedAt.AddDays(15) < DateTime.UtcNow)
+                    {
+                        await _accountService.DeleteAccountAsync(acc.IDAccount, ct);
+                        ModelState.AddModelError("", "Tài khoản đã hết hạn vì chưa xác thực email. Vui lòng đăng ký lại.");
+                        return View(vm);
+                    }
+
+                    // GỬI LẠI EMAIL Ở ĐÂY 
+                    await _resend.Handle(new ResendVerifyEmailDTO(acc.IDAccount), ct);
+
+                    // Lấy hạn mới (nếu UC có cập nhật)
+                    var fresh = await _accountService.GetAccountByID(acc.IDAccount, ct);
+                    TempData["Info"] = "Tài khoản chưa xác thực. Chúng tôi vừa gửi lại email xác thực.";
+                    TempData["ExpUtc"] = fresh?.VerifyKeyExpiresAt?.ToString("o");
+
+                    // Điều hướng sang trang thông báo
+                    return RedirectToAction("PendingVerify", new { uid = acc.IDAccount });
+                }
+
+
+                var token = _jwt.Generate(acc);
+
+
+                // Lưu JWT vào cookie (HTTP-only)
+                Response.Cookies.Append("access_token", token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    Path = "/",
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
+                });
+
+
+                // Refresh token (dài hạn) -> lưu DB 
+                var rt = await _refresh.IssueAsync(acc, ct);
+
+
+                // Lưu Resfresh Token vào cookie (HTTP-only)
+                Response.Cookies.Append("refresh_token", rt.Token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    Path = "/",
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTimeOffset.UtcNow.AddDays(15)
+                });
+
+
+                var Role = await _roleService.GetRole(acc.IDRole, ct);
+
+
+                if (Role.TenRole == "admin")
+                {
+                    return RedirectToAction("AdminLayout", "AdminHome", new { Area = "Admin" });
+                }
+
+
+
+                return RedirectToAction("Index", "Home");
             }
 
-
-            var token = _jwt.Generate(acc);
-
-               
-            // Lưu JWT vào cookie (HTTP-only)
-            Response.Cookies.Append("access_token", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                Path="/",
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTimeOffset.UtcNow.AddHours(1)
-            });
-
-
-            // Refresh token (dài hạn) -> lưu DB 
-            var rt = await _refresh.IssueAsync(acc, ct);
-
-
-            // Lưu Resfresh Token vào cookie (HTTP-only)
-            Response.Cookies.Append("refresh_token", rt.Token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                Path = "/",
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTimeOffset.UtcNow.AddDays(15)
-            });
-
-
-            var Role= await _roleService.GetRole(acc.IDRole,ct);
-
-
-            if (Role.TenRole == "admin")
-            {
-                return RedirectToAction("AdminLayout", "AdminHome", new { Area = "Admin" });
-            }
-
-
-
-            return RedirectToAction("Index", "Home");
+            return View(vm);
         }
 
 
@@ -157,13 +162,6 @@ namespace ComputerSalesProject_MVC.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromForm] RegisterRequestDTO req, CancellationToken ct)
         {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError(string.Empty, "Email sai định dạng hoặc không tồn tại email"); 
-                
-                return View(req);
-            }
-
             // Chuẩn hóa email
             var email = (req.Email ?? string.Empty).Trim().ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(req.Password))
@@ -181,11 +179,14 @@ namespace ComputerSalesProject_MVC.Controllers
             }
 
             var birthDate = req.Date;  // Giả sử `req.Date` chứa ngày sinh người dùng
+
             if (birthDate == null || birthDate > DateTime.Now.AddYears(-16))
             {
                 ModelState.AddModelError(string.Empty, "Tuổi phải lớn hơn hoặc bằng 16.");
                 return View(req);
             }
+
+
 
             try
             {
@@ -320,6 +321,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 return BadRequest(new { ok = false, message = ex.Message });
             }
         }
+
 
         // ====== Logout (MVC) ======
         [HttpPost("Logout")]

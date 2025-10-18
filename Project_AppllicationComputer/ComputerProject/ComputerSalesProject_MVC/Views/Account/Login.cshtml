@@ -1,3 +1,4 @@
+@model LoginViewModel
 @{
     Layout = null;
 }
@@ -49,23 +50,25 @@
                     <label class="block text-white mb-2" for="email">Email</label>
                     <div class="flex items-center bg-white/20 rounded-lg px-3">
                         <input class="w-full bg-transparent outline-none py-2 text-white placeholder-white"
-                               type="text" id="email" name="email" placeholder="Email" required />
+                               type="email" id="email" name="email" placeholder="Email" />
                         <span class="ml-2 text-white">
                             <!-- icon -->
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         </span>
                     </div>
+                    @Html.ValidationMessageFor(m => m.email, "", new { @class = "text-danger mb-8" })
                 </div>
                 <div class="mb-4">
                     <label class="block text-white mb-2" for="pass">Password</label>
                     <div class="flex items-center bg-white/20 rounded-lg px-3">
                         <input class="w-full bg-transparent outline-none py-2 text-white placeholder-white"
-                               type="password" id="pass" name="pass" placeholder="Password" required />
+                               type="password" id="pass" name="pass" placeholder="Password" />
                         <span class="ml-2 text-white">
                             <!-- icon -->
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2V7a2 2 0 10-4 0v2c0 1.104.896 2 2 2zm6 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-6m12 0a2 2 0 00-2-2H8a2 2 0 00-2 2m12 0V7a6 6 0 10-12 0v6" /></svg>
                         </span>
                     </div>
+                    @Html.ValidationMessageFor(m => m.pass, "", new { @class = "text-danger mt-4" })
                 </div>
                 <div class="flex items-center justify-between mb-6">
                     <label class="flex items-center text-white pr-4">
