@@ -25,10 +25,6 @@ namespace ComputerSales.Application.UseCase.ProductOvetView_UC
 
             entity.UpdateText(input.TextContent);
 
-            entity.UpdateCaption(input.Caption);
-
-            entity.UpdateImageUrl(input.ImageUrl);
-
             _repoProductOverView.Update(entity);
 
             await _unitOfWorkApplication.SaveChangesAsync(ct);

@@ -9,242 +9,250 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
-    namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
+namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
+{
+    [Area("Admin")]
+    [Route("Admin/[controller]/[action]")]
+    public class ProductOverviewsController : Controller
     {
-        [Area("Admin")]
-        [Route("Admin/[controller]/[action]")]
-        public class ProductOverviewsController : Controller
+        private readonly AppDbContext _db;
+        private readonly IConfiguration _configuration;
+
+        // Các UC bạn đã cung cấp
+        private readonly GetByIdProductOverView_UC _getById;
+        private readonly CreateProductOverView_UC _create;
+        private readonly UpdateProductOverView_UC _update;
+        private readonly DeleteProductOverView_UC _delete;
+
+        public ProductOverviewsController(
+            AppDbContext db,
+            IConfiguration configuration,
+            GetByIdProductOverView_UC getById,
+            CreateProductOverView_UC create,
+            UpdateProductOverView_UC update,
+            DeleteProductOverView_UC delete
+        )
         {
-            private readonly AppDbContext _db;
+            _db = db;
+            _configuration = configuration;
+            _getById = getById;
+            _create = create;
+            _update = update;
+            _delete = delete;
+        }
 
-            // Các UC bạn đã cung cấp
-            private readonly GetByIdProductOverView_UC _getById;
-            private readonly CreateProductOverView_UC _create;
-            private readonly UpdateProductOverView_UC _update;
-            private readonly DeleteProductOverView_UC _delete;
+        // Múi giờ Việt Nam (Windows)
+        private static TimeZoneInfo VnTz =>
+            TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
 
-            public ProductOverviewsController(
-                AppDbContext db,
-                GetByIdProductOverView_UC getById,
-                CreateProductOverView_UC create,
-                UpdateProductOverView_UC update,
-                DeleteProductOverView_UC delete
-            )
+        // Helper convert UTC -> VN (Giống controller mẫu)
+        private string ToVnTime(DateTime? utc)
+        {
+            if (!utc.HasValue) return "—";
+            return TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.SpecifyKind(utc.Value, DateTimeKind.Utc), VnTz)
+                .ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        [HttpGet]
+        public IActionResult ProductOverViewsCreate(long productId)
+        {
+            ViewBag.TinyMCEApiKey = _configuration["TinyMCE:ApiKey"];
+            return View(new ProductOverviewCreateVM { ProductId = productId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProductOverViewsCreate(ProductOverviewCreateVM vm,CancellationToken ct)
+        {
+            if (!ModelState.IsValid) return View(vm);
+
+            if(string.IsNullOrEmpty(vm.TextContent))
             {
-                _db = db;
-                _getById = getById;
-                _create = create;
-                _update = update;
-                _delete = delete;
-            }
-
-            // Múi giờ Việt Nam (Windows)
-            private static TimeZoneInfo VnTz =>
-                TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-
-            // Helper convert UTC -> VN (Giống controller mẫu)
-            private string ToVnTime(DateTime? utc)
-            {
-                if (!utc.HasValue) return "—";
-                return TimeZoneInfo.ConvertTimeFromUtc(
-                    DateTime.SpecifyKind(utc.Value, DateTimeKind.Utc), VnTz)
-                    .ToString("yyyy-MM-dd HH:mm:ss");
-            }
-
-            // ==================== INDEX (cho 1 Product) ====================
-            [HttpGet("{productId:long}")]
-            public async Task<IActionResult> ProductOverViewsIndex(long productId, CancellationToken ct)
-            {
-                var product = await _db.Products.AsNoTracking()
-                                          .Select(p => new { p.ProductID, p.SKU })
-                                          .FirstOrDefaultAsync(p => p.ProductID == productId, ct);
-
-                if (product == null) return NotFound("Không tìm thấy Product.");
-
-                ViewBag.ProductId = product.ProductID;
-                ViewBag.ProductSKU = product.SKU;
-
-                // SỬA LỖI: Chữ 'P' phải viết hoa
-                var items = await _db.productOverviews
-                                    .Where(po => po.ProductId == productId)
-                                    .OrderBy(po => po.DisplayOrder)
-                                    .Select(po => new ProductOverViewOutput(
-                                        po.ProductOverviewId,
-                                        po.ProductId,
-                                        po.BlockType,
-                                        po.TextContent,
-                                        po.ImageUrl,
-                                        po.Caption,
-                                        po.DisplayOrder,
-                                        po.CreateDate
-                                    ))
-                                    .ToListAsync(ct);
-
-                ViewBag.ToVn = (Func<DateTime?, string>)(utc => ToVnTime(utc));
-                return View(items);
-            }
-
-            // ==================== DETAILS ====================
-            [HttpGet("{id:int}")]
-            public async Task<IActionResult> ProductOverViewsDetails(int id, CancellationToken ct)
-            {
-                var dto = await _getById.HandleAsync(new GetByIDProductOverViewInput(id), ct);
-                if (dto is null) return NotFound();
-
-                ViewBag.CreateDateVN = ToVnTime(dto.CreateDate);
-                return View(dto);
-            }
-
-            // ==================== CREATE ====================
-            [HttpGet("{productId:long}")]
-            public async Task<IActionResult> ProductOverViewsCreate(long productId, CancellationToken ct)
-            {
-                var product = await _db.Products.AsNoTracking()
-                                          .Select(p => new { p.ProductID, p.SKU })
-                                          .FirstOrDefaultAsync(p => p.ProductID == productId, ct);
-                if (product == null) return NotFound("Product không tồn tại.");
-
-                int nextOrder = 1;
-                // SỬA LỖI: Chữ 'P' phải viết hoa
-                var overviewsExist = await _db.productOverviews.AnyAsync(po => po.ProductId == productId, ct);
-                if (overviewsExist)
-                {
-                    // SỬA LỖI: Chữ 'P' phải viết hoa
-                    nextOrder = (await _db.productOverviews
-                                             .Where(po => po.ProductId == productId)
-                                             .MaxAsync(po => po.DisplayOrder, ct)) + 1;
-                }
-
-                var vm = new ProductOverviewCreateVM
-                {
-                    ProductId = productId,
-                    DisplayOrder = nextOrder
-                };
-
-                ViewBag.ProductSKU = product.SKU;
+                ModelState.AddModelError(string.Empty, "TextContent is required.");
                 return View(vm);
             }
 
-            [HttpPost("{productId:long}")]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> ProductOverViewsCreate(ProductOverviewCreateVM vm, CancellationToken ct)
+            try
             {
-                // --- Validation ---
-                var productExists = await _db.Products.AsNoTracking().AnyAsync(p => p.ProductID == vm.ProductId, ct);
-                if (!productExists)
-                    ModelState.AddModelError(nameof(vm.ProductId), "Product không tồn tại.");
+                await _create.HandleAsync(new ProductOverViewInput(vm.ProductId, vm.TextContent), ct);
+                TempData["Success"] = "Tạo Product Overview thành công!";
+                return RedirectToAction("ProductDetails", "Product", new { id = vm.ProductId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Lỗi: {ex.Message}");
+                return View(vm);
+            }
+        }
 
-                if ((vm.BlockType == OverviewBlockType.Text || vm.BlockType == OverviewBlockType.List) && string.IsNullOrWhiteSpace(vm.TextContent))
-                    ModelState.AddModelError(nameof(vm.TextContent), "TextContent là bắt buộc cho block loại Text/List.");
+        // GET: ProductOverViewsIndex
+        [HttpGet]
+        public async Task<IActionResult> ProductOverViewsIndex(long productId, CancellationToken ct)
+        {
+            var product = await _db.Products
+                .AsNoTracking()
+                .Include(p => p.ProductOverviews)
+                .FirstOrDefaultAsync(p => p.ProductID == productId, ct);
 
-                if ((vm.BlockType == OverviewBlockType.Image || vm.BlockType == OverviewBlockType.Logo) && string.IsNullOrWhiteSpace(vm.ImageUrl))
-                    ModelState.AddModelError(nameof(vm.ImageUrl), "ImageUrl là bắt buộc cho block loại Image/Logo.");
-
-                if (!ModelState.IsValid)
-                {
-                    ViewBag.ProductSKU = (await _db.Products.AsNoTracking().Select(p => new { p.ProductID, p.SKU }).FirstOrDefaultAsync(p => p.ProductID == vm.ProductId, ct))?.SKU ?? "Unknown";
-                    return View(vm);
-                }
-                // --- Hết Validation ---
-
-                var input = new ProductOverViewInput(
-                    vm.ProductId,
-                    vm.BlockType,
-                    vm.TextContent ?? "",
-                    vm.ImageUrl,
-                    vm.Caption,
-                    vm.DisplayOrder
-                );
-
-                var created = await _create.HandleAsync(input, ct);
-
-                TempData["Success"] = "Đã tạo khối overview mới.";
-                return RedirectToAction(nameof(ProductOverViewsIndex), new { productId = created.ProductId });
+            if (product == null)
+            {
+                TempData["Error"] = "Không tìm thấy sản phẩm.";
+                return RedirectToAction("Index", "Product");
             }
 
-            // ==================== EDIT (Dựa trên Update_UC) ====================
-            [HttpGet("{id:int}")]
-            public async Task<IActionResult> Edit(int id, CancellationToken ct)
+            ViewBag.ProductId = productId;
+            ViewBag.ProductName = product.ShortDescription;
+
+            var overviews = product.ProductOverviews != null
+                    ? new List<ProductOverViewOutput>
+                    {
+                        new ProductOverViewOutput(
+                            product.ProductOverviews.ProductOverviewId,
+                            product.ProductOverviews.ProductId,
+                            product.ProductOverviews.TextContent,
+                            product.ProductOverviews.CreateDate
+                        )
+                    }
+                    : new List<ProductOverViewOutput>();
+
+            return View(overviews);
+        }
+
+        // GET: ProductOverViewsDetails
+        [HttpGet]
+        public async Task<IActionResult> ProductOverViewsDetails(int id, CancellationToken ct)
+        {
+            try
             {
-                var dto = await _getById.HandleAsync(new GetByIDProductOverViewInput(id), ct);
-                if (dto is null) return NotFound();
+                var result = await _getById.HandleAsync(new GetByIDProductOverViewInput(id), ct);
+                
+                if (result == null)
+                {
+                    TempData["Error"] = "Không tìm thấy Product Overview.";
+                    return RedirectToAction("Index", "Product");
+                }
+
+                return View(result);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index", "Product");
+            }
+        }
+
+        // GET: Edit
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id, CancellationToken ct)
+        {
+            try
+            {
+                var result = await _getById.HandleAsync(new GetByIDProductOverViewInput(id), ct);
+                
+                if (result == null)
+                {
+                    TempData["Error"] = "Không tìm thấy Product Overview.";
+                    return RedirectToAction("Index", "Product");
+                }
+
+                ViewBag.TinyMCEApiKey = _configuration["TinyMCE:ApiKey"];
 
                 var vm = new ProductOverviewEditVM
                 {
-                    ProductOverviewId = dto.ProductOverviewId,
-                    ProductId = dto.ProductId,
-                    BlockType = dto.BlockType,
-                    TextContent = dto.TextContent,
-                    ImageUrl = dto.ImageUrl,
-                    Caption = dto.Caption,
-                    DisplayOrder = dto.DisplayOrder
+                    ProductOverviewId = result.ProductOverviewId,
+                    ProductId = result.ProductId,
+                    TextContent = result.TextContent
                 };
-
-                var product = await _db.Products.AsNoTracking().Select(p => new { p.ProductID, p.SKU }).FirstOrDefaultAsync(p => p.ProductID == vm.ProductId, ct);
-                ViewBag.ProductSKU = product?.SKU ?? "Unknown";
 
                 return View(vm);
             }
-
-            [HttpPost("{productId:long}")]
-            [ValidateAntiForgeryToken]
-            // Sửa lại tên Action (bỏ 'ProductOverViews' đi để khớp với asp-action="Edit" của form)
-            public async Task<IActionResult> Edit(ProductOverviewEditVM vm, CancellationToken ct)
+            catch (Exception ex)
             {
-                // SỬA LỖI: Chữ 'P' phải viết hoa
-                var entity = await _db.productOverviews.AsNoTracking().FirstOrDefaultAsync(po => po.ProductOverviewId == vm.ProductOverviewId, ct);
-                if (entity == null) return NotFound();
+                TempData["Error"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index", "Product");
+            }
+        }
 
-                // (Validation logic... giữ nguyên)
+        // POST: Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ProductOverviewEditVM vm, CancellationToken ct)
+        {
+            if (!ModelState.IsValid) return View(vm);
 
-                if (!ModelState.IsValid)
-                {
-                    // ... (return View(vm) giữ nguyên)
-                }
-
-                // (Tạo 'input' DTO... giữ nguyên)
-                var input = new ProductOverviewUpdate_Input(
-                    ProductOverviewId: vm.ProductOverviewId,
-                    TextContent: vm.TextContent,
-                    ImageUrl: vm.ImageUrl,
-                    Caption: vm.Caption,
-                    DisplayOrder: vm.DisplayOrder,
-                    BlockType: null
-                );
-
-                var updated = await _update.HandleAsync(input, ct);
-                if (updated == null) return NotFound();
-
-                TempData["Success"] = "Đã cập nhật khối overview.";
-                return RedirectToAction(nameof(ProductOverViewsIndex), new { productId = updated.ProductId });
+            if (string.IsNullOrEmpty(vm.TextContent))
+            {
+                ModelState.AddModelError(string.Empty, "TextContent is required.");
+                return View(vm);
             }
 
-            // ==================== DELETE ====================
-            [HttpGet("{id:int}")]
-            public async Task<IActionResult> ProductOverViewsDelete(int id, CancellationToken ct)
+            try
             {
-                var dto = await _getById.HandleAsync(new GetByIDProductOverViewInput(id), ct);
-                if (dto is null) return NotFound();
-
-                ViewBag.CreateDateVN = ToVnTime(dto.CreateDate);
-                return View(dto);
+                await _update.HandleAsync(new ProductOverviewUpdate_Input(vm.ProductOverviewId, vm.TextContent), ct);
+                TempData["Success"] = "Cập nhật Product Overview thành công!";
+                return RedirectToAction("ProductDetails", "Product", new { id = vm.ProductId });
             }
-
-            [HttpPost("{id:int}")]
-            [ActionName("Delete")] // Tên này phải là "Delete", không phải "ProductOverViewsDelete"
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)
+            catch (Exception ex)
             {
-                var deletedDto = await _delete.HandleAsync(new DeleteProductOverViewInput(id), ct);
+                ModelState.AddModelError(string.Empty, $"Lỗi: {ex.Message}");
+                return View(vm);
+            }
+        }
 
-                if (deletedDto == null)
+        // GET: ProductOverViewsDelete
+        [HttpGet]
+        public async Task<IActionResult> ProductOverViewsDelete(int id, CancellationToken ct)
+        {
+            try
+            {
+                var result = await _getById.HandleAsync(new GetByIDProductOverViewInput(id), ct);
+                
+                if (result == null)
                 {
-                    TempData["Error"] = "Xóa không thành công (không tìm thấy).";
-                    return RedirectToAction("Index", "Dashboard");
+                    TempData["Error"] = "Không tìm thấy Product Overview.";
+                    return RedirectToAction("Index", "Product");
                 }
 
-                TempData["Success"] = "Đã xóa khối overview.";
-                return RedirectToAction(nameof(ProductOverViewsIndex), new { productId = deletedDto.ProductId });
+                return View(result);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index", "Product");
+            }
+        }
+
+        // POST: ProductOverViewsDelete
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProductOverViewsDeleteConfirmed(int id, CancellationToken ct)
+        {
+            try
+            {
+                // Lấy ProductId trước khi xóa để redirect
+                var overview = await _db.productOverviews
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(o => o.ProductOverviewId == id, ct);
+                
+                if (overview == null)
+                {
+                    TempData["Error"] = "Không tìm thấy Product Overview.";
+                    return RedirectToAction("Index", "Product");
+                }
+
+                var productId = overview.ProductId;
+
+                await _delete.HandleAsync(new DeleteProductOverViewInput(id), ct);
+                TempData["Success"] = "Xóa Product Overview thành công!";
+                return RedirectToAction("ProductDetails", "Product", new { id = productId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction("Index", "Product");
             }
         }
     }
+}
+    

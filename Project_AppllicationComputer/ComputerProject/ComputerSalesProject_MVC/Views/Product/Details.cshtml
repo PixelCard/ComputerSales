@@ -179,6 +179,24 @@
                     </div>
                 </div>
             }
+
+            @foreach(var overviewItems in Model.OverviewBlocks)
+            {
+                if(!string.IsNullOrWhiteSpace(overviewItems.TextContent))
+                {
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow mt-4">
+                        <h2 class="text-lg font-semibold mb-2 text-gray-800 inline-flex items-center gap-2">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M4 6h16v2H4zM4 11h16v2H4zM4 16h10v2H4z" />
+                            </svg>
+                            OverView Product 
+                        </h2>
+                        <div class="prose max-w-none text-gray-800 leading-relaxed">
+                            @Html.Raw(overviewItems.TextContent)
+                        </div>
+                    </div>
+                }
+            }
         </div>
 
         <!-- RIGHT: Price panel -->

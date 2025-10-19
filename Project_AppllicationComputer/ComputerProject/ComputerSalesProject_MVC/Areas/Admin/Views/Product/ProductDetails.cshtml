@@ -114,32 +114,17 @@
         {
             <!-- Overviews List -->
             <div class="space-y-6">
-                @foreach (var overview in Model.ProductOverviews.OrderBy(o => o.DisplayOrder))
+                @foreach (var overview in Model.ProductOverviews)
                 {
                     <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center gap-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    #@overview.DisplayOrder
+                                    ID: @overview.ProductOverviewId
                                 </span>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                                    @(overview.BlockType.ToString() switch {
-                                        "Text" => "bg-green-100 text-green-800",
-                                        "List" => "bg-yellow-100 text-yellow-800", 
-                                        "Image" => "bg-purple-100 text-purple-800",
-                                        "Logo" => "bg-indigo-100 text-indigo-800",
-                                        "Table" => "bg-red-100 text-red-800",
-                                        _ => "bg-gray-100 text-gray-800"
-                                    })">
-                                    <i class="fas @(overview.BlockType.ToString() switch {
-                                        "Text" => "fa-text-width",
-                                        "List" => "fa-list", 
-                                        "Image" => "fa-image",
-                                        "Logo" => "fa-trademark",
-                                        "Table" => "fa-table",
-                                        _ => "fa-question"
-                                    }) mr-2"></i>
-                                    @overview.BlockType
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-file-alt mr-2"></i>
+                                    Overview
                                 </span>
                             </div>
                             <div class="flex items-center gap-2">
@@ -167,70 +152,32 @@
                             </div>
                         </div>
 
-                        <!-- Content Preview -->
+                        <!-- Overview Details -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="text-sm">
+                                <span class="font-medium text-gray-700">Product ID:</span>
+                                <span class="ml-2 text-gray-600">@overview.ProductId</span>
+                            </div>
+                            <div class="text-sm">
+                                <span class="font-medium text-gray-700">Create Date:</span>
+                                <span class="ml-2 text-gray-600">@overview.CreateDate.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                        </div>
+
+                        <!-- Text Content -->
                         <div class="bg-gray-50 rounded-lg p-4">
-                            @if (overview.BlockType.ToString() == "Text" || overview.BlockType.ToString() == "List")
+                            <div class="text-sm mb-2">
+                                <span class="font-medium text-gray-700">Text Content:</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(overview.TextContent))
                             {
                                 <div class="prose max-w-none">
-                                    @if (!string.IsNullOrEmpty(overview.TextContent))
-                                    {
-                                        @if (overview.BlockType.ToString() == "List")
-                                        {
-                                            <ul class="list-disc list-inside space-y-1">
-                                                @foreach (var line in overview.TextContent.Split('\n', StringSplitOptions.RemoveEmptyEntries).Take(5))
-                                                {
-                                                    <li>@line.Trim()</li>
-                                                }
-                                                @if (overview.TextContent.Split('\n', StringSplitOptions.RemoveEmptyEntries).Length > 5)
-                                                {
-                                                    <li class="text-gray-500 italic">... và @(overview.TextContent.Split('\n', StringSplitOptions.RemoveEmptyEntries).Length - 5) mục khác</li>
-                                                }
-                                            </ul>
-                                        }
-                                        else
-                                        {
-                                            <p class="whitespace-pre-wrap">@(overview.TextContent.Length > 200 ? overview.TextContent.Substring(0, 200) + "..." : overview.TextContent)</p>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <p class="text-gray-500 italic">Không có nội dung</p>
-                                    }
+                                    <p class="whitespace-pre-wrap text-gray-600">@overview.TextContent</p>
                                 </div>
                             }
-                            else if (overview.BlockType.ToString() == "Image" || overview.BlockType.ToString() == "Logo")
+                            else
                             {
-                                <div class="flex items-center gap-4">
-                                    @if (!string.IsNullOrEmpty(overview.ImageUrl))
-                                    {
-                                        <img src="@overview.ImageUrl" alt="@overview.Caption" class="w-20 h-20 object-cover rounded-lg border">
-                                    }
-                                    else
-                                    {
-                                        <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-image text-gray-400"></i>
-                                        </div>
-                                    }
-                                    <div>
-                                        <p class="text-sm text-gray-600">
-                                            @if (!string.IsNullOrEmpty(overview.Caption))
-                                            {
-                                                <strong>Caption:</strong> @overview.Caption
-                                            }
-                                            else
-                                            {
-                                                <span class="text-gray-500 italic">Không có caption</span>
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                            }
-                            else if (overview.BlockType.ToString() == "Table")
-                            {
-                                <div class="text-center text-gray-500 italic">
-                                    <i class="fas fa-table text-2xl mb-2"></i>
-                                    <p>Table content</p>
-                                </div>
+                                <p class="text-gray-500 italic">Không có nội dung</p>
                             }
                         </div>
                     </div>
@@ -245,14 +192,14 @@
                     <i class="fas fa-file-alt text-3xl text-gray-400"></i>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có Product Overview</h3>
-                <p class="text-gray-500 mb-6">Sản phẩm này chưa có overview blocks. Hãy tạo overview đầu tiên để mô tả chi tiết sản phẩm.</p>
+                <p class="text-gray-500 mb-6">Sản phẩm này chưa có overview. Hãy tạo overview để mô tả chi tiết sản phẩm.</p>
                 <a asp-area="Admin"
                    asp-controller="ProductOverviews"
                    asp-action="ProductOverViewsCreate"
                    asp-route-productId="@Model.ProductID"
                    class="inline-flex items-center px-6 py-3 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
                     <i class="fas fa-plus mr-2"></i>
-                    Tạo Overview Đầu Tiên
+                    Tạo Overview
                 </a>
             </div>
         }

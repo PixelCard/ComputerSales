@@ -1,6 +1,7 @@
 ﻿using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCaseDTO.Product_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
 using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Models;
@@ -76,6 +77,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 .FirstOrDefaultAsync(ct);
 
             if (product == null) return NotFound();
+
             if (product.Variants == null || product.Variants.Count == 0) return NotFound();
 
             // Ưu tiên biến thể có giá còn hiệu lực, rồi tới Status, rồi Quantity
@@ -183,17 +185,11 @@ namespace ComputerSalesProject_MVC.Controllers
             // Overview blocks (nếu có)
             vm.OverviewBlocks = await _context.productOverviews
                 .AsNoTracking()
-                .Where(o => o.ProductId == vm.ProductId)
-                .OrderBy(o => o.DisplayOrder)
+                .Where(o => o.ProductId == product.ProductID)
                 .Select(o => new OverviewBlockVM
                 {
                     ProductOverviewId = o.ProductOverviewId,
-                    BlockType = (OverviewBlockType)o.BlockType,
-                    TextContent = o.TextContent,
-                    ImageUrl = o.ImageUrl,
-                    Caption = o.Caption,
-                    DisplayOrder = o.DisplayOrder,
-                    CreateDate = o.CreateDate
+                    TextContent = o.TextContent
                 })
                 .ToListAsync(ct);
 

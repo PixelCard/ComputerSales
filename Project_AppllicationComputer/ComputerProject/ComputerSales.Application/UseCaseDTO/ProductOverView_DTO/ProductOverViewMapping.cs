@@ -8,11 +8,7 @@ namespace ComputerSales.Application.UseCaseDTO.ProductOverView_DTO
         {
             return ProductOverview.Create(
                 input.ProductId,
-                input.BlockType,
-                input.TextContent,
-                string.IsNullOrWhiteSpace(input.ImageUrl) ? null : input.ImageUrl.Trim(),
-                string.IsNullOrWhiteSpace(input.Caption) ? null : input.Caption.Trim(),
-                input.DisplayOrder
+                input.TextContent
             );
         }
 
@@ -21,11 +17,7 @@ namespace ComputerSales.Application.UseCaseDTO.ProductOverView_DTO
             return new ProductOverViewOutput(
                 e.ProductOverviewId,
                 e.ProductId,
-                e.BlockType,
                 e.TextContent,
-                e.ImageUrl,
-                e.Caption,
-                e.DisplayOrder,
                 e.CreateDate
             );
         }

@@ -44,9 +44,9 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
              .HasForeignKey(pot => pot.ProductId);
 
             // 1–1 Overview
-            b.HasMany(p => p.ProductOverviews) // 1 Product có NHIỀU Overviews
+            b.HasOne (p => p.ProductOverviews) // 1 Product có NHIỀU 1 overview
              .WithOne(o => o.Product)          // 1 Overview thuộc về 1 Product
-             .HasForeignKey(o => o.ProductId)  // Khóa ngoại là ProductId trên bảng Overview
+             .HasForeignKey<ProductOverview>(p => p.ProductId) // Khóa ngoại là ProductId trên bảng Overview
              .OnDelete(DeleteBehavior.Cascade);
 
             // 1–1 Protection

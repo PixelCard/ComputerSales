@@ -296,7 +296,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                 .Include(p => p.Provider)
                 .Include(p => p.Accessories)
                 .Include(p => p.ProductVariants)
-                .Include(p => p.ProductOverviews)                // <<-- THÊM DÒNG NÀY
+                .Include(p => p.ProductOverviews)               
                 .FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
 
             if (product is null)
@@ -325,20 +325,18 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                     })
                     .ToList(),
 
-                // <<-- THÊM MAP OVERVIEWS VÀO VM
-                ProductOverviews = product.ProductOverviews
-                    .OrderBy(o => o.DisplayOrder)
-                    .Select(o => new ProductOverViewOutput(
-                        o.ProductOverviewId,
-                        o.ProductId,
-                        o.BlockType,
-                        o.TextContent,
-                        o.ImageUrl,
-                        o.Caption,
-                        o.DisplayOrder,
-                        o.CreateDate
-                    ))
-                    .ToList()
+                // <<-- THÊM MAP OVERVIEW VÀO VM (1-1)
+                ProductOverviews = product.ProductOverviews != null 
+                    ? new List<ProductOverViewOutput> 
+                    { 
+                        new ProductOverViewOutput(
+                            product.ProductOverviews.ProductOverviewId,
+                            product.ProductOverviews.ProductId,
+                            product.ProductOverviews.TextContent,
+                            product.ProductOverviews.CreateDate
+                        )
+                    }
+                    : new List<ProductOverViewOutput>()
             };
 
             return View(vm);

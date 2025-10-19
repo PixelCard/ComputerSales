@@ -36,8 +36,8 @@ namespace ComputerSales.Domain.Entity.EProduct
 
                                                             
 
-            //cập nhật 1 product sẽ có nhiều product overview khác nhau để mô tả sản phẩm từng dòng
-            public ICollection<ProductOverview> ProductOverviews { get; set; } = new List<ProductOverview>();
+            //cập nhật 1 product sẽ có 1 product overview  để mô tả sản phẩm từng dòng
+            public ProductOverview? ProductOverviews { get; set; }
 
 
             public ProductProtection? ProductProtection { get; set; }       // 1-1

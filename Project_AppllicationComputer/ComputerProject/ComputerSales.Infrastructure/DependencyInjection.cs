@@ -319,9 +319,11 @@ dotnet ef migrations add TenMigrationMoiUpdateVedieuGiDo -p ComputerSales.Infras
 
 dotnet ef database update -p ComputerSales.Infrastructure -s API_ComputerProject
 
+
 //nếu migration có bị sai thì chưa update được ta dùng lệnh này để xóa migration mới tạo  
 // CapNhatLaiQuanHeProduct_ProductOverview
 // dotnet ef migrations remove -p ComputerSales.Infrastructure -s API_ComputerProject
+
 
 
 // luôn luôn phải fetch và pull trước khi run dự án git clone về
