@@ -171,7 +171,7 @@ namespace ComputerSales.Infrastructure.Repositories.OrderCart_Respo
             order.PaymentID = paymentId;
             order.OrderStatus = OrderStatus.DangDongGoi;
 
-            _db.SaveChangesAsync(ct);
+            await _db.SaveChangesAsync(ct);
         }
     }
 }

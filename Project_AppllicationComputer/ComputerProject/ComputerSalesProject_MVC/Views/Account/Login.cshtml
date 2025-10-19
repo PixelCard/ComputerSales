@@ -1,3 +1,4 @@
+@model LoginViewModel
 @{
     Layout = null;
 }
@@ -67,56 +68,31 @@
         @using (Html.BeginForm("Login", "Account", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            <div class="glass-effect rounded-2xl shadow-2xl p-8 w-full max-w-md">
-                <!-- Header -->
-                <div class="text-center mb-8">
-                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <i class="fas fa-sign-in-alt text-white text-xl"></i>
+            <div class="bg-white/10 backdrop-blur-md rounded-xl shadow-lg p-8 w-full max-w-md border border-white/20">
+                <h2 class="text-3xl font-bold text-white text-center mb-8">Login</h2>
+                <div class="mb-4">
+                    <label class="block text-white mb-2" for="email">Email</label>
+                    <div class="flex items-center bg-white/20 rounded-lg px-3">
+                        <input class="w-full bg-transparent outline-none py-2 text-white placeholder-white"
+                               type="email" id="email" name="email" placeholder="Email" />
+                        <span class="ml-2 text-white">
+                            <!-- icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        </span>
                     </div>
-                    <h2 class="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-                    <p class="text-white/70">Sign in to your account</p>
+                    @Html.ValidationMessageFor(m => m.email, "", new { @class = "text-danger mb-8" })
                 </div>
-
-                <!-- Error Message -->
-                @if (ViewBag.Error != null)
-                {
-                    <div class="error-message bg-red-500/20 border border-red-500/30 rounded-lg p-4 mb-6">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-triangle text-red-400 mr-3"></i>
-                            <span class="text-red-200 text-sm">@ViewBag.Error</span>
-                        </div>
+                <div class="mb-4">
+                    <label class="block text-white mb-2" for="pass">Password</label>
+                    <div class="flex items-center bg-white/20 rounded-lg px-3">
+                        <input class="w-full bg-transparent outline-none py-2 text-white placeholder-white"
+                               type="password" id="pass" name="pass" placeholder="Password" />
+                        <span class="ml-2 text-white">
+                            <!-- icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2V7a2 2 0 10-4 0v2c0 1.104.896 2 2 2zm6 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-6m12 0a2 2 0 00-2-2H8a2 2 0 00-2 2m12 0V7a6 6 0 10-12 0v6" /></svg>
+                        </span>
                     </div>
-                }
-
-                <!-- Form Fields -->
-                <div class="space-y-6">
-                    <!-- Email Field -->
-                    <div>
-                        <label class="block text-white/90 mb-2 text-sm font-medium" for="email">
-                            <i class="fas fa-envelope mr-2"></i>Email Address
-                        </label>
-                        <div class="relative">
-                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
-                                   type="email" id="email" name="email" placeholder="Enter your email" required />
-                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                <i class="fas fa-envelope text-white/60"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Password Field -->
-                    <div>
-                        <label class="block text-white/90 mb-2 text-sm font-medium" for="pass">
-                            <i class="fas fa-lock mr-2"></i>Password
-                        </label>
-                        <div class="relative">
-                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 pr-12 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
-                                   type="password" id="pass" name="pass" placeholder="Enter your password" required />
-                            <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white transition-colors">
-                                <i class="fas fa-eye" id="passwordToggleIcon"></i>
-                            </button>
-                        </div>
-                    </div>
+                    @Html.ValidationMessageFor(m => m.pass, "", new { @class = "text-danger mt-4" })
                 </div>
 
                 <!-- Remember Me & Forgot Password -->
