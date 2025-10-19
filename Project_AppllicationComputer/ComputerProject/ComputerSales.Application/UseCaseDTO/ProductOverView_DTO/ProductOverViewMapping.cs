@@ -4,15 +4,11 @@ namespace ComputerSales.Application.UseCaseDTO.ProductOverView_DTO
 {
     public static class ProductOverViewMapping
     {
-        public static ProductOverview ToEnity(this ProductOverViewInput input)
+        public static ProductOverview ToEntity(this ProductOverViewInput input)
         {
             return ProductOverview.Create(
                 input.ProductId,
-                input.BlockType,
-                input.TextContent,
-                input.ImageUrl,
-                input.Caption,
-                input.DisplayOrder
+                input.TextContent
             );
         }
 
@@ -21,11 +17,8 @@ namespace ComputerSales.Application.UseCaseDTO.ProductOverView_DTO
             return new ProductOverViewOutput(
                 e.ProductOverviewId,
                 e.ProductId,
-                e.BlockType,
                 e.TextContent,
-                e.ImageUrl,
-                e.Caption,
-                e.DisplayOrder
+                e.CreateDate
             );
         }
     }

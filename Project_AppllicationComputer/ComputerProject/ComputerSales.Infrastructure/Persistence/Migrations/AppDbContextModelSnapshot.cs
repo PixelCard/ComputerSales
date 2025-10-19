@@ -72,6 +72,45 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.ToTable("Account", (string)null);
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.AccountBlock", b =>
+                {
+                    b.Property<int>("BlockId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BlockId"));
+
+                    b.Property<DateTime>("BlockFromUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("BlockToUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IDAccount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsBlock")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ReasonBlock")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("BlockId");
+
+                    b.HasIndex("IDAccount");
+
+                    b.HasIndex("IDAccount", "BlockFromUtc", "BlockToUtc");
+
+                    b.ToTable("AccountBlocks", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_AccountBlock_FromTo", "[BlockToUtc] IS NULL OR [BlockToUtc] > [BlockFromUtc]");
+                        });
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.EmailVerifyKey", b =>
                 {
                     b.Property<Guid>("Id")
@@ -444,6 +483,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("SortOrder")
@@ -699,24 +739,10 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductOverviewId"));
 
-                    b.Property<int>("BlockType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Caption")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<DateTime>("CreateDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<long>("ProductId")
                         .HasColumnType("bigint");
@@ -1066,6 +1092,17 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.AccountBlock", b =>
+                {
+                    b.HasOne("ComputerSales.Domain.Entity.Account", "Account")
+                        .WithMany("AccountBlocks")
+                        .HasForeignKey("IDAccount")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.EmailVerifyKey", b =>
                 {
                     b.HasOne("ComputerSales.Domain.Entity.Account", null)
@@ -1183,7 +1220,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.ProductOverview", b =>
                 {
                     b.HasOne("ComputerSales.Domain.Entity.EProduct.Product", "Product")
-                        .WithOne("ProductOverview")
+                        .WithOne("ProductOverviews")
                         .HasForeignKey("ComputerSales.Domain.Entity.EProduct.ProductOverview", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1313,6 +1350,8 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.Account", b =>
                 {
+                    b.Navigation("AccountBlocks");
+
                     b.Navigation("Customer");
                 });
 
@@ -1364,7 +1403,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("ProductOptionTypes");
 
-                    b.Navigation("ProductOverview");
+                    b.Navigation("ProductOverviews");
 
                     b.Navigation("ProductProtection");
 

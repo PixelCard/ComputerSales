@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
 <!-- Tailwind CDN -->
@@ -13,106 +14,6 @@
     }
 </style>
 
-<!-- Admin Header -->
-<header class="bg-[#0b2f63] text-white shadow-lg">
-    <div class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16">
-        <!-- Top Row: Logo, Search, Admin Actions -->
-        <div class="flex items-center justify-between h-16 gap-2 sm:gap-4">
-
-
-            <div class="flex items-center gap-1 sm:gap-2 min-w-0 flex-shrink-0">
-                <!-- Logo -->
-                <a asp-area="Admin" asp-controller="AdminHome" asp-action="AdminLayout"
-                    class="flex items-center gap-1 hover:opacity-90 transition">
-                    <div
-                        class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
-                        <span class="text-white font-bold text-sm sm:text-base">A</span>
-                    </div>
-                    <span class="hidden sm:block font-bold text-lg sm:text-xl tracking-tight text-white">Admin
-                        Panel</span>
-                </a>
-
-                <!-- Admin Status -->
-                <div
-                    class="hidden md:flex items-center gap-1 px-1 py-1 rounded hover:bg-white/10 transition cursor-pointer">
-                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <div class="text-left">
-                        <div class="text-xs text-orange-200">Status</div>
-                        <div class="text-sm font-medium">Online</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CENTER: Quick Search -->
-            <div class="flex-1 max-w-2xl mx-6 sm:mx-8">
-                <div class="relative flex items-center bg-white rounded-lg shadow-sm border border-gray-200">
-                    <input type="text" placeholder="Quick search products, orders, customers..."
-                        class="flex-1 px-3 py-2 text-gray-900 placeholder-gray-500 outline-none text-sm sm:text-base" />
-                    <button
-                        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-r-lg transition-colors">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M10 2a8 8 0 1 1 5.3 14l4.4 4.4-1.4 1.4-4.4-4.4A8 8 0 0 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- RIGHT: Admin Actions -->
-            <div class="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-                <!-- Notifications -->
-                <button class="relative flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 transition">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
-                    </svg>
-                    <span
-                        class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">3</span>
-                </button>
-
-                <!-- Admin Profile -->
-                <div class="flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 transition cursor-pointer">
-                    <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">AD</span>
-                    </div>
-                    <div class="text-left">
-                        <div class="text-xs text-orange-200">Admin</div>
-                        <div class="text-sm font-medium">Dashboard</div>
-                    </div>
-                </div>
-
-                <!-- Logout -->
-                <a asp-controller="Account" asp-action="Logout" class="px-3 py-2 rounded hover:bg-white/10 transition">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
-                    </svg>
-                </a>
-            </div>
-        </div>
-
-        <!-- Bottom Row: Admin Navigation -->
-        <div class="flex items-center justify-between py-2 border-t border-blue-800">
-            <!-- Left Navigation -->
-            <div class="flex items-center gap-6">
-                <a asp-area="Admin" asp-controller="AdminHome" asp-action="AdminLayout"
-                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Dashboard</a>
-                <a asp-area="Admin" asp-controller="Product" asp-action="Index"
-                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Sản phẩm</a>
-                <a asp-area="Admin" asp-controller="Customers" asp-action="Index"
-                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Khách hàng</a>
-            </div>
-
-            <!-- Right Navigation -->
-            <div class="flex items-center gap-4">
-                <a asp-area="Admin" asp-controller="Accounts" asp-action="Index"
-                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Tài khoản</a>
-                <a asp-controller="Home" asp-action="Index"
-                    class="px-3 py-2 rounded hover:bg-white/10 transition font-medium">Xem trang chủ</a>
-            </div>
-        </div>
-    </div>
-</header>
 
 <!-- Main Content -->
 <main class="w-full px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 py-6">

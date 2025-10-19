@@ -1,7 +1,9 @@
 ﻿using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCaseDTO.Product_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
 using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO;
+using ComputerSales.Domain.Entity.E_Order;
 using ComputerSales.Domain.Entity.EProduct; // ProductStatus
 using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence; // AppDbContext
@@ -11,7 +13,6 @@ using ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using System.ComponentModel.DataAnnotations;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
@@ -80,29 +81,26 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         }
 
         // Nạp dropdown cho View (Providers, Accessories, Status=int)
-        private async Task LoadLookupsAsync(CancellationToken ct = default)
-        {
-            var providers = await _db.Providers
-                .AsNoTracking()
-                .Select(x => new { x.ProviderID, x.ProviderName })
-                .ToListAsync(ct);
+        private async Task LoadLookupsAsync(
+             CancellationToken ct = default,
+             long? selectedProviderId = null,
+             long? selectedAccessoriesId = null,
+             int? selectedStatus = null)
+                {
+                    var providers = await _db.Providers.AsNoTracking()
+                        .Select(x => new { x.ProviderID, x.ProviderName }).ToListAsync(ct);
+                    var accessories = await _db.accessories.AsNoTracking()
+                        .Select(x => new { x.AccessoriesID, x.Name }).ToListAsync(ct);
 
-            var accessories = await _db.accessories
-                .AsNoTracking()
-                .Select(x => new { x.AccessoriesID, x.Name })
-                .ToListAsync(ct);
-
-            ViewBag.ProviderList = new SelectList(providers, "ProviderID", "ProviderName");
-            ViewBag.AccessoriesList = new SelectList(accessories, "AccessoriesID", "Name");
-            ViewData["DbgCounts"] = $"Providers={providers.Count}, Accessories={accessories.Count}";
-
-            // Status: enum -> int cho View (DTO nhận int)
-            ViewBag.StatusList = new SelectList(new[]
-            {
+                    ViewBag.ProviderList = new SelectList(providers, "ProviderID", "ProviderName", selectedProviderId);
+                    ViewBag.AccessoriesList = new SelectList(accessories, "AccessoriesID", "Name", selectedAccessoriesId);
+                    ViewBag.StatusList = new SelectList(new[]
+                    {
                 new { Value = (int)ProductStatus.Inactive, Text = nameof(ProductStatus.Inactive) },
                 new { Value = (int)ProductStatus.Active,   Text = nameof(ProductStatus.Active) }
-            }, "Value", "Text");
+             }, "Value", "Text", selectedStatus);
         }
+
 
         // GET /Admin/Product/Create
         [HttpGet]
@@ -118,35 +116,84 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                await LoadLookupsAsync(ct);
+                await LoadLookupsAsync(ct, input.ProviderID, input.AccessoriesID, input.Status);
                 return View(input);
             }
 
+            //Fix reload lại trang mất hết dropdown
+            if (!ModelState.IsValid)
+            {
+                await LoadLookupsAsync(ct, input.ProviderID, input.AccessoriesID, input.Status);
+                return View(input);
+            }
+
+            var finalSku = await EnsureFinalSkuAsync(input.SKU, ct);
+
+            if (finalSku == null)
+            {
+                ModelState.AddModelError("SKU", "Mã SKU này đã tồn tại, vui lòng nhập mã khác.");
+                await LoadLookupsAsync(ct, input.ProviderID, input.AccessoriesID, input.Status);
+                return View(input);
+            }
+
+            var product = Product.Create(
+                accessoriesId: input.AccessoriesID,
+                providerId: input.ProviderID,
+                shortDescription: input.ShortDescription,
+                sku: finalSku,
+                slug: input.Slug
+            );
+
+            _db.Products.Add(product);
             try
             {
-                ProductOutputDTOcs output = await _createUC.HandleAsync(input, ct);
-
-                TempData["Success"] = "Tạo sản phẩm thành công.";
-
-                // 🔥 Chuyển sang trang Index của ProductVariant kèm productId
-                return RedirectToAction(
-                    actionName: "Index",
-                    controllerName: "ProductVariant",
-                    routeValues: new { area = "Admin", productId = output.ProductID }
-                );
+                await _db.SaveChangesAsync(ct);
             }
-            catch (ValidationException ex)
+            catch
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Lỗi: {ex.Message}");
+                // nếu lỗi lưu, cũng cần nạp lại dropdown trước khi trả về view
+                await LoadLookupsAsync(ct, input.ProviderID, input.AccessoriesID, input.Status);
+                ModelState.AddModelError(string.Empty, "Có lỗi khi lưu dữ liệu.");
+                return View(input);
             }
 
-            await LoadLookupsAsync(ct);
-            return View(input);
+            TempData["Success"] = $"✅ Đã tạo sản phẩm mới ({finalSku}) thành công!";
+            return RedirectToAction("Index", "Product", new { area = "Admin" });
         }
+
+
+        // Trả về SKU cuối cùng.
+        // - Nếu người dùng để trống -> tự sinh.
+        // - Nếu người dùng nhập mà bị trùng -> trả về null.
+        private async Task<string?> EnsureFinalSkuAsync(string? inputSku, CancellationToken ct)
+        {
+            string finalSku;
+
+            // 1) Nếu SKU trống -> tự sinh
+            if (string.IsNullOrWhiteSpace(inputSku))
+            {
+                var lastId = await _db.Products
+                                      .AsNoTracking()
+                                      .MaxAsync(p => (int?)p.ProductID, ct) ?? 0;
+                finalSku = $"SKU_{10000 + lastId + 1}";
+            }
+            else
+            {
+                // 2) Có nhập -> chuẩn hóa
+                finalSku = inputSku.Trim();
+
+                // 3) Kiểm tra trùng
+                var exists = await _db.Products
+                                      .AsNoTracking()
+                                      .AnyAsync(p => p.SKU == finalSku, ct);
+                if (exists)
+                    return null; // báo trùng
+            }
+
+            return finalSku; // hợp lệ
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> CreateVariant(long productId, CancellationToken ct)
@@ -169,8 +216,8 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                     v.Quantity
                 })
                 .ToListAsync(ct);
-            ViewBag.Variants = variants;                 // [THÊM]
-            ViewBag.VariantsCount = variants.Count;      // [THÊM]
+            ViewBag.Variants = variants;                 
+            ViewBag.VariantsCount = variants.Count;
 
             // Truyền product sang View (nếu cần show)
             ViewBag.Product = product;
@@ -249,12 +296,12 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                 .Include(p => p.Provider)
                 .Include(p => p.Accessories)
                 .Include(p => p.ProductVariants)
+                .Include(p => p.ProductOverviews)               
                 .FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
 
             if (product is null)
                 return NotFound();
 
-            // Chuẩn hóa sang ViewModel để hiển thị
             var vm = new ProductDetailsVM
             {
                 ProductID = product.ProductID,
@@ -264,6 +311,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                 Status = product.Status,
                 ProviderName = product.Provider?.ProviderName ?? "(N/A)",
                 AccessoriesName = product.Accessories?.Name ?? "(N/A)",
+
                 Variants = product.ProductVariants
                     .OrderByDescending(v => v.Id)
                     .Select(v => new ProductVariantDetailVM
@@ -275,11 +323,25 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                         Quantity = v.Quantity,
                         Status = v.Status
                     })
-                    .ToList()
+                    .ToList(),
+
+                // <<-- THÊM MAP OVERVIEW VÀO VM (1-1)
+                ProductOverviews = product.ProductOverviews != null 
+                    ? new List<ProductOverViewOutput> 
+                    { 
+                        new ProductOverViewOutput(
+                            product.ProductOverviews.ProductOverviewId,
+                            product.ProductOverviews.ProductId,
+                            product.ProductOverviews.TextContent,
+                            product.ProductOverviews.CreateDate
+                        )
+                    }
+                    : new List<ProductOverViewOutput>()
             };
 
             return View(vm);
         }
+
         //=================== Edit Product  ========================//
         // GET: /Admin/Product/Edit/5
         [HttpGet]
@@ -370,33 +432,8 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             return View(vm); // hiển thị confirm "Bạn có chắc muốn xóa không?"
         }
 
-        // POST: /Admin/Product/DeleteConfirmed/5
-        [HttpPost, ActionName("DeleteConfirmed")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id, CancellationToken ct)
-        {
-            var product = await _db.Set<Product>().FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
-            if (product == null) return NotFound();
 
-            try
-            {
-                // soft delete
-                product.IsDeleted = true;
-                _db.Update(product);
-                await _db.SaveChangesAsync(ct);
-
-                TempData["Success"] = "Sản phẩm đã được xóa (soft delete).";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Lỗi khi xóa: {ex.Message}";
-                return RedirectToAction(nameof(Delete), new { id });
-            }
-        }
-
-
-private static bool IsExpired(VariantPrice p, DateTime nowUtc)
+    private static bool IsExpired(VariantPrice p, DateTime nowUtc)
     {
         if (p == null) return true;
 
@@ -442,10 +479,145 @@ private static bool IsExpired(VariantPrice p, DateTime nowUtc)
         var old = row.Price > price ? row.Price : (decimal?)null;
         return (price, old, currency);
     }
+        // GET: /Admin/Product/Deleted
+        [HttpGet]
+        public async Task<IActionResult> DanhSachSanPhamXoa(int page = 1, int pageSize = 20, CancellationToken ct = default)
+        {
+            if (page < 1) page = 1;
+            if (pageSize <= 0 || pageSize > 200) pageSize = 20;
+
+            var query = _db.Set<Product>()
+                           .AsNoTracking()
+                           .Where(p => p.IsDeleted); // 🔥 lấy sản phẩm đã xóa mềm
+
+            var total = await query.CountAsync(ct);
+
+            var items = await query
+                .OrderByDescending(p => p.ProductID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new ProductRowVM
+                {
+                    ProductID = p.ProductID,
+                    SKU = p.SKU,
+                    Slug = p.Slug,
+                    ShortDescription = p.ShortDescription,
+                    Status = p.Status,
+                    ProviderName = p.Provider.ProviderName,
+                    AccessoriesName = p.Accessories.Name,
+                    VariantsCount = p.ProductVariants.Count
+                })
+                .ToListAsync(ct);
+
+            var vm = new ProductIndexVM
+            {
+                Items = items,
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = total,
+                Query = null,
+                Status = "Deleted"
+            };
+
+            ViewData["Title"] = "Danh sách sản phẩm đã xóa";
+            return View("DanhSachSanPhamXoa", vm);
+        }
+
+        //hàm khôi phục sản phẩm đã xóa đổi IsDelete -> false trong layout
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(long id, CancellationToken ct)
+        {
+            var product = await _db.Set<Product>().FirstOrDefaultAsync(p => p.ProductID == id && p.IsDeleted, ct);
+            if (product == null)
+            {
+                TempData["Error"] = "Không tìm thấy sản phẩm để khôi phục.";
+                return RedirectToAction(nameof(DanhSachSanPhamXoa));
+            }
+
+            product.IsDeleted = false;
+            _db.Update(product);
+            await _db.SaveChangesAsync(ct);
+
+            TempData["Success"] = "Khôi phục sản phẩm thành công.";
+            return RedirectToAction(nameof(DanhSachSanPhamXoa));
+        }
+
+        // POST: không xóa sản phẩm , chỉ cập nhật trạng IsDelete ẩn đi sau đó mới xác nhận xóa
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(long id, CancellationToken ct)
+        {
+            var product = await _db.Set<Product>()
+                .FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
+
+            if (product == null)
+            {
+                TempData["Error"] = "Không tìm thấy sản phẩm cần xóa.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                // ✅ Đánh dấu IsDeleted = true
+                product.IsDeleted = true;
+                _db.Update(product);
+                await _db.SaveChangesAsync(ct);
+
+                TempData["Success"] = "✅ Đã xóa sản phẩm thành công (soft delete).";
+
+                // ✅ Quay về danh sách
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"❌ Lỗi khi xóa sản phẩm: {ex.Message}";
+                return RedirectToAction(nameof(DeleteProduct), new { id });
+            }
+        }
 
 
+        //hàm xác nhận xóa sản phẩm cho view DanhSachSanPhamXoa -> Xác nhận xóa
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePermanently(long id, CancellationToken ct)
+        {
+            var product = await _db.Set<Product>()
+                .Include(p => p.ProductVariants)
+                .FirstOrDefaultAsync(p => p.ProductID == id && p.IsDeleted, ct);
+
+            if (product == null)
+            {
+                TempData["Error"] = "❌ Không thể xóa: Sản phẩm không tồn tại hoặc chưa bị xóa mềm.";
+                return RedirectToAction(nameof(DanhSachSanPhamXoa));
+            }
+
+            try
+            {
+                var variantIds = product.ProductVariants.Select(v => v.Id).ToList();
+
+                bool hasOrder = await _db.Set<OrderDetail>()
+                    .AnyAsync(od => od.ProductID == id || variantIds.Contains(od.ProductVariantID), ct);
+
+                if (hasOrder)
+                {
+                    TempData["Error"] = "⚠️ Không thể xóa vĩnh viễn vì sản phẩm này còn đơn hàng.";
+                    return RedirectToAction(nameof(DanhSachSanPhamXoa));
+                }
+
+                _db.Remove(product);
+                await _db.SaveChangesAsync(ct);
+
+                TempData["Success"] = "🗑️ Đã xóa vĩnh viễn sản phẩm khỏi hệ thống.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"❌ Lỗi khi xóa sản phẩm: {ex.Message}";
+            }
+
+            return RedirectToAction(nameof(DanhSachSanPhamXoa));
+        }
 
 
-
-}
+    }
 }

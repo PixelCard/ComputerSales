@@ -6,7 +6,7 @@
         long AccessoriesID,
         long ProviderID,
         string Slug,
-        string SKU
+        string? SKU
 
     );
 

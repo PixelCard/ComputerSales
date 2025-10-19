@@ -1,0 +1,181 @@
+﻿@using ComputerSales.Application.UseCaseDTO.AccountBlock_DTO
+@model AccountBlockOutputDTO
+@{
+    ViewData["Title"] = "Block Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+    <div class="mb-4 sm:mb-0">
+        <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+            <i class="fas fa-info-circle text-blue-500 mr-3"></i>
+            Block Details
+        </h1>
+        <p class="text-gray-600 mt-2">Detailed information about account block #@Model.BlockId</p>
+    </div>
+    <div class="flex space-x-3">
+        <a class="inline-flex items-center px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+           asp-area="Admin"
+           asp-controller="AccountBlocks"
+           asp-action="IndexAccountBlocks">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to List
+        </a>
+        <a class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+           asp-area="Admin"
+           asp-controller="AccountBlocks"
+           asp-action="DeleteAccountBlocks"
+           asp-route-id="@Model.BlockId">
+            <i class="fas fa-trash mr-2"></i>
+            Delete Block
+        </a>
+    </div>
+</div>
+
+<!-- Details Card -->
+<div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900 flex items-center">
+            <i class="fas fa-ban text-red-500 mr-2"></i>
+            Account Block Information
+        </h2>
+    </div>
+    
+    <div class="p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Left Column -->
+            <div class="space-y-6">
+                <!-- Block ID -->
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <dt class="text-sm font-medium text-gray-500 mb-1 sm:mb-0 sm:w-1/3">
+                        <i class="fas fa-hashtag mr-2"></i>Block ID
+                    </dt>
+                    <dd class="text-sm text-gray-900 font-mono bg-gray-100 px-3 py-2 rounded-md">
+                        #@Model.BlockId
+                    </dd>
+                </div>
+
+                <!-- Account ID -->
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <dt class="text-sm font-medium text-gray-500 mb-1 sm:mb-0 sm:w-1/3">
+                        <i class="fas fa-user mr-2"></i>Account ID
+                    </dt>
+                    <dd class="text-sm text-gray-900">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            @Model.IDAccount
+                        </span>
+                    </dd>
+                </div>
+
+                <!-- Block From (Giờ Việt Nam – UTC+7) -->
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <dt class="text-sm font-medium text-gray-500 mb-1 sm:mb-0 sm:w-1/3">
+                        <i class="fas fa-clock mr-2"></i>Block From (Giờ Việt Nam – UTC+7)
+                    </dt>
+                    <dd class="text-sm text-gray-900">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-alt text-gray-400 mr-2"></i>
+                            <span class="font-mono">@ViewBag.FromVN</span>
+                        </div>
+                    </dd>
+                </div>
+
+                <!-- Block To (Giờ Việt Nam – UTC+7) -->
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <dt class="text-sm font-medium text-gray-500 mb-1 sm:mb-0 sm:w-1/3">
+                        <i class="fas fa-clock mr-2"></i>Block To (Giờ Việt Nam – UTC+7)
+                    </dt>
+                    <dd class="text-sm text-gray-900">
+                        @if (Model.BlockToUtc.HasValue)
+                        {
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt text-gray-400 mr-2"></i>
+                                <span class="font-mono">@ViewBag.ToVN</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                <i class="fas fa-infinity mr-1"></i>
+                                Permanent Block
+                            </span>
+                        }
+                    </dd>
+                </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <!-- Database Status -->
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <dt class="text-sm font-medium text-gray-500 mb-1 sm:mb-0 sm:w-1/3">
+                        <i class="fas fa-database mr-2"></i>DB Status
+                    </dt>
+                    <dd class="text-sm text-gray-900">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @(Model.IsBlock ? "bg-red-100 text-red-800" : "bg-gray-100 text-gray-800")">
+                            <i class="fas @(Model.IsBlock ? "fa-ban" : "fa-check") mr-1"></i>
+                            @(Model.IsBlock ? "Blocked" : "Active")
+                        </span>
+                    </dd>
+                </div>
+
+                <!-- Current Status -->
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <dt class="text-sm font-medium text-gray-500 mb-1 sm:mb-0 sm:w-1/3">
+                        <i class="fas fa-exclamation-circle mr-2"></i>Current Status
+                    </dt>
+                    <dd class="text-sm text-gray-900">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @(Model.IsActiveNowUtc ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800")">
+                            <i class="fas @(Model.IsActiveNowUtc ? "fa-lock" : "fa-unlock") mr-1"></i>
+                            @(Model.IsActiveNowUtc ? "Currently Blocked" : "Currently Free")
+                        </span>
+                    </dd>
+                </div>
+
+                <!-- Duration -->
+                <div class="flex flex-col sm:flex-row sm:items-center">
+                    <dt class="text-sm font-medium text-gray-500 mb-1 sm:mb-0 sm:w-1/3">
+                        <i class="fas fa-hourglass-half mr-2"></i>Duration
+                    </dt>
+                    <dd class="text-sm text-gray-900">
+                        @if (Model.BlockToUtc.HasValue)
+                        {
+                            var duration = Model.BlockToUtc.Value - Model.BlockFromUtc;
+                            <span class="font-mono">
+                                @(duration.Days > 0 ? $"{duration.Days}d " : "")@(duration.Hours > 0 ? $"{duration.Hours}h " : "")@(duration.Minutes > 0 ? $"{duration.Minutes}m" : "")
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-gray-500 italic">Indefinite</span>
+                        }
+                    </dd>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reason Section -->
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <dt class="text-sm font-medium text-gray-500 mb-3">
+                <i class="fas fa-comment mr-2"></i>Block Reason
+            </dt>
+            <dd class="text-sm text-gray-900">
+                @if (!string.IsNullOrEmpty(Model.ReasonBlock))
+                {
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <p class="text-gray-900 leading-relaxed whitespace-pre-wrap break-words">@Model.ReasonBlock</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <span class="text-gray-400 italic">No reason provided for this block.</span>
+                    </div>
+                }
+            </dd>
+        </div>
+    </div>
+</div>

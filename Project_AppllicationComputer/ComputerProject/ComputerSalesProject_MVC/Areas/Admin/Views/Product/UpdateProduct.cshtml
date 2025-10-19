@@ -47,9 +47,14 @@
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                     Lưu thay đổi
                 </button>
-                <a asp-action="Details" asp-route-id="@ViewBag.ProductId" class="ml-2 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                <a asp-area="Admin"
+                   asp-controller="Product"
+                   asp-action="ProductDetails"
+                   asp-route-id="@ViewBag.ProductId"
+                   class="ml-2 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
                     Hủy
                 </a>
+
             </div>
         </form>
     </div>

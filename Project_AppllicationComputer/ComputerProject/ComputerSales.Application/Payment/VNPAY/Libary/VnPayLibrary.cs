@@ -104,28 +104,53 @@ namespace ComputerSales.Application.Payment.VNPAY.Libary
         }
 
 
+        //public string CreateRequestUrl(string baseUrl, string vnpHashSecret)
+        //{
+        //    var data = new StringBuilder();
+
+        //    foreach (var (key, value) in _requestData.Where(kv => !string.IsNullOrEmpty(kv.Value)))
+        //    {
+        //        data.Append(WebUtility.UrlEncode(key) + "=" + WebUtility.UrlEncode(value) + "&");
+        //    }
+
+        //    var querystring = data.ToString();
+
+        //    baseUrl += "?" + querystring;
+        //    var signData = querystring;
+        //    if (signData.Length > 0)
+        //    {
+        //        signData = signData.Remove(data.Length - 1, 1);
+        //    }
+
+        //    var vnpSecureHash = HmacSha512(vnpHashSecret, signData);
+        //    baseUrl += "vnp_SecureHash=" + vnpSecureHash;
+
+        //    return baseUrl;
+        //}
+
         public string CreateRequestUrl(string baseUrl, string vnpHashSecret)
         {
-            var data = new StringBuilder();
+            // 1) build danh sách key=value đã URL-encode
+            var pairs = _requestData
+                .Where(kv => !string.IsNullOrEmpty(kv.Value))
+                .Select(kv => $"{WebUtility.UrlEncode(kv.Key)}={WebUtility.UrlEncode(kv.Value)}")
+                .ToList();
 
-            foreach (var (key, value) in _requestData.Where(kv => !string.IsNullOrEmpty(kv.Value)))
-            {
-                data.Append(WebUtility.UrlEncode(key) + "=" + WebUtility.UrlEncode(value) + "&");
-            }
+            // 2) raw data để ký (không có vnp_SecureHash ở đây)
+            var signData = string.Join("&", pairs);
 
-            var querystring = data.ToString();
-
-            baseUrl += "?" + querystring;
-            var signData = querystring;
-            if (signData.Length > 0)
-            {
-                signData = signData.Remove(data.Length - 1, 1);
-            }
-
+            // 3) tính hash
             var vnpSecureHash = HmacSha512(vnpHashSecret, signData);
-            baseUrl += "vnp_SecureHash=" + vnpSecureHash;
 
-            return baseUrl;
+            // 4) ráp URL gửi đi
+            var url = $"{baseUrl}?{signData}&vnp_SecureHash={vnpSecureHash}";
+
+            // 5) LOG để bạn so khớp nếu còn sai chữ ký
+            Console.WriteLine("VNPAY signData = " + signData);
+            Console.WriteLine("VNPAY secureHash = " + vnpSecureHash);
+            Console.WriteLine("VNPAY fullURL = " + url);
+
+            return url;
         }
 
 

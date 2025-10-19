@@ -29,12 +29,15 @@ using ComputerSales.Application.UseCase.OptionalType_UC;
 using ComputerSales.Application.UseCase.OptionalValue_UC;
 using ComputerSales.Application.UseCase.Order_UC;
 using ComputerSales.Application.UseCase.Product_UC;
+using ComputerSales.Application.UseCase.ProductOptionalType_UC;
 using ComputerSales.Application.UseCase.ProductOvetView_UC;
 using ComputerSales.Application.UseCase.ProductProtection_UC;
 using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCase.Provider_UC;
 using ComputerSales.Application.UseCase.Role_UC;
 using ComputerSales.Application.UseCase.VariantImage_UC;
+using ComputerSales.Application.UseCase.VariantOptionValue_UC;
+using ComputerSales.Application.UseCase.VariantPrice_UC;
 using ComputerSales.Application.UseCase.VariantPrice_UC.variantGetPriceByVariantID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
@@ -62,16 +65,6 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ComputerSales.Infrastructure.Repositories.ForgetPassRespo;
-using ComputerSales.Application.Interface.Interface_ForgetPassword;
-using ComputerSales.Application.UseCase.ForgetPass_UC;
-using ComputerSales.Application.Payment.Interface;
-using ComputerSales.Application.Payment.VNPAY.Respository;
-using ComputerSales.Application.Interface.InterfaceVNPAYMENT;
-using ComputerSales.Infrastructure.Repositories.VNPAYMENTRespo;
-using ComputerSales.Application.UseCase.VariantPrice_UC;
-using ComputerSales.Application.UseCase.VariantOptionValue_UC;
-using ComputerSales.Application.UseCase.ProductOptionalType_UC;
 
 
 namespace ComputerSales.Infrastructure
@@ -197,10 +190,18 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<GetAccountByEmail_UC>();
            services.AddScoped<DeleteAccount_UC>();
 
-        
+            //==============    Accounts Blocks   ===============//
+            services.AddScoped<GetAllAccountBlock_UC>();
+            services.AddScoped<GetAccountBlockById_UC>();   // <-- thiếu cái này
+            services.AddScoped<CreateAccountBlock_UC>();
+            services.AddScoped<DeleteAccountBlock_UC>();    
+            services.AddScoped<CheckAccountBlock_UC>();
+
+
+
 
             /********************Product Protection**************************/
-           services.AddScoped<CreateProductProtection_UC>();
+            services.AddScoped<CreateProductProtection_UC>();
            services.AddScoped<DeleteProductProtection_UC>();
            services.AddScoped<GetByIdProductProtection_UC>();
            services.AddScoped<UpdateProductProtection_UC>();
@@ -279,6 +280,7 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<GetByIdProvider_UC>();
             services.AddScoped<UpdateProvider_UC>();
 
+            //================= Account Block ==============//
 
             return services;
         }
@@ -305,9 +307,18 @@ dotnet ef migrations add TenMigrationMoiUpdateVedieuGiDo -p ComputerSales.Infras
 dotnet ef database update -p ComputerSales.Infrastructure -s API_ComputerProject
 
 
+//nếu migration có bị sai thì chưa update được ta dùng lệnh này để xóa migration mới tạo  
+// CapNhatLaiQuanHeProduct_ProductOverview
+// dotnet ef migrations remove -p ComputerSales.Infrastructure -s API_ComputerProject
+
+
+
 // luôn luôn phải fetch và pull trước khi run dự án git clone về
 -> git changes -> view all commmits -> incomming -> fetch -> full
 
  */
+
+
+
 
 

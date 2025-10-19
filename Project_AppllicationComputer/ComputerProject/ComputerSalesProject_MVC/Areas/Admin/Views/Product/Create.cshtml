@@ -5,13 +5,13 @@
 
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <!-- Header -->
         <div class="mb-8">
             <div class="flex items-center gap-3 mb-2">
-                <a href="/admin/products" class="text-orange-500 hover:text-orange-600 transition-colors">
+                <a href="/admin/product/index" class="text-orange-500 hover:text-orange-600 transition-colors">
                     <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
                     </svg>
                 </a>
                 <h1 class="text-3xl font-bold text-gray-900">Tạo sản phẩm mới</h1>
@@ -21,7 +21,7 @@
 
         <!-- Form Container -->
         <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-            
+
             <!-- Form Header -->
             <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
                 <h2 class="text-xl font-semibold text-white">Thông tin sản phẩm</h2>
@@ -30,48 +30,48 @@
 
             <!-- Form Content -->
             <form asp-action="Create" method="post" class="p-6 space-y-6">
-                
-                <!-- Basic Information Section -->
+
+                <!-- Thông tin cơ bản -->
                 <div class="border-b border-gray-200 pb-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                         <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                             <svg class="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
                         </div>
                         Thông tin cơ bản
                     </h3>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- SKU Field -->
+                        <!-- SKU -->
                         <div class="space-y-2">
                             <label asp-for="SKU" class="block text-sm font-medium text-gray-700">
                                 SKU <span class="text-red-500">*</span>
                             </label>
-                            <input asp-for="SKU" 
+                            <input asp-for="SKU"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                                   placeholder="Nhập mã SKU sản phẩm" />
+                                   placeholder="Để trống để hệ thống tự sinh SKU tự động" />
                             <span asp-validation-for="SKU" class="text-red-500 text-sm"></span>
                         </div>
 
-                        <!-- Slug Field -->
+                        <!-- Slug -->
                         <div class="space-y-2">
                             <label asp-for="Slug" class="block text-sm font-medium text-gray-700">
                                 Slug <span class="text-red-500">*</span>
                             </label>
-                            <input asp-for="Slug" 
+                            <input asp-for="Slug"
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                                   placeholder="Nhập slug sản phẩm" />
+                                   placeholder="Nhập slug sản phẩm (nếu trống sẽ tự tạo từ SKU)" />
                             <span asp-validation-for="Slug" class="text-red-500 text-sm"></span>
                         </div>
                     </div>
 
-                    <!-- Short Description Field -->
+                    <!-- Mô tả -->
                     <div class="mt-6 space-y-2">
                         <label asp-for="ShortDescription" class="block text-sm font-medium text-gray-700">
                             Mô tả ngắn <span class="text-red-500">*</span>
                         </label>
-                        <textarea asp-for="ShortDescription" 
+                        <textarea asp-for="ShortDescription"
                                   rows="4"
                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
                                   placeholder="Nhập mô tả ngắn về sản phẩm..."></textarea>
@@ -79,48 +79,48 @@
                     </div>
                 </div>
 
-                <!-- Category & Status Section -->
+                <!-- Phân loại -->
                 <div class="border-b border-gray-200 pb-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                         <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                             <svg class="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M3 5h8v6H3V5Zm10 0h8v6h-8V5ZM3 13h8v6H3v-6Zm10 0h8v6h-8v-6Z"/>
+                                <path d="M3 5h8v6H3V5Zm10 0h8v6h-8V5ZM3 13h8v6H3v-6Zm10 0h8v6h-8v-6Z" />
                             </svg>
                         </div>
                         Phân loại & Trạng thái
                     </h3>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Status Field -->
+                        <!-- Status -->
                         <div class="space-y-2">
                             <label asp-for="Status" class="block text-sm font-medium text-gray-700">
                                 Trạng thái <span class="text-red-500">*</span>
                             </label>
-                            <select asp-for="Status" asp-items="ViewBag.StatusList" 
+                            <select asp-for="Status" asp-items="ViewBag.StatusList"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white">
                                 <option value="">-- Chọn Trạng thái --</option>
                             </select>
                             <span asp-validation-for="Status" class="text-red-500 text-sm"></span>
                         </div>
 
-                        <!-- Accessories Field -->
+                        <!-- Accessories -->
                         <div class="space-y-2">
                             <label asp-for="AccessoriesID" class="block text-sm font-medium text-gray-700">
                                 Danh mục <span class="text-red-500">*</span>
                             </label>
-                            <select asp-for="AccessoriesID" asp-items="ViewBag.AccessoriesList" 
+                            <select asp-for="AccessoriesID" asp-items="ViewBag.AccessoriesList"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white">
                                 <option value="">-- Chọn Accessories --</option>
                             </select>
                             <span asp-validation-for="AccessoriesID" class="text-red-500 text-sm"></span>
                         </div>
 
-                        <!-- Provider Field -->
+                        <!-- Provider -->
                         <div class="space-y-2">
                             <label asp-for="ProviderID" class="block text-sm font-medium text-gray-700">
                                 Nhà cung cấp <span class="text-red-500">*</span>
                             </label>
-                            <select asp-for="ProviderID" asp-items="ViewBag.ProviderList" 
+                            <select asp-for="ProviderID" asp-items="ViewBag.ProviderList"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors bg-white">
                                 <option value="">-- Chọn Provider --</option>
                             </select>
@@ -131,18 +131,27 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center justify-end gap-4 pt-6">
-                    <a href="/admin/products" 
+                    <a asp-area="Admin"
+                       asp-controller="Product"
+                       asp-action="Index"
                        class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
                         Hủy bỏ
                     </a>
-                    <button type="submit" 
-                            class="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 font-medium shadow-lg hover:shadow-xl">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                            </svg>
-                            Tạo sản phẩm
-                        </div>
+
+
+                    <!-- Submit Button -->
+                    <button id="btnSubmit" type="submit"
+                            class="relative flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 font-medium shadow-lg hover:shadow-xl">
+                        <svg id="btnIcon" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                        </svg>
+                        <span id="btnText">Tạo sản phẩm</span>
+                        <svg id="btnSpinner" class="hidden w-5 h-5 animate-spin text-white"
+                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
                     </button>
                 </div>
             </form>
@@ -153,16 +162,16 @@
             <div class="flex items-start gap-3">
                 <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg class="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
                     </svg>
                 </div>
                 <div>
                     <h4 class="font-semibold text-blue-900 mb-2">Lưu ý khi tạo sản phẩm</h4>
                     <ul class="text-blue-800 text-sm space-y-1">
-                        <li>• SKU phải là duy nhất và không được trùng lặp</li>
-                        <li>• Slug sẽ được sử dụng trong URL của sản phẩm</li>
-                        <li>• Mô tả ngắn sẽ hiển thị trong danh sách sản phẩm</li>
-                        <li>• Đảm bảo chọn đúng danh mục và nhà cung cấp</li>
+                        <li>• SKU để trống hệ thống sẽ tự sinh</li>
+                        <li>• Nếu nhập SKU trùng sẽ báo lỗi yêu cầu nhập lại</li>
+                        <li>• Slug được dùng trong đường dẫn sản phẩm</li>
+                        <li>• Mô tả ngắn hiển thị trong danh sách sản phẩm</li>
                     </ul>
                 </div>
             </div>
@@ -170,15 +179,20 @@
     </div>
 </div>
 
+<!-- JS xử lý nút + validate + slug -->
 <script>
-    // Form enhancement
-    document.addEventListener('DOMContentLoaded', function() {
-        // Auto-generate slug from SKU
+    document.addEventListener('DOMContentLoaded', function () {
         const skuInput = document.querySelector('input[name="SKU"]');
         const slugInput = document.querySelector('input[name="Slug"]');
-        
+        const form = document.querySelector('form');
+        const btn = document.getElementById("btnSubmit");
+        const icon = document.getElementById("btnIcon");
+        const text = document.getElementById("btnText");
+        const spinner = document.getElementById("btnSpinner");
+
+        // Tự tạo slug từ SKU
         if (skuInput && slugInput) {
-            skuInput.addEventListener('input', function() {
+            skuInput.addEventListener('input', function () {
                 if (!slugInput.value) {
                     const slug = this.value.toLowerCase()
                         .replace(/[^a-z0-9\s-]/g, '')
@@ -190,25 +204,15 @@
             });
         }
 
-        // Form validation enhancement
-        const form = document.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const requiredFields = form.querySelectorAll('input[required], select[required]');
-                let isValid = true;
-                
-                requiredFields.forEach(field => {
-                    if (!field.value.trim()) {
-                        field.classList.add('border-red-500');
-                        isValid = false;
-                    } else {
-                        field.classList.remove('border-red-500');
-                    }
-                });
-                
-                if (!isValid) {
-                    e.preventDefault();
-                    alert('Vui lòng điền đầy đủ các trường bắt buộc');
+        // Xử lý loading nút
+        if (form && btn) {
+            form.addEventListener('submit', function () {
+                if (form.checkValidity()) {
+                    btn.disabled = true;
+                    btn.classList.add("opacity-70", "cursor-not-allowed");
+                    icon.classList.add("hidden");
+                    spinner.classList.remove("hidden");
+                    text.textContent = "Đang tạo...";
                 }
             });
         }

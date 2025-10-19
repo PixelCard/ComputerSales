@@ -1,174 +1,260 @@
 @model ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO.RegisterRequestDTO
 @{
     ViewData["Title"] = "Đăng ký tài khoản";
-    Layout = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Register</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .doodle-bg {
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath d='M20,20 Q30,10 40,20 Q50,30 40,40 Q30,50 20,40 Q10,30 20,20' fill='none' stroke='white' stroke-width='1' opacity='0.3'/%3E%3Cpath d='M60,60 Q70,50 80,60 Q90,70 80,80 Q70,90 60,80 Q50,70 60,60' fill='none' stroke='white' stroke-width='1' opacity='0.3'/%3E%3Cpath d='M10,70 Q20,60 30,70 Q40,80 30,90 Q20,100 10,90 Q0,80 10,70' fill='none' stroke='white' stroke-width='1' opacity='0.3'/%3E%3Cpath d='M70,10 Q80,0 90,10 Q100,20 90,30 Q80,40 70,30 Q60,20 70,10' fill='none' stroke='white' stroke-width='1' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E");
-            background-size: 200px 200px;
-        }
-    </style>
-
-    @section Scripts {
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const form = document.getElementById('registerForm');
-                const btn = document.getElementById('submitBtn');
-                if (!form || !btn) return;
-
-                form.addEventListener('submit', function () {
-                    btn.disabled = true;
-                    btn.textContent = 'Processing...';
-                });
-            });
-        </script>
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #0b2f63 0%, #002D6A 50%, #1e40af 100%);
     }
-</head>
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .error-message {
+        animation: slideIn 0.3s ease-out;
+    }
+    keyframes slideIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .floating-animation {
+        animation: float 6s ease-in-out infinite;
+    }
+    keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    .form-field {
+        transition: all 0.3s ease;
+    }
+    .form-field:focus-within {
+        transform: translateY(-2px);
+    }
+</style>
 
-<body class="min-h-screen bg-purple-600 doodle-bg flex items-center justify-center relative">
-    <!-- Hand-drawn doodles overlay -->
-    <div class="absolute inset-0 pointer-events-none opacity-20">
-        <svg class="w-full h-full" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Books -->
-            <path d="M100,100 L120,100 L120,140 L100,140 Z" fill="white" opacity="0.4"/>
-            <path d="M130,100 L150,100 L150,140 L130,140 Z" fill="white" opacity="0.4"/>
-            <path d="M160,100 L180,100 L180,140 L160,140 Z" fill="white" opacity="0.4"/>
-            
-            <!-- Hearts -->
-            <path d="M200,120 C200,110 210,100 220,100 C230,100 240,110 240,120 C240,130 220,150 220,150 C220,150 200,130 200,120 Z" fill="white" opacity="0.4"/>
-            <path d="M300,120 C300,110 310,100 320,100 C330,100 340,110 340,120 C340,130 320,150 320,150 C320,150 300,130 300,120 Z" fill="white" opacity="0.4"/>
-            
-            <!-- Music notes -->
-            <circle cx="400" cy="120" r="8" fill="white" opacity="0.4"/>
-            <path d="M408,120 L408,100" stroke="white" stroke-width="2" opacity="0.4"/>
-            <path d="M400,100 Q410,95 420,100" stroke="white" stroke-width="2" opacity="0.4" fill="none"/>
-            
-            <!-- Sports equipment -->
-            <circle cx="500" cy="120" r="15" fill="none" stroke="white" stroke-width="2" opacity="0.4"/>
-            <path d="M485,120 L515,120" stroke="white" stroke-width="2" opacity="0.4"/>
-            
-            <!-- Clothing -->
-            <path d="M600,100 L620,100 L625,140 L615,150 L605,150 L595,140 Z" fill="white" opacity="0.4"/>
-            
-            <!-- More scattered doodles -->
-            <circle cx="100" cy="300" r="12" fill="white" opacity="0.3"/>
-            <path d="M200,300 Q210,290 220,300 Q230,310 220,320 Q210,330 200,320 Q190,310 200,300" fill="white" opacity="0.3"/>
-            <path d="M300,300 L320,300 L315,320 L305,320 Z" fill="white" opacity="0.3"/>
-            
-            <circle cx="400" cy="300" r="10" fill="white" opacity="0.3"/>
-            <path d="M500,300 Q510,290 520,300 Q530,310 520,320 Q510,330 500,320 Q490,310 500,300" fill="white" opacity="0.3"/>
-            
-            <!-- Bottom section doodles -->
-            <path d="M100,600 L120,600 L120,640 L100,640 Z" fill="white" opacity="0.3"/>
-            <circle cx="200" cy="620" r="15" fill="white" opacity="0.3"/>
-            <path d="M300,600 Q310,590 320,600 Q330,610 320,620 Q310,630 300,620 Q290,610 300,600" fill="white" opacity="0.3"/>
-            
-            <circle cx="400" cy="620" r="12" fill="white" opacity="0.3"/>
-            <path d="M500,600 L520,600 L515,620 L505,620 Z" fill="white" opacity="0.3"/>
-            <path d="M600,600 Q610,590 620,600 Q630,610 620,620 Q610,630 600,620 Q590,610 600,600" fill="white" opacity="0.3"/>
-            
-            <!-- Right side doodles -->
-            <circle cx="800" cy="150" r="10" fill="white" opacity="0.3"/>
-            <path d="M900,150 Q910,140 920,150 Q930,160 920,170 Q910,180 900,170 Q890,160 900,150" fill="white" opacity="0.3"/>
-            <path d="M800,300 L820,300 L820,340 L800,340 Z" fill="white" opacity="0.3"/>
-            <circle cx="900" cy="320" r="12" fill="white" opacity="0.3"/>
-        </svg>
+<div class="min-h-screen gradient-bg flex items-center justify-center relative overflow-hidden">
+    <!-- Background decorative elements -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+        <!-- Floating geometric shapes -->
+        <div class="absolute top-20 left-20 w-32 h-32 bg-orange-400/10 rounded-full floating-animation"></div>
+        <div class="absolute top-40 right-32 w-24 h-24 bg-white/5 rounded-lg floating-animation" style="animation-delay: -2s;"></div>
+        <div class="absolute bottom-32 left-32 w-40 h-40 bg-orange-500/10 rounded-full floating-animation" style="animation-delay: -4s;"></div>
+        <div class="absolute bottom-20 right-20 w-28 h-28 bg-white/5 rounded-lg floating-animation" style="animation-delay: -1s;"></div>
+        
+        <!-- Subtle grid pattern -->
+        <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 50px 50px;"></div>
     </div>
 
-    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4">
+    <!-- Header with logo -->
+    <div class="absolute top-0 left-0 right-0 z-20 p-6">
+        <div class="flex items-center justify-center">
+            <a href="/" class="flex items-center gap-3 hover:opacity-90 transition">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg">
+                    <span class="text-white font-bold text-xl">C</span>
+                </div>
+                <span class="text-white font-bold text-2xl tracking-tight">Computer Sales</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4 py-8">
         @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "registerForm" }))
         {
             @Html.AntiForgeryToken()
 
-            @* Thông báo nhẹ nếu cần *@
+            <!-- Info Message -->
             @if (TempData["Info"] != null)
             {
-                <div class="mb-4 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
-                    @TempData["Info"]
+                <div class="error-message bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 mb-6 max-w-md w-full">
+                    <div class="flex items-center">
+                        <i class="fas fa-info-circle text-blue-400 mr-3"></i>
+                        <span class="text-blue-200 text-sm">@TempData["Info"]</span>
+                    </div>
                 </div>
             }
 
-
-            <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm">
-                <!-- Profile Picture Section -->
-                <div class="flex flex-col items-center mb-8">
-                    <div class="relative">
-                        <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                            <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <button type="button" class="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-purple-600">
-                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                        </button>
+            <div class="glass-effect rounded-2xl shadow-2xl p-8 w-full max-w-md">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <i class="fas fa-user-plus text-white text-xl"></i>
                     </div>
-                    <p class="text-purple-600 font-medium mt-2">Add Profile</p>
+                    <h2 class="text-3xl font-bold text-white mb-2">Create Account</h2>
+                    <p class="text-white/70">Join our community today</p>
                 </div>
+
+                <!-- Validation Errors -->
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="error-message bg-red-500/20 border border-red-500/30 rounded-lg p-4 mb-6">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-red-400 mr-3 mt-0.5"></i>
+                            <div class="text-red-200 text-sm">
+                                @Html.ValidationSummary(true, "", new { @class = "text-red-200" })
+                            </div>
+                        </div>
+                    </div>
+                }
 
                 <!-- Form Fields -->
                 <div class="space-y-4">
-                    <div>
-                        <input class="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-purple-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500" 
-                               type="text" id="UserName" name="UserName" placeholder="Name" required />
+                    <!-- Full Name -->
+                    <div class="form-field">
+                        <label class="block text-white/90 mb-2 text-sm font-medium" for="UserName">
+                            <i class="fas fa-user mr-2"></i>Full Name
+                        </label>
+                        <div class="relative">
+                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
+                                   type="text" id="UserName" name="UserName" placeholder="Enter your full name" required />
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-user text-white/60"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <input class="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-purple-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500" 
-                               type="email" id="Email" name="Email" placeholder="Email ID" required />
+
+                    <!-- Email -->
+                    <div class="form-field">
+                        <label class="block text-white/90 mb-2 text-sm font-medium" for="Email">
+                            <i class="fas fa-envelope mr-2"></i>Email Address
+                        </label>
+                        <div class="relative">
+                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
+                                   type="email" id="Email" name="Email" placeholder="Enter your email" required />
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-envelope text-white/60"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <input class="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-purple-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                               type="text" id="Description" name="Description_User" placeholder="Description" required />
+
+                    <!-- Description -->
+                    <div class="form-field">
+                        <label class="block text-white/90 mb-2 text-sm font-medium" for="Description">
+                            <i class="fas fa-info-circle mr-2"></i>Description
+                        </label>
+                        <div class="relative">
+                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
+                                   type="text" id="Description" name="Description_User" placeholder="Tell us about yourself" required />
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-info-circle text-white/60"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <input class="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-purple-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                               type="text" id="address" name="address" placeholder="Address" />
+
+                    <!-- Address -->
+                    <div class="form-field">
+                        <label class="block text-white/90 mb-2 text-sm font-medium" for="address">
+                            <i class="fas fa-map-marker-alt mr-2"></i>Address
+                        </label>
+                        <div class="relative">
+                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
+                                   type="text" id="address" name="address" placeholder="Enter your address" />
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-map-marker-alt text-white/60"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <input class="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-purple-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                               type="text" id="phone" name="phone" placeholder="Phone" maxlength="12" />
+
+                    <!-- Phone -->
+                    <div class="form-field">
+                        <label class="block text-white/90 mb-2 text-sm font-medium" for="phone">
+                            <i class="fas fa-phone mr-2"></i>Phone Number
+                        </label>
+                        <div class="relative">
+                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
+                                   type="tel" id="phone" name="phone" placeholder="Enter your phone number" maxlength="12" />
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-phone text-white/60"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <input class="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-purple-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                               type="password" id="Password" name="Password" placeholder="Password" required />
+
+                    <!-- Password -->
+                    <div class="form-field">
+                        <label class="block text-white/90 mb-2 text-sm font-medium" for="Password">
+                            <i class="fas fa-lock mr-2"></i>Password
+                        </label>
+                        <div class="relative">
+                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 pr-12 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
+                                   type="password" id="Password" name="Password" placeholder="Create a password" required />
+                            <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white transition-colors">
+                                <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <input class="w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-700 placeholder-purple-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                               type="date" id="Date" name="Date" max="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+
+                    <!-- Date of Birth -->
+                    <div class="form-field">
+                        <label class="block text-white/90 mb-2 text-sm font-medium" for="Date">
+                            <i class="fas fa-calendar-alt mr-2"></i>Date of Birth
+                        </label>
+                        <div class="relative">
+                            <input class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20 transition-all"
+                                   type="date" id="Date" name="Date" max="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas fa-calendar-alt text-white/60"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Submit Button -->
-                <button id="submitBtn" type="submit" class="w-full bg-white border-2 border-purple-600 text-purple-600 font-bold py-3 rounded-xl mt-6 hover:bg-purple-50 transition-colors duration-200">
-                    SIGN IN
+                <button id="submitBtn" type="submit" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 mt-6">
+                    <i class="fas fa-user-plus mr-2"></i>Create Account
                 </button>
 
-                <div class="text-red-500 text-center mt-4 text-sm">
-                    @Html.ValidationSummary(true, "", new { @class = "text-red-500" })
-                </div>
-
-
                 <!-- Login Link -->
-                <div class="text-center mt-6 text-gray-600">
-                    Đã có tài khoản?
-                    <a href="@Url.Action("Login", "Account")" class="text-purple-600 font-semibold hover:underline">Đăng nhập</a>
+                <div class="text-center mt-6 text-white/80">
+                    Already have an account?
+                    <a href="@Url.Action("Login", "Account")" class="text-orange-400 hover:text-orange-300 font-semibold transition-colors">
+                        Sign In
+                    </a>
                 </div>
             </div>
         }
     </div>
-</body>
-</html>
+</div>
 
+@section Scripts {
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('Password');
+            const toggleIcon = document.getElementById('passwordToggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
 
+        // Add loading state to form submission
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('registerForm');
+            const btn = document.getElementById('submitBtn');
+            if (!form || !btn) return;
 
+            form.addEventListener('submit', function () {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang tạo tài khoản...';
+                btn.disabled = true;
+            });
+        });
 
+        // Add smooth focus animations
+        document.querySelectorAll('.form-field input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.classList.add('form-field');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.parentElement.classList.remove('form-field');
+            });
+        });
+    </script>
+}

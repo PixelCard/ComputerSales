@@ -36,7 +36,7 @@ namespace ComputerSalesProject_MVC.Controllers
                 return Json(new { count = 0 });
             }
 
-            var vm = await _get.Handle(new GetCartPageQuery(userId), ct);
+          var vm = await _get.Handle(new GetCartPageQuery(userId), ct);
             return Json(new { count = vm.ItemsCount });
         }
 
@@ -76,23 +76,24 @@ namespace ComputerSalesProject_MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(int productId, int? productVariantId, int qty = 1, CancellationToken ct = default)
+        public async Task<IActionResult> Add(
+            int productId,
+            int? productVariantId,
+            int qty = 1,
+            int? optionalValueId = null,
+            CancellationToken ct = default)
         {
             qty = Math.Clamp(qty, 1, 3);
-
-            // Lấy userId từ claim (giống CartHome); fallback = 1 khi local
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+            if (userId == 0) return RedirectToAction("Login", "Account");
 
-            if(userId == 0)
-            {
-                return RedirectToAction("Login", "Account");
-            }
+            await _addItem.Handle(
+             new AddItemCommand(userId, productId, productVariantId, qty)
+             {
+                 OptionalValueId = optionalValueId   
+             }, ct);
 
-            await _addItem.Handle(new AddItemCommand(userId, productId, productVariantId, qty), ct);
-
-            // tuỳ ý: về CartHome hoặc ở lại trang sản phẩm
-            return RedirectToAction(nameof(CartHome), new { t = DateTimeOffset.UtcNow.ToUnixTimeSeconds() });
-
+            return RedirectToAction(nameof(CartHome));
         }
 
 

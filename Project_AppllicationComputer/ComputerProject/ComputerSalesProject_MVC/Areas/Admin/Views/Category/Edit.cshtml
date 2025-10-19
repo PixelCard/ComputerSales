@@ -1,46 +1,79 @@
-﻿@model ComputerSales.Application.UseCaseDTO.Category_DTO.CategoryInput
-<script src="https://cdn.tailwindcss.com"></script>
-@{
-    ViewData["Title"] = "Edit Category";
+﻿@{
+    ViewData["Title"] = "Sửa danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
     // Lấy id từ route vì action GET Edit trả về CategoryInput (không có id)
     var id = Convert.ToInt64(ViewContext.RouteData.Values["id"]);
 }
 
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-gray-900">Cập nhật Category</h1>
-        <p class="text-sm text-gray-500 mt-1">Chỉnh sửa tên danh mục và lưu thay đổi.</p>
+@model ComputerSales.Application.UseCaseDTO.Category_DTO.CategoryInput
+
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <i class="fas fa-edit text-blue-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">Chỉnh sửa danh mục</h1>
+                        <p class="text-sm text-gray-500">Cập nhật thông tin danh mục sản phẩm</p>
+                    </div>
+                </div>
+                <a asp-area="Admin" asp-controller="Category" asp-action="Details" asp-route-id="@id"
+                   class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Quay lại
+                </a>
+            </div>
+        </div>
+
+        <!-- Error Messages -->
+        @if (TempData["Error"] != null)
+        {
+            <div class="mx-6 mt-4 rounded-md bg-red-50 p-4 border border-red-200 text-red-800">
+                <i class="fas fa-exclamation-circle mr-2"></i>@TempData["Error"]
+            </div>
+        }
+
+        <!-- Form -->
+        <form asp-area="Admin" asp-controller="Category" asp-action="Edit" asp-route-id="@id" method="post" class="p-6">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-sm text-red-700 mb-4"></div>
+
+            <div class="space-y-6">
+                <div>
+                    <label asp-for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-tag mr-2 text-blue-600"></i>Tên danh mục
+                    </label>
+                    <div class="relative">
+                        <input asp-for="name"
+                               placeholder="Nhập tên danh mục..."
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200" />
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i class="fas fa-tags text-gray-400"></i>
+                        </div>
+                    </div>
+                    <span asp-validation-for="name" class="mt-2 block text-sm text-red-600"></span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+                <a asp-area="Admin" asp-controller="Category" asp-action="Details" asp-route-id="@id"
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                    <i class="fas fa-times mr-2"></i>
+                    Hủy
+                </a>
+                <button type="submit"
+                        class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm">
+                    <i class="fas fa-save mr-2"></i>
+                    Cập nhật
+                </button>
+            </div>
+        </form>
     </div>
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="mb-4 rounded-md bg-rose-50 p-4 border border-rose-200 text-rose-800">
-            @TempData["Error"]
-        </div>
-    }
-
-    <form asp-area="Admin" asp-controller="Category" asp-action="Edit" asp-route-id="@id" method="post" class="space-y-6">
-        @Html.AntiForgeryToken()
-        <div asp-validation-summary="ModelOnly" class="text-sm text-rose-700"></div>
-
-        <div>
-            <label asp-for="name" class="block text-sm font-medium text-gray-700">Tên danh mục</label>
-            <input asp-for="name"
-                   class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
-            <span asp-validation-for="name" class="mt-1 block text-sm text-rose-600"></span>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <button type="submit"
-                    class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
-                Lưu thay đổi
-            </button>
-            <a asp-area="Admin" asp-controller="Category" asp-action="Details" asp-route-id="@id"
-               class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                Hủy
-            </a>
-        </div>
-    </form>
 </div>
 
 @section Scripts {

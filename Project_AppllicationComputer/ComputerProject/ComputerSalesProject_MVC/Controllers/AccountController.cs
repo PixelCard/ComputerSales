@@ -1,16 +1,17 @@
 ﻿using ComputerSales.Application.Interface.Account_Interface;
+using ComputerSales.Application.Interface.Interface_Email_Respository;
 using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
 using ComputerSales.Application.Interface.Role_Interface;
 using ComputerSales.Application.Interface.UnitOfWork;
+using ComputerSales.Application.Sercurity.JWT.Interface;
 using ComputerSales.Application.UseCase.Account_UC;
+using ComputerSales.Application.UseCase.AccountBlock_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.EmailVerify_DTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.ResendVerifyEmaiDTO;
-using ComputerSales.Application.Sercurity.JWT.Interface;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ComputerSales.Application.Interface.Interface_Email_Respository;
 namespace ComputerSalesProject_MVC.Controllers
 {
     [Route("[controller]")]
@@ -28,6 +29,13 @@ namespace ComputerSalesProject_MVC.Controllers
         private readonly VerifyEmail_UC _verify;
         private readonly ResendVerifyEmail_UC _resend;
 
+        //sử dụng hàm này kiểm tra Accountblock
+        private readonly CheckAccountBlock_UC _checkActive;
+
+        // Múi giờ Việt Nam (Windows)
+        private static TimeZoneInfo VnTz =>           // <--- THÊM PROPERTY NÀY
+            TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
         public AccountController(IJwtTokenGenerator jwt, 
             IAccountRepository accountService, 
             IRoleRepository roleService, 
@@ -36,7 +44,8 @@ namespace ComputerSalesProject_MVC.Controllers
             RegisterAccount_UC register, VerifyEmail_UC verify, 
             ResendVerifyEmail_UC resend,
             IConfiguration _cfg,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            CheckAccountBlock_UC checkActive)
         {
             _jwt = jwt;
             _accountService = accountService;
@@ -48,6 +57,9 @@ namespace ComputerSalesProject_MVC.Controllers
             _resend = resend;
             this._cfg = _cfg;
             this.emailSender = emailSender;
+
+            //tạo phương thức kiểm tra check block
+            _checkActive = checkActive;
         }
 
         //---------------------------------------Constructor--------------------------------------------------
@@ -71,64 +83,97 @@ namespace ComputerSalesProject_MVC.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel vm, CancellationToken ct)
         {
-            var acc = await _accountService.GetAccountByEmail(vm.email, ct);
-
-            //var hash = BCrypt.Net.BCrypt.HashPassword(vm.pass); 
-            
-            //Không nên hash pass rồi so sánh vs pass ma lấy ra từ account 
-
-            //Bởi vì nó sẽ làm ra các trường id khác nhau làm cho dù nó có cùng mã hash nhưng khác salt(id  hash) khác nên sẽ khác
-
-            if (acc == null || !BCrypt.Net.BCrypt.Verify(vm.pass, acc.Pass))
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Sai tài khoản/mật khẩu");
+                var acc = await _accountService.GetAccountByEmail(vm.email, ct);
+
+
+                if (acc == null || !BCrypt.Net.BCrypt.Verify(vm.pass, acc.Pass))
+                {
+                    ModelState.AddModelError("", "Sai tài khoản/mật khẩu");
+                    return View(vm);
+                }
+
+
+            // Hàm kiểm tra tài khoản có bị block trước khi cho đăng nhập 
+            var blockError = await CheckAccountBlockStatusAsync(acc.IDAccount, ct);
+            if (blockError != null)
+            {
+                ModelState.AddModelError("", blockError);
                 return View(vm);
             }
 
             if (acc.Role == null) acc.Role = await _roleService.GetRole(acc.IDRole, ct);
 
 
-            // Kiểm tra xem tài khoản đã xác thực email chưa
-            // Chưa xác thực email
-            if (!acc.EmailConfirmed)
-            {
-                // Hết hạn 15 ngày
-                if (acc.CreatedAt.AddDays(15) < DateTime.UtcNow)
+                // Kiểm tra xem tài khoản đã xác thực email chưa
+                // Chưa xác thực email
+                if (!acc.EmailConfirmed)
                 {
-                    await _accountService.DeleteAccountAsync(acc.IDAccount, ct);
-                    ModelState.AddModelError("", "Tài khoản đã hết hạn vì chưa xác thực email. Vui lòng đăng ký lại.");
-                    return View(vm);
+                    // Hết hạn 15 ngày
+                    if (acc.CreatedAt.AddDays(15) < DateTime.UtcNow)
+                    {
+                        await _accountService.DeleteAccountAsync(acc.IDAccount, ct);
+                        ModelState.AddModelError("", "Tài khoản đã hết hạn vì chưa xác thực email. Vui lòng đăng ký lại.");
+                        return View(vm);
+                    }
+
+                    // GỬI LẠI EMAIL Ở ĐÂY 
+                    await _resend.Handle(new ResendVerifyEmailDTO(acc.IDAccount), ct);
+
+                    // Lấy hạn mới (nếu UC có cập nhật)
+                    var fresh = await _accountService.GetAccountByID(acc.IDAccount, ct);
+                    TempData["Info"] = "Tài khoản chưa xác thực. Chúng tôi vừa gửi lại email xác thực.";
+                    TempData["ExpUtc"] = fresh?.VerifyKeyExpiresAt?.ToString("o");
+
+                    // Điều hướng sang trang thông báo
+                    return RedirectToAction("PendingVerify", new { uid = acc.IDAccount });
                 }
 
-                // ✅ GỬI LẠI EMAIL Ở ĐÂY 
-                await _resend.Handle(new ResendVerifyEmailDTO(acc.IDAccount), ct);
 
-                // Lấy hạn mới (nếu UC có cập nhật)
-                var fresh = await _accountService.GetAccountByID(acc.IDAccount, ct);
-                TempData["Info"] = "Tài khoản chưa xác thực. Chúng tôi vừa gửi lại email xác thực.";
-                TempData["ExpUtc"] = fresh?.VerifyKeyExpiresAt?.ToString("o");
+                var token = _jwt.Generate(acc);
 
-                // Điều hướng sang trang thông báo
-                return RedirectToAction("PendingVerify", new { uid = acc.IDAccount });
+
+                // Lưu JWT vào cookie (HTTP-only)
+                Response.Cookies.Append("access_token", token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    Path = "/",
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
+                });
+
+
+                // Refresh token (dài hạn) -> lưu DB 
+                var rt = await _refresh.IssueAsync(acc, ct);
+
+
+                // Lưu Resfresh Token vào cookie (HTTP-only)
+                Response.Cookies.Append("refresh_token", rt.Token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    Path = "/",
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTimeOffset.UtcNow.AddDays(15)
+                });
+
+
+                var Role = await _roleService.GetRole(acc.IDRole, ct);
+
+
+                if (Role.TenRole == "admin")
+                {
+                    return RedirectToAction("AdminLayout", "AdminHome", new { Area = "Admin" });
+                }
+
+
+
+                return RedirectToAction("Index", "Home");
             }
 
-            var token = _jwt.Generate(acc);
-
-               
-            // Lưu JWT vào cookie (HTTP-only)
-            Response.Cookies.Append("access_token", token, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(1)
-            });
-
-
-            // Refresh token (dài hạn) -> lưu DB 
-            var rt = await _refresh.IssueAsync(acc, ct);
-
-            return RedirectToAction("Index", "Home");
+            return View(vm);
         }
 
 
@@ -137,13 +182,6 @@ namespace ComputerSalesProject_MVC.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromForm] RegisterRequestDTO req, CancellationToken ct)
         {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError(string.Empty, "Email sai định dạng hoặc không tồn tại email"); 
-                
-                return View(req);
-            }
-
             // Chuẩn hóa email
             var email = (req.Email ?? string.Empty).Trim().ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(req.Password))
@@ -161,11 +199,14 @@ namespace ComputerSalesProject_MVC.Controllers
             }
 
             var birthDate = req.Date;  // Giả sử `req.Date` chứa ngày sinh người dùng
+
             if (birthDate == null || birthDate > DateTime.Now.AddYears(-16))
             {
                 ModelState.AddModelError(string.Empty, "Tuổi phải lớn hơn hoặc bằng 16.");
                 return View(req);
             }
+
+
 
             try
             {
@@ -302,62 +343,6 @@ namespace ComputerSalesProject_MVC.Controllers
         }
 
 
-
-        // ====== Refresh (MVC) ======
-        // Gọi khi access token hết hạn (ví dụ Ajax POST tới /Account/Refresh)
-        [HttpPost("Refresh")]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Refresh(string? returnUrl, CancellationToken ct)
-        {
-            var refreshToken = Request.Cookies["refresh_token"];
-            if (string.IsNullOrEmpty(refreshToken))
-                return Unauthorized("Missing refresh token");
-
-            var active = await _refresh.GetActiveAsync(refreshToken, ct);
-            if (active == null)
-                return Unauthorized("Invalid/expired refresh token");
-
-            // phát access token mới từ account của refresh token
-            var newAccess = _jwt.Generate(active.Account);
-
-            Response.Cookies.Append("access_token", newAccess, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(1)
-            });
-
-
-            // --- chọn nơi để quay lại ---
-            string? target = null;
-
-
-            // 1) ưu tiên returnUrl nếu hợp lệ (local)
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                target = returnUrl;
-
-
-            // 2) fallback: dùng Referer (trang trước đó)
-            if (target == null)
-            {
-                var referer = Request.Headers["Referer"].ToString();
-                if (Uri.TryCreate(referer, UriKind.Absolute, out var uri))
-                {
-                    var path = uri.PathAndQuery;
-                    if (Url.IsLocalUrl(path) && !path.StartsWith("/Account", StringComparison.OrdinalIgnoreCase))
-                        target = path;
-                }
-            }
-
-            // 3) cuối cùng: về Home
-            return target != null
-                ? LocalRedirect(target)
-                : RedirectToAction("Index", "Home");
-        }
-
-
         // ====== Logout (MVC) ======
         [HttpPost("Logout")]
         [ValidateAntiForgeryToken]
@@ -371,6 +356,36 @@ namespace ComputerSalesProject_MVC.Controllers
             Response.Cookies.Delete("refresh_token");
 
             return RedirectToAction(nameof(Login));
+        }
+
+        private async Task<string?> CheckAccountBlockStatusAsync(int accountId, CancellationToken ct)
+        {
+
+            // Lấy thông tin block hiện tại của tài khoản
+            var activeBlock = await _checkActive.HandleAsync(accountId, ct);
+
+           //kiểm tra tài khoản có bị block 
+            if (activeBlock != null)
+            {
+                // 3. Xử lý thông báo (giống hệt code trước)
+                string blockUntilDisplay = "vĩnh viễn";
+                if (activeBlock.BlockToUtc.HasValue)
+                {
+                    var toVn = TimeZoneInfo.ConvertTimeFromUtc(
+                        DateTime.SpecifyKind(activeBlock.BlockToUtc.Value, DateTimeKind.Utc), VnTz);
+                    blockUntilDisplay = $"tới {toVn:yyyy-MM-dd HH:mm:ss} (Giờ VN)";
+                }
+
+                string reason = string.IsNullOrWhiteSpace(activeBlock.ReasonBlock)
+                    ? "Không có lý do cụ thể."
+                    : activeBlock.ReasonBlock;
+
+                // 4. Trả về thông báo lỗi
+                return $"Tài khoản đang bị khóa {blockUntilDisplay}. Lý do: {reason}";
+            }
+
+            // 5. Không bị block
+            return null;
         }
     }
 }

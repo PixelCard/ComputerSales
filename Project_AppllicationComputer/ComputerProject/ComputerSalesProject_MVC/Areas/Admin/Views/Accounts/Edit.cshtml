@@ -1,152 +1,307 @@
 ﻿@model ComputerSalesProject_MVC.Areas.Admin.Models.AccountVM.AccountUpdateVM
+@using ComputerSales.Application.UseCaseDTO.Customer_DTO
+
 @{
-    ViewData["Title"] = "Sửa tài khoản";
+    ViewData["Title"] = "Chỉnh sửa vai trò tài khoản";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var cust = ViewBag.Customer as CustomerOutputDTO; // có thể null
 }
 
-<div class="relative min-h-screen w-full overflow-hidden">
-    <!-- Animated Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900"></div>
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=" 60" height="60" viewBox="0 0 60 60"
-        xmlns="http://www.w3.org/2000/svg" %3E%3Cg fill="none" fill-rule="evenodd" %3E%3Cg fill="%239C92AC"
-        fill-opacity="0.1" %3E%3Ccircle cx="30" cy="30" r="2" /%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Chỉnh sửa vai trò tài khoản</h1>
+                    <p class="text-gray-600">Cập nhật vai trò cho tài khoản ID: <strong>#@Model.IDAccount</strong></p>
+                </div>
+                <a asp-action="Index" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Quay lại danh sách
+                </a>
+            </div>
+        </div>
 
-    <!-- Floating Orbs -->
-    <div
-        class="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse">
-    </div>
-    <div
-        class="absolute top-40 right-10 w-72 h-72 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000">
-    </div>
-    <div
-        class="absolute -bottom-8 left-20 w-72 h-72 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500">
-    </div>
-
-    <div class="relative z-10 py-8 px-4 w-full">
-        <div class="w-full px-4 py-4">
-            <!-- Header Section -->
-            <div class="relative mb-8">
-                <div
-                    class="relative p-8 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-3xl opacity-75">
+        <!-- Alert Messages -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="mb-6 bg-white rounded-xl shadow-sm border border-emerald-200 overflow-hidden">
+                <div class="bg-emerald-50 px-6 py-4 border-b border-emerald-200">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-emerald-600"></i>
+                        <span class="font-medium text-emerald-800">Thành công</span>
                     </div>
-                    <div
-                        class="absolute inset-[1px] bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 rounded-3xl">
+                </div>
+                <div class="px-6 py-4 text-emerald-700">@TempData["Success"]</div>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="mb-6 bg-white rounded-xl shadow-sm border border-rose-200 overflow-hidden">
+                <div class="bg-rose-50 px-6 py-4 border-b border-rose-200">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-exclamation-circle text-rose-600"></i>
+                        <span class="font-medium text-rose-800">Lỗi</span>
                     </div>
+                </div>
+                <div class="px-6 py-4 text-rose-700">@TempData["Error"]</div>
+            </div>
+        }
 
-                    <div class="relative z-10 text-center">
-                        <div
-                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-2xl mb-6 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                            <i class="fa-solid fa-user-edit text-white text-3xl"></i>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- ACCOUNT BLOCK -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Account Header -->
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                    <div class="flex items-center">
+                        <div class="bg-white/20 rounded-lg p-2 mr-3">
+                            <i class="fas fa-user-edit text-white text-xl"></i>
                         </div>
-                        <h1
-                            class="text-4xl font-black bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-4">
-                            Chỉnh sửa tài khoản
-                        </h1>
-                        <p class="text-white/80 text-lg font-medium">Cập nhật thông tin tài khoản #@Model.IDAccount</p>
+                        <div>
+                            <h2 class="text-xl font-semibold text-white">Chỉnh sửa tài khoản</h2>
+                            <p class="text-blue-100 text-sm">Cập nhật vai trò và thông tin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Content -->
+                <div class="p-6">
+                    <form asp-area="Admin" asp-controller="Accounts" asp-action="Edit" asp-route-id="@Model.IDAccount" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="IDAccount" />
+                        
+                        <div class="space-y-6">
+                            <!-- ID Account (Read-only) -->
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                    <i class="fas fa-id-badge text-blue-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <dt class="text-sm font-medium text-gray-500">ID Tài khoản</dt>
+                                    <dd class="text-lg font-semibold text-gray-900">#@Model.IDAccount</dd>
+                                    <small class="text-gray-400 text-xs">Không thể thay đổi</small>
+                                </div>
+                            </div>
+
+                            <!-- Email (Read-only) -->
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                    <i class="fas fa-envelope text-green-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <dt class="text-sm font-medium text-gray-500">Email đăng nhập</dt>
+                                    <dd class="text-lg font-semibold text-gray-900">@Model.Email</dd>
+                                    <small class="text-gray-400 text-xs">Không thể thay đổi</small>
+                                </div>
+                            </div>
+
+                            <!-- Role Selection (Editable) -->
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                    <i class="fas fa-user-tag text-orange-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <label asp-for="IDRole" class="text-sm font-medium text-gray-500 block mb-2">Vai trò</label>
+                                    <select asp-for="IDRole" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors">
+                                        <option value="">-- Chọn vai trò --</option>
+                                        <option value="1">Admin</option>
+                                        <option value="2">Manager</option>
+                                        <option value="3">Staff</option>
+                                        <option value="4">Customer</option>
+                                    </select>
+                                    <span asp-validation-for="IDRole" class="text-red-500 text-xs mt-1 block"></span>
+                                    <small class="text-gray-400 text-xs mt-1 block">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Chỉ có thể thay đổi vai trò của tài khoản
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="mt-8 flex flex-wrap gap-3">
+                            <a asp-action="Details" asp-route-id="@Model.IDAccount"
+                               class="flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 font-medium">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Quay lại chi tiết
+                            </a>
+                            <button type="submit" 
+                                    class="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium">
+                                <i class="fas fa-save mr-2"></i>
+                                Cập nhật vai trò
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Account Note -->
+                    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-500 mr-2 mt-1"></i>
+                            <div>
+                                <h4 class="text-sm font-semibold text-blue-800 mb-1">Lưu ý về chỉnh sửa</h4>
+                                <p class="text-sm text-blue-700">
+                                    Chỉ có thể thay đổi vai trò của tài khoản. Email và ID tài khoản không thể chỉnh sửa.
+                                    Vai trò quyết định các quyền truy cập và chức năng có thể sử dụng.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Form Card -->
-            <div class="relative">
-                <div
-                    class="relative bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
-                    <div
-                        class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-3xl opacity-75">
+            <!-- CUSTOMER BLOCK -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Customer Header -->
+                <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-white/20 rounded-lg p-2 mr-3">
+                                <i class="fas fa-users text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold text-white">Thông tin khách hàng</h2>
+                                <p class="text-emerald-100 text-sm">Chi tiết cá nhân và liên hệ</p>
+                            </div>
+                        </div>
                     </div>
-                    <div
-                        class="absolute inset-[1px] bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 rounded-3xl">
-                    </div>
+                </div>
 
-                    <div class="relative z-10 p-8">
-                        <form asp-action="Edit" asp-route-id="@Model.IDAccount" method="post" class="space-y-6">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" asp-for="IDAccount" />
+                <!-- Customer Content -->
+                <div class="p-6">
+                    @if (cust == null)
+                    {
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user-plus text-gray-400 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Chưa có thông tin khách hàng</h3>
+                            <p class="text-gray-600 mb-6">Tài khoản này chưa được liên kết với thông tin khách hàng nào.</p>
+                            
+                            <a asp-area="Admin" asp-controller="Customers" asp-action="Create" 
+                               class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-semibold">
+                                <i class="fas fa-plus mr-2"></i>
+                                Tạo thông tin khách hàng
+                            </a>
+                        </div>
+                        
+                        <!-- Customer Note when empty -->
+                        <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-amber-500 mr-2 mt-1"></i>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-amber-800 mb-1">Lưu ý về khách hàng</h4>
+                                    <p class="text-sm text-amber-700">
+                                        Để hoàn thiện hồ sơ, cần tạo thông tin khách hàng bao gồm: 
+                                        họ tên, số điện thoại, địa chỉ và các thông tin cá nhân khác.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Avatar -->
+                            <div class="md:col-span-1">
+                                @if (!string.IsNullOrWhiteSpace(cust.IMG))
+                                {
+                                    <div class="relative">
+                                        <img src="@cust.IMG" alt="Avatar" 
+                                             class="w-full aspect-square object-cover rounded-xl border-4 border-emerald-100" />
+                                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-sm"></i>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="w-full aspect-square bg-gray-100 rounded-xl border-4 border-gray-200 flex flex-col items-center justify-center">
+                                        <i class="fas fa-user text-gray-400 text-4xl mb-2"></i>
+                                        <span class="text-gray-500 text-sm">Chưa có ảnh</span>
+                                    </div>
+                                }
+                            </div>
 
-                            <!-- Email Field -->
-                            <div class="space-y-3">
-                                <label asp-for="Email" class="flex items-center text-sm font-bold text-cyan-300">
-                                    <i class="fa-solid fa-envelope mr-3 text-cyan-400 text-lg"></i>
-                                    Email
-                                </label>
-                                <div class="relative">
-                                    <input asp-for="Email"
-                                        class="w-full px-6 py-4 border-2 border-cyan-400/30 bg-white/20 backdrop-blur-sm rounded-2xl focus:ring-4 focus:ring-cyan-400/50 focus:border-cyan-400 transition-all duration-300 text-white placeholder:text-white/60 text-lg font-medium"
-                                        placeholder="Nhập địa chỉ email" />
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-4">
-                                        <i class="fa-solid fa-envelope text-cyan-400 text-lg"></i>
+                            <!-- Customer Details -->
+                            <div class="md:col-span-2 space-y-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-id-card text-emerald-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">ID Khách hàng</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">#@cust.IDCustomer</dd>
                                     </div>
                                 </div>
-                                <span asp-validation-for="Email" class="text-red-400 text-sm flex items-center">
-                                    <i class="fa-solid fa-exclamation-triangle mr-2"></i>
-                                    <span asp-validation-for="Email"></span>
-                                </span>
-                            </div>
 
-                            <!-- Password Field -->
-                            <div class="space-y-3">
-                                <label asp-for="Pass" class="flex items-center text-sm font-bold text-purple-300">
-                                    <i class="fa-solid fa-lock mr-3 text-purple-400 text-lg"></i>
-                                    Mật khẩu
-                                </label>
-                                <div class="relative">
-                                    <input asp-for="Pass" type="password"
-                                        class="w-full px-6 py-4 border-2 border-purple-400/30 bg-white/20 backdrop-blur-sm rounded-2xl focus:ring-4 focus:ring-purple-400/50 focus:border-purple-400 transition-all duration-300 text-white placeholder:text-white/60 text-lg font-medium"
-                                        placeholder="Để trống nếu không đổi mật khẩu" />
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-4">
-                                        <i class="fa-solid fa-lock text-purple-400 text-lg"></i>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-user text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Họ và tên</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.Name</dd>
                                     </div>
                                 </div>
-                                <p class="text-sm text-cyan-300 flex items-center">
-                                    <i class="fa-solid fa-info-circle mr-2"></i>
-                                    Để trống nếu không muốn thay đổi mật khẩu
-                                </p>
-                            </div>
 
-                            <!-- Role ID Field -->
-                            <div class="space-y-3">
-                                <label asp-for="IDRole" class="flex items-center text-sm font-bold text-indigo-300">
-                                    <i class="fa-solid fa-key mr-3 text-indigo-400 text-lg"></i>
-                                    Role ID
-                                </label>
-                                <div class="relative">
-                                    <input asp-for="IDRole"
-                                        class="w-full px-6 py-4 border-2 border-indigo-400/30 bg-white/20 backdrop-blur-sm rounded-2xl focus:ring-4 focus:ring-indigo-400/50 focus:border-indigo-400 transition-all duration-300 text-white placeholder:text-white/60 text-lg font-medium"
-                                        placeholder="Nhập ID vai trò" />
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-4">
-                                        <i class="fa-solid fa-key text-indigo-400 text-lg"></i>
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-phone text-purple-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Số điện thoại</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.sdt</dd>
                                     </div>
                                 </div>
-                                <span asp-validation-for="IDRole" class="text-red-400 text-sm flex items-center">
-                                    <i class="fa-solid fa-exclamation-triangle mr-2"></i>
-                                    <span asp-validation-for="IDRole"></span>
-                                </span>
-                            </div>
 
-                            <!-- Action Buttons -->
-                            <div class="flex items-center justify-center gap-6 pt-8">
-                                <button type="submit"
-                                    class="group relative px-10 py-4 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white font-bold rounded-2xl shadow-2xl hover:shadow-cyan-500/25 transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-300 overflow-hidden">
-                                    <div
-                                        class="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-map-marker-alt text-orange-600 text-sm"></i>
                                     </div>
-                                    <span class="relative flex items-center text-lg">
-                                        <i class="fa-solid fa-save mr-3 text-xl"></i>
-                                        Cập nhật
-                                    </span>
-                                </button>
-                                <a asp-action="Details" asp-route-id="@Model.IDAccount"
-                                    class="group relative px-10 py-4 bg-white/20 backdrop-blur-sm text-white font-bold rounded-2xl border-2 border-white/30 hover:bg-white/30 hover:border-white/50 transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/20">
-                                    <span class="flex items-center text-lg">
-                                        <i class="fa-solid fa-arrow-left mr-3 text-xl"></i>
-                                        Quay lại
-                                    </span>
-                                </a>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Địa chỉ</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.address</dd>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-calendar text-pink-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <dt class="text-sm font-medium text-gray-500">Ngày tạo</dt>
+                                        <dd class="text-lg font-semibold text-gray-900">@cust.Date.ToString("dd/MM/yyyy")</dd>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(cust.Description))
+                        {
+                            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-2">
+                                    <i class="fas fa-sticky-note text-gray-600 mr-2"></i>
+                                    Ghi chú
+                                </h4>
+                                <p class="text-gray-700">@cust.Description</p>
+                            </div>
+                        }
+
+                        <!-- Customer Note when exists -->
+                        <div class="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                            <div class="flex items-start">
+                                <i class="fas fa-check-circle text-emerald-500 mr-2 mt-1"></i>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-emerald-800 mb-1">Thông tin khách hàng</h4>
+                                    <p class="text-sm text-emerald-700">
+                                        Khách hàng này đã được liên kết với tài khoản. 
+                                        Có thể quản lý đơn hàng, lịch sử mua hàng và thông tin cá nhân.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

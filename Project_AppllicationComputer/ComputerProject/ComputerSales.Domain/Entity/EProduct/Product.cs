@@ -33,7 +33,13 @@ namespace ComputerSales.Domain.Entity.EProduct
             // Navigations
             public Accessories Accessories { get; set; } = null!;
             public Provider Provider { get; set; } = null!; //1-1
-            public ProductOverview? ProductOverview { get; set; }           // 1-1
+
+                                                            
+
+            //cập nhật 1 product sẽ có 1 product overview  để mô tả sản phẩm từng dòng
+            public ProductOverview? ProductOverviews { get; set; }
+
+
             public ProductProtection? ProductProtection { get; set; }       // 1-1
 
             public ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();   // 1-n
