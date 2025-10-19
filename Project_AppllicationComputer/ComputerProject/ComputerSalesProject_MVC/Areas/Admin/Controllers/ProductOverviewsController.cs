@@ -7,7 +7,8 @@
     using ComputerSales.Infrastructure.Persistence;
     using ComputerSalesProject_MVC.Areas.Admin.Models.Product_Overview;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
@@ -54,6 +55,12 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                 .ToString("yyyy-MM-dd HH:mm:ss");
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            ViewBag.TinyMCEApiKey = _configuration["TinyMCE:ApiKey"];
+            base.OnActionExecuting(context);
+        }
+
         [HttpGet]
         public IActionResult ProductOverViewsCreate(long productId)
         {
@@ -65,7 +72,9 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductOverViewsCreate(ProductOverviewCreateVM vm,CancellationToken ct)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid){
+                return View(vm);
+            }
 
             if(string.IsNullOrEmpty(vm.TextContent))
             {
@@ -179,7 +188,9 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProductOverviewEditVM vm, CancellationToken ct)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid){
+                return View(vm);
+            }
 
             if (string.IsNullOrEmpty(vm.TextContent))
             {
