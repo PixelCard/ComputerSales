@@ -48,22 +48,36 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage
                 return string.Join(" • ", parts);
             }
 
+
             // 5) map từng dòng
             var lines = new List<CartItemsDTO>();
             foreach (var i in cart.Items)
             {
                 variants.TryGetValue(i.ProductVariantID ?? -1, out var v);
                 var ap = Active(v?.VariantPrices ?? Array.Empty<VariantPrice>());
-                var list = ap?.Price ?? i.UnitPrice;
-                var sale = ap != null
-                    ? Math.Max(0, ap.Price - (ap.DiscountPrice > 0 ? ap.DiscountPrice : 0))
-                    : i.UnitPrice;
+
+                // base price lấy từ bảng giá; fallback snapshot
+                var baseList = ap?.Price ?? i.UnitPrice;
+
+                // phụ thu option đã được cộng sẵn vào UnitPrice khi AddItem
+                // => suy ra surcharge = snapshot - baseList (>=0 nếu có option)
+                var optionSurcharge = Math.Max(0m, i.UnitPrice - baseList);
+
+                // số tiền giảm/đơn vị trên BASE (không giảm trên surcharge)
+                var discountPerUnit = Math.Clamp(ap?.DiscountPrice ?? 0m, 0m, baseList);
+
+                // dùng cho hiển thị:
+                // ListPrice = giá niêm yết đã cộng option để gạch ngang
+                var listForDisplay = baseList + optionSurcharge;
+
+                // SalePrice = số tiền giảm/đơn vị (để trừ ở summary)
+                var saleForDisplay = discountPerUnit;
 
                 var imageUrl = (v?.VariantImages != null && v.VariantImages.Count > 0)
                     ? v.VariantImages.OrderBy(vi => vi.SortOrder).First().Url
                     : i.ImageUrl;
 
-                var line = new CartItemsDTO
+                lines.Add(new CartItemsDTO
                 {
                     CartItemId = i.ID,
                     ImageUrl = imageUrl,
@@ -72,27 +86,35 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Queries.GetCartPage
                     OptionSummary = string.IsNullOrWhiteSpace(i.OptionSummary) ? BuildOptionSummary(v) : i.OptionSummary,
                     Quantity = i.Quantity,
                     PerItemLimit = i.PerItemLimit,
-                    ListPrice = list,
-                    SalePrice = sale,
+
+                    // HIỂN THỊ
+                    ListPrice = listForDisplay,   // giá gạch (đã gồm option)
+                    SalePrice = listForDisplay - saleForDisplay,   // số tiền giảm/đơn vị
+
                     IsChildService = i.ParentItemID.HasValue,
                     ParentItemId = i.ParentItemID
-                };
-                lines.Add(line);
+                });
             }
 
-            // 6) tổng: tính cả service để khớp grand total
-            var subtotal = lines.Sum(l => l.ListPrice * l.Quantity);
+            // 6) tổng: dùng đơn giá hiệu lực để tính Subtotal
+            //var subtotal = lines.Sum(l => l.ListPrice * l.Quantity);
+
+            //// tổng giảm của dòng (dựa trên SalePrice là tiền giảm/đv)
+            //var itemDiscountTotal = lines.Sum(l => l.SalePrice * l.Quantity);
+
+            //var totalDiscountTotal=subtotal-itemDiscountTotal;
+
             var itemsCount = lines.Count(l => !l.IsChildService);
 
             return new CartPageDTO
             {
                 CartId = cart.ID,
                 ItemsCount = itemsCount,
-                Subtotal = subtotal,
+                Subtotal = cart.Subtotal,
                 DiscountTotal = cart.DiscountTotal,
                 ShippingFee = cart.ShippingFee,
                 TaxTotal = 0m,
-                GrandTotal = subtotal - cart.DiscountTotal + cart.ShippingFee,
+                GrandTotal = cart.Subtotal - cart.DiscountTotal + cart.ShippingFee,
                 Lines = lines
             };
         }

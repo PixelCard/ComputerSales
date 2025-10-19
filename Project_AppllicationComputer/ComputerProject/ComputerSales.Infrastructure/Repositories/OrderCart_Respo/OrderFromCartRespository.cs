@@ -164,24 +164,14 @@ namespace ComputerSales.Infrastructure.Repositories.OrderCart_Respo
             var order = await _db.Orders.FirstOrDefaultAsync(x => x.OrderID == orderId, ct)
                         ?? throw new InvalidOperationException($"Order #{orderId} not found");
 
-            // Idempotent: nếu đã gắn VNPAY và trạng thái >= Chờ xác nhận thì bỏ qua
-            if (order.PaymentID == paymentId && order.OrderStatus >= OrderStatus.ChoXacNhan)
+            // Idempotent: nếu đã gắn VNPAY và trạng thái > Chờ xác nhận thì bỏ qua
+            if (order.PaymentID == paymentId && order.OrderStatus > OrderStatus.ChoXacNhan)
                 return;
 
             order.PaymentID = paymentId;
-            order.OrderStatus = OrderStatus.ChoXacNhan; // hoặc DaThanhToan tùy enum của bạn
+            order.OrderStatus = OrderStatus.DangDongGoi;
 
-            //lưu log giao dịch
-            _db.Set<VNPAYPaymentTransaction>().Add(new VNPAYPaymentTransaction
-            {
-                OrderId = orderId,
-                Gateway = code,
-                TransactionId = transactionId,
-                ResponseCode = responseCode ?? string.Empty,
-                CreatedAt = DateTime.UtcNow
-            });
-
-            await _db.SaveChangesAsync(ct);
+            _db.SaveChangesAsync(ct);
         }
     }
 }

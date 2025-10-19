@@ -1,6 +1,8 @@
 ﻿using ComputerSales.Application.Interface.Interface_RefreshTokenRespository;
 using ComputerSales.Application.Sercurity.JWT.Enity;
 using ComputerSales.Application.Sercurity.JWT.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
 namespace ComputerSalesProject_MVC.MiddleWareCustome
@@ -15,40 +17,44 @@ namespace ComputerSalesProject_MVC.MiddleWareCustome
             IJwtTokenGenerator jwt,
             IOptions<JwtOptions> opt)
         {
-            var path = ctx.Request.Path.Value ?? "";  //Lấy ra URL đang truy cập
+            var path = ctx.Request.Path.Value ?? "";
 
-            //chỉ chạy khi chưa đăng nhập
-            if (!ctx.User.Identity?.IsAuthenticated ?? true)
-                if (ctx.Request.Method == "GET" &&
-                    !path.StartsWith("/Account", StringComparison.OrdinalIgnoreCase))
+            // Chỉ GET, không phải khu vực account/auth (tránh vòng lặp), và chưa authenticated
+            if (ctx.Request.Method == HttpMethods.Get &&
+                !path.StartsWith("/Account", StringComparison.OrdinalIgnoreCase) &&
+                !path.StartsWith("/auth", StringComparison.OrdinalIgnoreCase) &&
+                !(ctx.User?.Identity?.IsAuthenticated ?? false))
+            {
+                // Đọc refresh_token (Path="/" như trên)
+                if (ctx.Request.Cookies.TryGetValue("refresh_token", out var rt))
                 {
-                    //Đọc refresh token từ cookie:
-                    if (ctx.Request.Cookies.TryGetValue("refresh_token", out var rt))
+                    var active = await refreshRepo.GetActiveAsync(rt); // verify + chưa revoke + chưa hết hạn
+                    if (active != null)
                     {
-                        //gọi repo kiểm tra còn active không:
-                        var active = await refreshRepo.GetActiveAsync(rt);
 
-                        //Hợp lệ (chưa hết hạn, chưa bị revoke)
-                        if (active != null)
+                        // Cấp access token mới
+                        var access = jwt.Generate(active.Account);
+
+                        // Cho request hiện tại: chèn Authorization header
+                        ctx.Request.Headers["Authorization"] = "Bearer " + access;
+
+                        // Ghi cookie access mới
+                        ctx.Response.Cookies.Append("access_token", access, new CookieOptions
                         {
-                            //sinh access token mới
-                            var token = jwt.Generate(active.Account);
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Lax,   // hoặc Strict
+                            Path = "/",                // dùng toàn site
+                            Expires = DateTimeOffset.UtcNow.AddMinutes(opt.Value.ExpireMinutes)
+                        });
 
-                            // dùng cho request hiện tại
-                            ctx.Request.Headers["Authorization"] = "Bearer " + token;
-
-
-                            ctx.Response.Cookies.Append("access_token", token, new CookieOptions
-                            {
-                                HttpOnly = true,
-                                Secure = false, // PROD: true
-                                SameSite = SameSiteMode.Strict,
-                                Expires = DateTimeOffset.UtcNow.AddMinutes(opt.Value.ExpireMinutes)
-                            });
-                        }
+                        // Re-auth ngay lập tức để request hiện tại qua được [Authorize]
+                        var authResult = await ctx.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+                        if (authResult.Succeeded && authResult.Principal != null)
+                            ctx.User = authResult.Principal;
                     }
                 }
-            //Chuyển tiếp pipeline cho middleware tiếp theo.
+            }
             await _next(ctx);
         }
     }

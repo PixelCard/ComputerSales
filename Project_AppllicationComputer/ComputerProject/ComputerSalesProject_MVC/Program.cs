@@ -1,9 +1,12 @@
+using ComputerSales.Application.Payment.VNPAY.Entity;
 using ComputerSales.Application.Sercurity.JWT.Extensions;
 using ComputerSales.Infrastructure;
 using ComputerSalesProject_MVC.Extensions;
 using ComputerSalesProject_MVC.MiddleWareCustome;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var configuration = builder.Configuration;
 
 // ====================================================
 // Add services to the container (DI)
@@ -25,6 +28,14 @@ builder.Services.AddApplicationUseCase();
 builder.Services.ConfigureAutoMapper();
 
 
+//CORS Test
+builder.Services.AddCors(o => o.AddPolicy("GamePieceLabsPolicy", builder =>
+{
+    builder.AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithOrigins(configuration["AllowedOrigins"])
+        .AllowCredentials();
+}));
 
 // ====================================================
 // Middleware pipeline
@@ -36,6 +47,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 
+app.UseCors("GamePieceLabsPolicy");
+
 app.UseRouting();
 
 app.UseAuthentication();
@@ -43,7 +56,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<AutoRefreshAccessMiddleware>();
-
 
 //dùng cho logo
 //app.UseStaticFiles();
