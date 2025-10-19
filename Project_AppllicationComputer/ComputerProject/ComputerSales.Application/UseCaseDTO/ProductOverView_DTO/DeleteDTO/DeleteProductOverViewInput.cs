@@ -1,4 +1,4 @@
 ﻿namespace ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.DeleteDTO
 {
-    public sealed record  DeleteProductOverViewInput(int ProductOverViewID);
+    public sealed record  DeleteProductOverViewInput(int ProductOverviewId);
 }

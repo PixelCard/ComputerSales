@@ -20,7 +20,7 @@ namespace ComputerSales.Application.UseCase.ProductOvetView_UC
 
         public async Task<ProductOverViewOutput?> HandleAsync(GetByIDProductOverViewInput input, CancellationToken ct)
         {
-            var entity = await _repoProductOverView.GetByIdAsync(input.ProductOverViewID, ct);
+            var entity = await _repoProductOverView.GetByIdAsync(input.ProductOverviewId, ct);
 
             if (entity == null) return null;
 

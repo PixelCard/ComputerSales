@@ -3,36 +3,38 @@ using ComputerSales.Domain.Entity.EAccount;
 
 public static class AccountBlockMapping
 {
-    // InputDTO -> Entity
+    // InputDTO -> Entity (CREATE)
     public static AccountBlock ToEntity(this AccountBlockInputDTO input)
     {
-        var e = AccountBlock.Create(
-            input.IDAccount,
-            input.BlockFromUtc,
-            input.BlockToUtc,
-            input.ReasonBlock ?? string.Empty
-        );
+        var fromUtc = DateTime.SpecifyKind(input.BlockFromUtc, DateTimeKind.Utc);
+        DateTime? toUtc = input.BlockToUtc.HasValue
+            ? DateTime.SpecifyKind(input.BlockToUtc.Value, DateTimeKind.Utc)
+            : null;
 
-        e.UpdateStatusByTime(); // tự cập nhật Active/Inactive dựa vào ngày
-        return e;
+        // Create() đã tự UpdateStatusByTime()
+        return AccountBlock.Create(
+            input.IDAccount,
+            fromUtc,
+            toUtc,
+            input.ReasonBlock?.Trim() ?? string.Empty
+        );
     }
 
-    // Entity -> OutputDTO
+    // Entity -> OutputDTO (READ) — KHÔNG mutate entity ở đây
     public static AccountBlockOutputDTO ToResult(this AccountBlock e)
     {
-        e.UpdateStatusByTime(); // đảm bảo trạng thái mới nhất
-
-        bool isBlock = e.IsBlock == true;
-
+        var now = DateTime.UtcNow;
+        bool activeNow = now >= e.BlockFromUtc &&
+                         (!e.BlockToUtc.HasValue || now < e.BlockToUtc.Value);
 
         return new AccountBlockOutputDTO(
-            e.IdBlock,
+            e.BlockId,
             e.IDAccount,
             e.BlockFromUtc,
             e.BlockToUtc,
-            isBlock,
+            e.IsBlock,                 // cờ lưu trong DB (lần cập nhật gần nhất)
             e.ReasonBlock ?? string.Empty,
-            e.IsActiveNowUtc
+            activeNow                  // trạng thái động theo đồng hồ
         );
     }
 }

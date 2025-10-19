@@ -1,0 +1,128 @@
+@model List<ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.ProductOverViewOutput>
+
+@{
+    ViewData["Title"] = "Product Overviews";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-6xl mx-auto py-8">
+    <!-- Header -->
+    <div class="bg-white shadow rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Product Overviews</h1>
+                <p class="text-gray-600 mt-1">Sản phẩm: @ViewBag.ProductName</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a asp-area="Admin"
+                   asp-controller="ProductOverviews"
+                   asp-action="ProductOverViewsCreate"
+                   asp-route-productId="@ViewBag.ProductId"
+                   class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i> Thêm Overview
+                </a>
+                <a asp-area="Admin"
+                   asp-controller="Product"
+                   asp-action="ProductDetails"
+                   asp-route-id="@ViewBag.ProductId"
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <!-- Overviews List -->
+        <div class="space-y-6">
+            @foreach (var overview in Model)
+            {
+                <div class="bg-white shadow rounded-xl p-6 hover:shadow-md transition-shadow">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                ID: @overview.ProductOverviewId
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-file-alt mr-2"></i>
+                                Overview
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a asp-area="Admin"
+                               asp-controller="ProductOverviews"
+                               asp-action="ProductOverViewsDetails"
+                               asp-route-id="@overview.ProductOverviewId"
+                               class="text-blue-600 hover:text-blue-900 transition-colors" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a asp-area="Admin"
+                               asp-controller="ProductOverviews"
+                               asp-action="Edit"
+                               asp-route-id="@overview.ProductOverviewId"
+                               class="text-indigo-600 hover:text-indigo-900 transition-colors" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a asp-area="Admin"
+                               asp-controller="ProductOverviews"
+                               asp-action="ProductOverViewsDelete"
+                               asp-route-id="@overview.ProductOverviewId"
+                               class="text-red-600 hover:text-red-900 transition-colors" title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Overview Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="text-sm">
+                            <span class="font-medium text-gray-700">Product ID:</span>
+                            <span class="ml-2 text-gray-600">@overview.ProductId</span>
+                        </div>
+                        <div class="text-sm">
+                            <span class="font-medium text-gray-700">Create Date:</span>
+                            <span class="ml-2 text-gray-600">@overview.CreateDate.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    </div>
+
+                    <!-- Text Content -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="text-sm mb-2">
+                            <span class="font-medium text-gray-700">Text Content:</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(overview.TextContent))
+                        {
+                            <div class="prose max-w-none">
+                                <p class="whitespace-pre-wrap text-gray-600">@overview.TextContent</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-gray-500 italic">Không có nội dung</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Empty State -->
+        <div class="bg-white shadow rounded-xl p-12 text-center">
+            <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-file-alt text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có Product Overview</h3>
+            <p class="text-gray-500 mb-6">Sản phẩm này chưa có overview. Hãy tạo overview để mô tả chi tiết sản phẩm.</p>
+            <a asp-area="Admin"
+               asp-controller="ProductOverviews"
+               asp-action="ProductOverViewsCreate"
+               asp-route-productId="@ViewBag.ProductId"
+               class="inline-flex items-center px-6 py-3 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>
+                Tạo Overview Đầu Tiên
+            </a>
+        </div>
+    }
+</div>

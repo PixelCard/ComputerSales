@@ -8,6 +8,8 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
     
     <style>
         .sidebar-transition {
@@ -93,7 +95,7 @@
                           <a asp-area="Admin" asp-controller="Product" asp-action="Index"
                                class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
                                 <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                    <i class="fas fa-box text-lg"></i>
                                 </div>
                                 <span class="font-medium">Products</span>
                             </a>
@@ -104,7 +106,7 @@
                           <a asp-area="Admin" asp-controller="Product" asp-action="DanhSachSanPhamXoa"
                                class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
                                 <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                    <i class="fas fa-trash-alt text-lg"></i>
                                 </div>
                                 <span class="font-medium">Delete Product</span>
                             </a>
@@ -117,7 +119,7 @@
                         <a asp-area="Admin" asp-controller="Provider" asp-action="Index"
                                class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
                                 <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                    <i class="fas fa-puzzle-piece text-lg"></i>
                                 </div>
                                 <span class="font-medium">Accessories</span>
                             </a>
@@ -128,7 +130,7 @@
                          <a asp-area="Admin" asp-controller="Provider" asp-action="Index"
                                class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
                                 <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                    <i class="fas fa-truck text-lg"></i>
                                 </div>
                                 <span class="font-medium">Providers</span>
                             </a>
@@ -140,7 +142,7 @@
                             <a asp-area="Admin" asp-controller="Order" asp-action="OrderAdminHome"
                                class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
                                 <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                    <i class="fas fa-receipt text-lg"></i>
                                 </div>
                                 <span class="font-medium">Orders</span>
                             </a>
@@ -152,15 +154,15 @@
                           <a asp-area="Admin" asp-controller="Accounts" asp-action="Index"
                                class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
                                 <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-cart text-lg"></i>
+                                    <i class="fas fa-users text-lg"></i>
                                 </div>
-                                <span class="font-medium">Accouns</span>
+                                <span class="font-medium">Accounts</span>
                             </a>
                     </li>
 
                     <!-- Account Block Management -->
                     <li>
-                        <a asp-area="Admin" asp-controller="AccountBlock" asp-action="Index"
+                        <a asp-area="Admin" asp-controller="AccountBlocks" asp-action="IndexAccountBlocks"
                            class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="accountblock">
                             <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
                                 <i class="fas fa-ban text-lg"></i>

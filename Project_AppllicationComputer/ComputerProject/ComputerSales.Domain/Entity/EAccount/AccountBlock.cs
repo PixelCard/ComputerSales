@@ -1,32 +1,41 @@
 ﻿namespace ComputerSales.Domain.Entity.EAccount
 {
-    public enum AccountBlockStatus
-    {
-        Inactive = 0,   // không khóa
-        Active = 1      // khóa
-    }
-
     public class AccountBlock
     {
-        public int IdBlock { get; set; }
+        public int BlockId { get; set; }
         public int IDAccount { get; set; }
-        public DateTime BlockFromUtc { get; set; }
+        public DateTime BlockFromUtc { get; set; } //chỉnh sửa lại allow null để cho phép lưu bản ghi
         public DateTime? BlockToUtc { get; set; }
 
-        public bool IsBlock { get; set; } = false;
+        //Isblock đổi thành privateset để logic tự tính , không cho người dùng tính 
+        public bool IsBlock { get; private set; } = false;
 
         public string ReasonBlock { get; set; } = string.Empty;
+
+        // Liên kết tới bảng Accounts   
         public virtual Account Account { get; set; } = null!;
 
-        
-        public bool IsActiveNowUtc => DateTime.UtcNow >= BlockFromUtc
-                                   && (BlockToUtc == null || DateTime.UtcNow < BlockToUtc.Value);
+
+        //hàm tính toán xem trạng thái tài khoản có bị block hay không
+        public bool IsActiveNowUtc
+        {
+            get
+            {
+                var now = DateTime.UtcNow;
+                if (now < BlockFromUtc)
+                    return false;
+                if (BlockToUtc.HasValue && now >= BlockToUtc.Value)
+                    return false;
+                return true;
+            }
+        }
+
+        //cập nhật trạng thái IsBlock dựa trên thời gian hiện tại
         public void UpdateStatusByTime()
         {
-            IsBlock = IsActiveNowUtc
-                ? true
-                : false;
+            IsBlock = IsActiveNowUtc;
         }
+
         public static AccountBlock Create(int accountId, DateTime fromUtc, DateTime? toUtc, string reason)
         {
             var block = new AccountBlock
@@ -34,9 +43,9 @@
                 IDAccount = accountId,
                 BlockFromUtc = fromUtc,
                 BlockToUtc = toUtc,
-                ReasonBlock = reason ?? string.Empty
+                ReasonBlock = reason?.Trim() ?? string.Empty
             };
-            block.UpdateStatusByTime(); // <--- tự xác định Active/Inactive ngay khi tạo
+            block.UpdateStatusByTime(); // Tự set IsBlock khi tạo mới
             return block;
         }
     }

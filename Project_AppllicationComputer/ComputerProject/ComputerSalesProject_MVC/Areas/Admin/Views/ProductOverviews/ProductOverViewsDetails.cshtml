@@ -1,0 +1,95 @@
+@model ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.ProductOverViewOutput
+
+@{
+    ViewData["Title"] = "Chi tiết Product Overview";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-4xl mx-auto py-8">
+    <!-- Header -->
+    <div class="bg-white shadow rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Chi tiết Product Overview</h1>
+                <p class="text-gray-600 mt-1">ID: @Model.ProductOverviewId</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a asp-area="Admin"
+                   asp-controller="ProductOverviews"
+                   asp-action="Edit"
+                   asp-route-id="@Model.ProductOverviewId"
+                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+                    <i class="fas fa-edit mr-2"></i> Chỉnh sửa
+                </a>
+                <a asp-area="Admin"
+                   asp-controller="ProductOverviews"
+                   asp-action="ProductOverViewsDelete"
+                   asp-route-id="@Model.ProductOverviewId"
+                   class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors">
+                    <i class="fas fa-trash mr-2"></i> Xóa
+                </a>
+                <a asp-area="Admin"
+                   asp-controller="Product"
+                   asp-action="ProductDetails"
+                   asp-route-id="@Model.ProductId"
+                   class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Information -->
+    <div class="bg-white shadow rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">Thông tin Overview</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <div>
+                    <span class="font-semibold text-gray-700">Product Overview ID:</span>
+                    <span class="ml-2 text-gray-600">@Model.ProductOverviewId</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-700">Product ID:</span>
+                    <span class="ml-2 text-gray-600">@Model.ProductId</span>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <span class="font-semibold text-gray-700">Ngày tạo:</span>
+                    <span class="ml-2 text-gray-600">@Model.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</span>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-700">Trạng thái:</span>
+                    <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <i class="fas fa-check-circle mr-1"></i>
+                        Active
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Content -->
+    <div class="bg-white shadow rounded-xl p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">Nội dung</h2>
+        
+        @if (!string.IsNullOrEmpty(Model.TextContent))
+        {
+            <div class="bg-gray-50 rounded-lg p-6">
+                <div class="prose max-w-none">
+                    <p class="whitespace-pre-wrap text-gray-700 leading-relaxed">@Model.TextContent</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-12">
+                <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-file-alt text-2xl text-gray-400"></i>
+                </div>
+                <p class="text-gray-500 italic">Không có nội dung</p>
+            </div>
+        }
+    </div>
+</div>

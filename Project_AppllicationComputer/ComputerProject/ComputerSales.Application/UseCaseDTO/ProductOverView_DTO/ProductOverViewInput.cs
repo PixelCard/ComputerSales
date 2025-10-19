@@ -2,6 +2,8 @@
 
 namespace ComputerSales.Application.UseCaseDTO.ProductOverView_DTO
 {
-    public sealed record ProductOverViewInput(long ProductId, OverviewBlockType BlockType, string TextContent,
-            string? ImageUrl, string? Caption, int DisplayOrder);
+    public sealed record ProductOverViewInput(
+        long ProductId,
+        string TextContent
+        );
 }

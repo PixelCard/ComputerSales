@@ -45,6 +45,7 @@
   <ItemGroup>
     <Folder Include="Image\" />
     <Folder Include="JavaScript\" />
+    <Folder Include="wwwroot\img\" />
   </ItemGroup>
 
   <ItemGroup>

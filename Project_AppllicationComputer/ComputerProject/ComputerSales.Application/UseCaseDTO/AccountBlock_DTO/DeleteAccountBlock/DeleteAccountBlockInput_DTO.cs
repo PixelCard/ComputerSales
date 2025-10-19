@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCaseDTO.AccountBlock_DTO.DeleteAccountBlock
 {
-    public sealed record DeleteAccountBlockInput_DTO( int IdBlock);
+    public sealed record DeleteAccountBlockInput_DTO(int BlockId);
 }

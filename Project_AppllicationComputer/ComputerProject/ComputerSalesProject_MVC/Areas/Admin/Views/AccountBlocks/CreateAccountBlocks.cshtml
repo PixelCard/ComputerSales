@@ -1,0 +1,229 @@
+﻿@using ComputerSalesProject_MVC.Areas.Admin.Models.AccountBlocks
+@model AccountBlockCreateVM
+@{
+    ViewData["Title"] = "Create Block";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+    <div class="mb-4 sm:mb-0">
+        <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+            <i class="fas fa-plus-circle text-red-500 mr-3"></i>
+            Tạo mới AccountBlocks
+        </h1>
+        <p class="text-gray-600 mt-2">Block an account with specific restrictions and time period</p>
+    </div>
+    <a class="inline-flex items-center px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+       asp-area="Admin"
+       asp-controller="AccountBlocks"
+       asp-action="IndexAccountBlocks">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Quay về 
+    </a>
+</div>
+
+<!-- Form Card -->
+<div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900 flex items-center">
+            <i class="fas fa-ban text-red-500 mr-2"></i>
+            Block Configuration
+        </h2>
+    </div>
+    
+    <form asp-area="Admin" asp-controller="AccountBlocks" asp-action="CreateAccountBlocks" method="post" class="p-6">
+        <!-- Validation Summary -->
+        <div asp-validation-summary="All" class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-red-500 mr-3 mt-0.5"></i>
+                <div class="text-red-700 text-sm">
+                    <strong>Please correct the following errors:</strong>
+                    <ul class="mt-2 list-disc list-inside">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Left Column -->
+            <div class="space-y-6">
+                <!-- Account ID -->
+                <div>
+                    <label asp-for="IDAccount" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Account ID
+                    </label>
+                    <div class="relative">
+                        <input asp-for="IDAccount" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200" 
+                               placeholder="Enter account ID to block" />
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                    </div>
+                    <span asp-validation-for="IDAccount" class="text-red-500 text-sm mt-1"></span>
+                </div>
+
+                <!-- Block From -->
+                <div>
+                    <label asp-for="BlockFromUtc" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-clock mr-2"></i>
+                        Block From (Giờ Việt Nam – UTC+7)
+                    </label>
+                    <div class="relative">
+                        <input asp-for="BlockFromUtc"
+                               type="datetime-local"
+                               step="1"
+                               asp-format="{0:yyyy-MM-ddTHH:mm:ss}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200" />
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <i class="fas fa-calendar-alt text-gray-400"></i>
+                        </div>
+                    </div>
+                    <span asp-validation-for="BlockFromUtc" class="text-red-500 text-sm mt-1"></span>
+                </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                    <div>
+                        <label asp-for="BlockToUtc" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-clock mr-2"></i>
+                            Block To (Giờ Việt Nam – UTC+7)
+                        </label>
+                        <div class="relative">
+                            <input asp-for="BlockToUtc"
+                                   type="datetime-local"
+                                   step="1"
+                                   asp-format="{0:yyyy-MM-ddTHH:mm:ss}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200" />
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <i class="fas a-calendar-alt text-gray-400"></i>
+                            </div>
+                        </div>
+                        <span asp-validation-for="BlockToUtc" class="text-red-500 text-sm mt-1"></span>
+                        <div class="mt-2 text-sm text-gray-500 flex items-center">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Để trống nếu muốn block vĩnh viễn
+                        </div>
+                    </div>
+
+                <!-- Duration Preview -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-blue-900 mb-2 flex items-center">
+                        <i class="fas fa-hourglass-half mr-2"></i>Dự định
+                    </h4>
+                    <p class="text-sm text-blue-700" id="durationPreview">
+                        Thời gian khóa dự định
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reason Section -->
+        <div class="mt-6">
+            <label asp-for="ReasonBlock" class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-comment mr-2"></i>Block Reason
+            </label>
+            <div class="relative">
+                <textarea asp-for="ReasonBlock" 
+                          rows="4" 
+                          maxlength="500"
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200 resize-none" 
+                          placeholder="Provide a detailed reason for blocking this account..."></textarea>
+                <div class="absolute bottom-3 right-3">
+                    <span class="text-xs text-gray-400" id="charCount">0/500</span>
+                </div>
+            </div>
+            <span asp-validation-for="ReasonBlock" class="text-red-500 text-sm mt-1"></span>
+            <div class="mt-2 text-sm text-gray-500 flex items-center">
+                <i class="fas fa-lightbulb mr-2"></i>
+                A clear reason helps with account management and user communication
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col sm:flex-row gap-3">
+            <button type="submit" 
+                    class="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                <i class="fas fa-ban mr-2"></i>
+                Create Block
+            </button>
+            <a class="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200"
+               asp-area="Admin"
+               asp-controller="AccountBlocks"
+               asp-action="IndexAccountBlocks">
+                <i class="fas fa-times mr-2"></i>
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Character counter for reason textarea
+        const reasonTextarea = document.querySelector('textarea[name="ReasonBlock"]');
+        const charCount = document.getElementById('charCount');
+        
+        if (reasonTextarea && charCount) {
+            reasonTextarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = `${length}/500`;
+                
+                if (length > 450) {
+                    charCount.classList.add('text-red-500');
+                    charCount.classList.remove('text-gray-400');
+                } else {
+                    charCount.classList.remove('text-red-500');
+                    charCount.classList.add('text-gray-400');
+                }
+            });
+        }
+
+        // Duration preview
+        const blockFromInput = document.querySelector('input[name="BlockFromUtc"]');
+        const blockToInput = document.querySelector('input[name="BlockToUtc"]');
+        const durationPreview = document.getElementById('durationPreview');
+        
+        function updateDurationPreview() {
+            if (blockFromInput && blockToInput && durationPreview) {
+                const fromValue = blockFromInput.value;
+                const toValue = blockToInput.value;
+                
+                if (fromValue && toValue) {
+                    const fromDate = new Date(fromValue);
+                    const toDate = new Date(toValue);
+                    
+                    if (toDate > fromDate) {
+                        const diff = toDate - fromDate;
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        
+                        let durationText = '';
+                        if (days > 0) durationText += `${days} day${days > 1 ? 's' : ''} `;
+                        if (hours > 0) durationText += `${hours} hour${hours > 1 ? 's' : ''} `;
+                        if (minutes > 0) durationText += `${minutes} minute${minutes > 1 ? 's' : ''}`;
+                        
+                        durationPreview.textContent = `Block duration: ${durationText.trim()}`;
+                    } else {
+                        durationPreview.textContent = 'End date must be after start date';
+                    }
+                } else if (fromValue && !toValue) {
+                    durationPreview.textContent = 'Permanent block (no end date)';
+                } else {
+                    durationPreview.textContent = 'Select dates to see block duration';
+                }
+            }
+        }
+        
+        if (blockFromInput) blockFromInput.addEventListener('change', updateDurationPreview);
+        if (blockToInput) blockToInput.addEventListener('change', updateDurationPreview);
+    </script>
+}

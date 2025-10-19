@@ -19,7 +19,7 @@ namespace ComputerSales.Infrastructure.Persistence
     {
         public DbSet<Account> Accounts { get; set; }
 
-        //public DbSet<AccountBlock> AccountBlocks { get; set; }
+        public DbSet<AccountBlock> AccountBlocks { get; set; }
 
         public DbSet<VNPAYPaymentSession> vNPAYPaymentSessions { get; set; }
 

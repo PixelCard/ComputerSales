@@ -190,10 +190,18 @@ namespace ComputerSales.Infrastructure
             services.AddScoped<GetAccountByEmail_UC>();
            services.AddScoped<DeleteAccount_UC>();
 
-        
+            //==============    Accounts Blocks   ===============//
+            services.AddScoped<GetAllAccountBlock_UC>();
+            services.AddScoped<GetAccountBlockById_UC>();   // <-- thiếu cái này
+            services.AddScoped<CreateAccountBlock_UC>();
+            services.AddScoped<DeleteAccountBlock_UC>();    
+            services.AddScoped<CheckAccountBlock_UC>();
+
+
+
 
             /********************Product Protection**************************/
-           services.AddScoped<CreateProductProtection_UC>();
+            services.AddScoped<CreateProductProtection_UC>();
            services.AddScoped<DeleteProductProtection_UC>();
            services.AddScoped<GetByIdProductProtection_UC>();
            services.AddScoped<UpdateProductProtection_UC>();
@@ -297,6 +305,12 @@ dotnet ef migrations add TenMigrationMoiUpdateVedieuGiDo -p ComputerSales.Infras
 // (2) sau khi thực hiện (1) ta thực hiện lại cập nhật lại migration bằng cầu lệnh 
 
 dotnet ef database update -p ComputerSales.Infrastructure -s API_ComputerProject
+
+
+//nếu migration có bị sai thì chưa update được ta dùng lệnh này để xóa migration mới tạo  
+// CapNhatLaiQuanHeProduct_ProductOverview
+// dotnet ef migrations remove -p ComputerSales.Infrastructure -s API_ComputerProject
+
 
 
 // luôn luôn phải fetch và pull trước khi run dự án git clone về
