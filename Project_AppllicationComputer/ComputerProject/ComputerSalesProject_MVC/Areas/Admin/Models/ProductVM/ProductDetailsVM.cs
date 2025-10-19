@@ -1,5 +1,6 @@
 ﻿using ComputerSales.Domain.Entity.EProduct;
 using ComputerSalesProject_MVC.Areas.Admin.Models.NewFolder;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM
 {
@@ -15,6 +16,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM
         public string AccessoriesName { get; set; } = string.Empty;
 
         public List<ProductVariantDetailVM> Variants { get; set; } = new();
+        public List<ProductOverViewOutput> ProductOverviews { get; set; } = new();
        
     }
 }

@@ -1,31 +1,32 @@
 ﻿using ComputerSales.Application.Interface.InterfaceRespository;
 using ComputerSales.Application.Interface.UnitOfWork;
 using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.DeleteDTO;
 using ComputerSales.Domain.Entity.EProduct;
 
 namespace ComputerSales.Application.UseCase.ProductOvetView_UC
 {
-    public class CreateProductOverView_UC
+    public class DeleteProductOverView_UC
     {
         private IRespository<ProductOverview> _repoProductOverView;
         private IUnitOfWorkApplication _unitOfWorkApplication;
 
-        public CreateProductOverView_UC(IRespository<ProductOverview> productOverView, 
+        public DeleteProductOverView_UC(IRespository<ProductOverview> productOverView,
             IUnitOfWorkApplication unitOfWorkApplication)
         {
             _repoProductOverView = productOverView;
             _unitOfWorkApplication = unitOfWorkApplication;
         }
 
-        public async Task<ProductOverViewOutput> HandleAsync(ProductOverViewInput input,CancellationToken ct)
+        public async Task<ProductOverViewOutput?> HandleAsync(DeleteProductOverViewInput input, CancellationToken ct)
         {
-            ProductOverview productOverView=input.ToEnity();
+            var entity = await _repoProductOverView.GetByIdAsync(input.ProductOverviewId, ct);
+            if (entity == null) return null;
 
-            await _repoProductOverView.AddAsync(productOverView, ct);
+            _repoProductOverView.Remove(entity);
+            await _unitOfWorkApplication.SaveChangesAsync(ct);
 
-            await _unitOfWorkApplication.SaveChangesAsync();
-
-            return productOverView.ToResult();
+            return entity.ToResult();
         }
     }
 }

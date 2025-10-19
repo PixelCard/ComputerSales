@@ -1,53 +1,56 @@
-﻿//using ComputerSales.Domain.Entity;
-//using ComputerSales.Domain.Entity.EAccount;
-//using Microsoft.EntityFrameworkCore;
-//using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using ComputerSales.Domain.Entity.EAccount;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-//namespace ComputerSales.Infrastructure.Persistence.Configuration
-//{
-//    public class AccountBlockConfiguration : IEntityTypeConfiguration<AccountBlock>
-//    {
-//        public void Configure(EntityTypeBuilder<AccountBlock> b)
-//        {
-//            b.ToTable("AccountBlocks");
+namespace ComputerSales.Infrastructure.Persistence.Configuration
+{
+    public class AccountBlockConfiguration : IEntityTypeConfiguration<AccountBlock>
+    {
+        public void Configure(EntityTypeBuilder<AccountBlock> b)
+        {
+            b.ToTable("AccountBlocks");
 
-//            // PK
-//            b.HasKey(x => x.IdBlock);
-//            b.Property(x => x.IdBlock)
-//             .ValueGeneratedOnAdd();
+            // Đặt khóa chính tự sinh
+            b.HasKey(x => x.BlockId);
+            b.Property(x => x.BlockId).ValueGeneratedOnAdd();
 
-//            // Columns
-//            b.Property(x => x.IDAccount)
-//             .IsRequired();
+            // FK -> Account (int)
+            b.Property(x => x.IDAccount).IsRequired();
 
-//            // Lưu tới GIÂY (đổi (0)->(3)/(7) nếu cần mili/100ns)
-//            b.Property(x => x.BlockFromUtc)
-//             .IsRequired()
-//             .HasColumnType("datetime2");
+            // Lưu thời gian tới giờ/phút/giây
+            b.Property(x => x.BlockFromUtc)
+             .IsRequired()
+             .HasColumnType("datetime2");
 
-//            b.Property(x => x.BlockToUtc)
-//             .HasColumnType("datetime2");
+            b.Property(x => x.BlockToUtc)
+             .HasColumnType("datetime2");
 
-//            b.Property(x => x.IsBlock)
-//             .IsRequired()
-//             .HasDefaultValue(false);
+            b.Property(x => x.IsBlock)
+             .IsRequired()
+             .HasDefaultValue(false);
 
-//            b.Property(x => x.ReasonBlock)
-//             .IsRequired()
-//             .HasMaxLength(500);
+            b.Property(x => x.ReasonBlock)
+             .IsRequired()
+             .HasMaxLength(500);
 
-//            // Không map helper
-//            b.Ignore(x => x.IsActiveNowUtc);
+            // Ignore computed property
+            b.Ignore(x => x.IsActiveNowUtc);
 
-//            // Quan hệ: nhiều block cho 1 account (giữ đơn giản giống file bạn)
-//            b.HasOne(x => x.Account)
-//             .WithMany() // nếu sau này thêm ICollection<AccountBlock> trong Account => đổi .WithMany(a => a.AccountBlocks)
-//             .HasForeignKey(x => x.IDAccount)
-//             .OnDelete(DeleteBehavior.Cascade);
+            // THÊM MỚI: Định nghĩa rõ ràng mối quan hệ
+            b.HasOne(block => block.Account)         // Mỗi AccountBlock có một Account
+             .WithMany(account => account.AccountBlocks) // Mỗi Account có nhiều AccountBlock
+             .HasForeignKey(block => block.IDAccount)  // Khóa ngoại là IDAccount
+             .OnDelete(DeleteBehavior.Cascade);      // Tùy chọn: Xóa các block khi account bị xóa
 
-//            // Index cơ bản
-//            b.HasIndex(x => x.IDAccount);
-//            b.HasIndex(x => new { x.IDAccount, x.BlockFromUtc, x.BlockToUtc });
-//        }
-//    }
-//}
+            // Indexes
+            b.HasIndex(x => x.IDAccount);
+            b.HasIndex(x => new { x.IDAccount, x.BlockFromUtc, x.BlockToUtc });
+
+            b.ToTable(tb => tb.HasCheckConstraint(
+                "CK_AccountBlock_FromTo",
+                "[BlockToUtc] IS NULL OR [BlockToUtc] > [BlockFromUtc]"
+));
+
+        }
+    }
+}

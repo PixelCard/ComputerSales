@@ -39,11 +39,14 @@ namespace ComputerSales.Domain.Entity
         public Role Role { get; set; }   // hoặc virtual Role Role { get; set; }
 
         // 1-1
-        public Customer? Customer { get; set; }   
+        public Customer? Customer { get; set; }
 
         // Factory method (nếu bạn muốn áp dụng pattern như Product.Create)
 
+        //1 account có nhiều lần bị khóa
+        public virtual ICollection<AccountBlock> AccountBlocks { get; set; } = new List<AccountBlock>();
 
+        //1 account có nhiều lần bị khóa
         public static Account Create(string email, string pass, int idRole,DateTime CreatedAt)
         {
             return new Account

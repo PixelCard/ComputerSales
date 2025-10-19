@@ -18,16 +18,16 @@ namespace ComputerSales.Application.UseCase.ProductOvetView_UC
             _unitOfWorkApplication = unitOfWorkApplication;
         }
 
-        public async Task<ProductOverViewOutput?> HandleAsync(UpdateInputDTO input, CancellationToken ct)
+        public async Task<ProductOverViewOutput?> HandleAsync(ProductOverviewUpdate_Input input, CancellationToken ct)
         {
-            var entity = await _repoProductOverView.GetByIdAsync(input.ProductOverViewID, ct);
+            var entity = await _repoProductOverView.GetByIdAsync(input.ProductOverviewId, ct);
             if (entity == null) return null;
 
             entity.UpdateText(input.TextContent);
 
             entity.UpdateCaption(input.Caption);
 
-            entity.UpdateImageUrl(input.ImgURL);
+            entity.UpdateImageUrl(input.ImageUrl);
 
             _repoProductOverView.Update(entity);
 

@@ -113,14 +113,14 @@
                                 <p class="text-emerald-100 text-sm">Chi tiết cá nhân và liên hệ</p>
                             </div>
                         </div>
-                        @if (cust == null)
+                        @* @if (cust == null)
                         {
                             <a asp-area="Admin" asp-controller="Customers" asp-action="Create" 
                                class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-semibold">
                                 <i class="fas fa-plus mr-1"></i>
                                 Tạo Customer
                             </a>
-                        }
+                        } *@
                     </div>
                 </div>
 
@@ -248,16 +248,7 @@
                         <!-- Action Buttons -->
                         <div class="mt-6 flex flex-wrap gap-3">
 
-                            <a asp-area="Admin" asp-controller="Customers" asp-action="EditCustomer" asp-route-id="@cust.IDCustomer"
-                               class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg">
-                                <i class="fas fa-edit mr-2"></i> Chỉnh sửa
-                            </a>
-
-                            <a asp-area="Admin" asp-controller="Customers" asp-action="Delete" asp-route-id="@cust.IDCustomer" 
-                               class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-semibold">
-                                <i class="fas fa-trash mr-2"></i>
-                                Xóa
-                            </a>
+                           
                         </div>
 
                         <!-- Customer Note when exists -->

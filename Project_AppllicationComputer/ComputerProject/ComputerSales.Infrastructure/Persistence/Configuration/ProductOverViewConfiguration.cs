@@ -35,11 +35,7 @@ namespace ComputerSales.Infrastructure.Persistence.Configuration
             b.Property(x => x.CreateDate)
              .HasDefaultValueSql("GETDATE()");  // default khi insert
 
-            // 1-1: Product <-> ProductOverview
-            b.HasOne(x => x.Product)
-             .WithOne(p => p.ProductOverview)   
-             .HasForeignKey<ProductOverview>(x => x.ProductId)
-             .OnDelete(DeleteBehavior.Cascade); // xóa Product thì xóa luôn Overview
+            
         }
     }
 }

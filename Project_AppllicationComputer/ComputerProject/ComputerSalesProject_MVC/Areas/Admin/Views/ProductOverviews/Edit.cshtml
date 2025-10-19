@@ -1,0 +1,280 @@
+@model ComputerSalesProject_MVC.Areas.Admin.Models.Product_Overview.ProductOverviewEditVM
+@{
+    ViewData["Title"] = "Edit Overview Block";
+    var productSKU = ViewBag.ProductSKU as string;
+        Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+}
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Edit Overview Block</h1>
+                <p class="text-sm text-gray-600 mt-1">
+                    Update overview block for product: <span class="font-medium text-blue-600">@productSKU</span>
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a asp-action="ProductOverViewsDetails" asp-route-id="@Model.ProductOverviewId" 
+                   class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-eye mr-2"></i>
+                    View Details
+                </a>
+                <a asp-action="ProductOverViewsIndex" asp-route-productId="@Model.ProductId" 
+                   class="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-6">
+        <form asp-action="ProductOverViewsEdit" method="post" class="space-y-6">
+            @Html.AntiForgeryToken()
+            <input asp-for="ProductOverviewId" type="hidden" />
+            <input asp-for="ProductId" type="hidden" />
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Form -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Block Type (Read-only) -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Block Type</h3>
+                        <div class="flex items-center p-4 bg-white border border-gray-200 rounded-lg">
+                            <i class="fas @(Model.BlockType.ToString() switch {
+                                "Text" => "fa-text-width",
+                                "List" => "fa-list", 
+                                "Image" => "fa-image",
+                                "Logo" => "fa-trademark",
+                                "Table" => "fa-table",
+                                _ => "fa-question"
+                            }) text-2xl text-gray-400 mr-3"></i>
+                            <div>
+                                <div class="font-medium text-gray-900">@Model.BlockType</div>
+                                <div class="text-sm text-gray-500">Block type cannot be changed after creation</div>
+                            </div>
+                        </div>
+                        <input asp-for="BlockType" type="hidden" />
+                    </div>
+
+                    <!-- Content Fields -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Content</h3>
+                        
+                        <!-- Text Content (for Text and List) -->
+                        @if (Model.BlockType.ToString() == "Text" || Model.BlockType.ToString() == "List")
+                        {
+                            <div class="space-y-4">
+                                <div>
+                                    <label asp-for="TextContent" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Text Content
+                                    </label>
+                                    <textarea asp-for="TextContent" rows="6" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Enter your text content here..."></textarea>
+                                    <span asp-validation-for="TextContent" class="text-red-500 text-sm"></span>
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        For lists, separate each item with a new line.
+                                    </p>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Image Content (for Image and Logo) -->
+                        @if (Model.BlockType.ToString() == "Image" || Model.BlockType.ToString() == "Logo")
+                        {
+                            <div class="space-y-4">
+                                <div>
+                                    <label asp-for="ImageUrl" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Image URL
+                                    </label>
+                                    <input asp-for="ImageUrl" type="url" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="https://example.com/image.jpg" />
+                                    <span asp-validation-for="ImageUrl" class="text-red-500 text-sm"></span>
+                                </div>
+                                
+                                <div>
+                                    <label asp-for="Caption" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Caption (Optional)
+                                    </label>
+                                    <input asp-for="Caption" type="text" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Enter image caption..." />
+                                    <span asp-validation-for="Caption" class="text-red-500 text-sm"></span>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Table Content -->
+                        @if (Model.BlockType.ToString() == "Table")
+                        {
+                            <div class="space-y-4">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <div class="flex">
+                                        <i class="fas fa-info-circle text-yellow-600 mr-2 mt-0.5"></i>
+                                        <div>
+                                            <h4 class="text-sm font-medium text-yellow-800">Table Content</h4>
+                                            <p class="text-sm text-yellow-700 mt-1">
+                                                Table content will be handled separately. This block type is reserved for future table functionality.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Display Order -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Display Settings</h3>
+                        <div>
+                            <label asp-for="DisplayOrder" class="block text-sm font-medium text-gray-700 mb-2">
+                                Display Order
+                            </label>
+                            <input asp-for="DisplayOrder" type="number" min="1" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                            <span asp-validation-for="DisplayOrder" class="text-red-500 text-sm"></span>
+                            <p class="text-sm text-gray-500 mt-1">
+                                Lower numbers appear first. Adjust the order to change the display sequence.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Preview -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Preview</h3>
+                        <div id="preview-content" class="min-h-32 bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-300">
+                            <!-- Preview will be updated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Current Values -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-blue-900 mb-4">Current Values</h3>
+                        <dl class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <dt class="text-blue-700">Block ID:</dt>
+                                <dd class="text-blue-900 font-medium">@Model.ProductOverviewId</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-blue-700">Type:</dt>
+                                <dd class="text-blue-900 font-medium">@Model.BlockType</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-blue-700">Order:</dt>
+                                <dd class="text-blue-900 font-medium">@Model.DisplayOrder</dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <!-- Help -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Editing Tips</h3>
+                        <div class="space-y-3 text-sm text-gray-600">
+                            <div>
+                                <strong>Block Type:</strong> Cannot be changed after creation.
+                            </div>
+                            <div>
+                                <strong>Content:</strong> Update the content based on the block type.
+                            </div>
+                            <div>
+                                <strong>Display Order:</strong> Lower numbers appear first in the overview.
+                            </div>
+                            <div>
+                                <strong>Preview:</strong> See how your changes will look in real-time.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
+                        <div class="space-y-3">
+                            <button type="submit" 
+                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-save mr-2"></i>
+                                Save Changes
+                            </button>
+                            <a asp-action="ProductOverViewsDetails" asp-route-id="@Model.ProductOverviewId" 
+                               class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors">
+                                <i class="fas fa-eye mr-2"></i>
+                                View Details
+                            </a>
+                            <a asp-action="ProductOverViewsIndex" asp-route-productId="@Model.ProductId" 
+                               class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors">
+                                <i class="fas fa-times mr-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textContent = document.querySelector('textarea[name="TextContent"]');
+            const imageUrl = document.querySelector('input[name="ImageUrl"]');
+            const caption = document.querySelector('input[name="Caption"]');
+            const previewContent = document.getElementById('preview-content');
+            const blockType = '@Model.BlockType';
+
+            function updatePreview() {
+                const textValue = textContent?.value || '';
+                const imageValue = imageUrl?.value || '';
+                const captionValue = caption?.value || '';
+
+                let previewHtml = '';
+
+                if (blockType === 'Text') {
+                    previewHtml = textValue ? `<p class="whitespace-pre-wrap">${textValue}</p>` : '<p class="text-gray-500 italic">No text content</p>';
+                } else if (blockType === 'List') {
+                    if (textValue) {
+                        const items = textValue.split('\n').filter(item => item.trim());
+                        previewHtml = '<ul class="list-disc list-inside space-y-1">';
+                        items.forEach(item => {
+                            previewHtml += `<li>${item.trim()}</li>`;
+                        });
+                        previewHtml += '</ul>';
+                    } else {
+                        previewHtml = '<p class="text-gray-500 italic">No list items</p>';
+                    }
+                } else if (blockType === 'Image' || blockType === 'Logo') {
+                    if (imageValue) {
+                        previewHtml = `<div class="space-y-2">
+                            <img src="${imageValue}" alt="${captionValue}" class="max-w-full h-auto rounded-lg border">
+                            ${captionValue ? `<p class="text-sm text-gray-600 text-center">${captionValue}</p>` : ''}
+                        </div>`;
+                    } else {
+                        previewHtml = '<div class="text-center text-gray-500 italic">No image URL provided</div>';
+                    }
+                } else if (blockType === 'Table') {
+                    previewHtml = '<div class="text-center text-gray-500 italic">Table preview not available</div>';
+                } else {
+                    previewHtml = '<p class="text-gray-500 text-center">Unknown block type</p>';
+                }
+
+                previewContent.innerHTML = previewHtml;
+            }
+
+            // Add event listeners for content changes
+            if (textContent) textContent.addEventListener('input', updatePreview);
+            if (imageUrl) imageUrl.addEventListener('input', updatePreview);
+            if (caption) caption.addEventListener('input', updatePreview);
+
+            // Initialize preview
+            updatePreview();
+        });
+    </script>
+}

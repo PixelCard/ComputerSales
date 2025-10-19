@@ -64,7 +64,7 @@ namespace API_ComputerProject.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateInputDTO body, CancellationToken ct)
+        public async Task<IActionResult> Update(int id, [FromBody] ProductOverviewUpdate_Input body, CancellationToken ct)
         {
             if (id != body.ProductOverViewID) return BadRequest("Mismatched id.");
             var rs = await updateProductOverView_UC.HandleAsync(body, ct);

@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ComputerSales.Application.UseCaseDTO.AccountBlock_DTO.GetAccountBlock
 {
-    public sealed record GetAccountBlockByID_InputDTO( int IdBlock);
+    public sealed record GetAccountBlockByID_InputDTO(int BlockId);
 }

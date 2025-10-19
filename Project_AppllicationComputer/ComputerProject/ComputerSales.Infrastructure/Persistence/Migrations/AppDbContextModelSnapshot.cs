@@ -74,11 +74,11 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.AccountBlock", b =>
                 {
-                    b.Property<int>("IdBlock")
+                    b.Property<int>("BlockId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdBlock"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BlockId"));
 
                     b.Property<DateTime>("BlockFromUtc")
                         .HasColumnType("datetime2");
@@ -99,13 +99,16 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.HasKey("IdBlock");
+                    b.HasKey("BlockId");
 
                     b.HasIndex("IDAccount");
 
                     b.HasIndex("IDAccount", "BlockFromUtc", "BlockToUtc");
 
-                    b.ToTable("AccountBlocks", (string)null);
+                    b.ToTable("AccountBlocks", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_AccountBlock_FromTo", "[BlockToUtc] IS NULL OR [BlockToUtc] > [BlockFromUtc]");
+                        });
                 });
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.EmailVerifyKey", b =>
@@ -480,6 +483,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("SortOrder")
@@ -764,8 +768,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
                     b.HasKey("ProductOverviewId");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductOverview", (string)null);
                 });
@@ -1105,7 +1108,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.EAccount.AccountBlock", b =>
                 {
                     b.HasOne("ComputerSales.Domain.Entity.Account", "Account")
-                        .WithMany()
+                        .WithMany("AccountBlocks")
                         .HasForeignKey("IDAccount")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1230,8 +1233,8 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("ComputerSales.Domain.Entity.EProduct.ProductOverview", b =>
                 {
                     b.HasOne("ComputerSales.Domain.Entity.EProduct.Product", "Product")
-                        .WithOne("ProductOverview")
-                        .HasForeignKey("ComputerSales.Domain.Entity.EProduct.ProductOverview", "ProductId")
+                        .WithMany("ProductOverviews")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1360,6 +1363,8 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ComputerSales.Domain.Entity.Account", b =>
                 {
+                    b.Navigation("AccountBlocks");
+
                     b.Navigation("Customer");
                 });
 
@@ -1411,7 +1416,7 @@ namespace ComputerSales.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("ProductOptionTypes");
 
-                    b.Navigation("ProductOverview");
+                    b.Navigation("ProductOverviews");
 
                     b.Navigation("ProductProtection");
 

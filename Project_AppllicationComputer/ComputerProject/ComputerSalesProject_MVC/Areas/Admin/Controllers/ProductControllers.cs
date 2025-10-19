@@ -1,6 +1,7 @@
 ﻿using ComputerSales.Application.UseCase.Product_UC;
 using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCaseDTO.Product_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
 using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO;
 using ComputerSales.Domain.Entity.E_Order;
 using ComputerSales.Domain.Entity.EProduct; // ProductStatus
@@ -12,7 +13,6 @@ using ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using System.ComponentModel.DataAnnotations;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
@@ -81,29 +81,26 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         }
 
         // Nạp dropdown cho View (Providers, Accessories, Status=int)
-        private async Task LoadLookupsAsync(CancellationToken ct = default)
-        {
-            var providers = await _db.Providers
-                .AsNoTracking()
-                .Select(x => new { x.ProviderID, x.ProviderName })
-                .ToListAsync(ct);
+        private async Task LoadLookupsAsync(
+             CancellationToken ct = default,
+             long? selectedProviderId = null,
+             long? selectedAccessoriesId = null,
+             int? selectedStatus = null)
+                {
+                    var providers = await _db.Providers.AsNoTracking()
+                        .Select(x => new { x.ProviderID, x.ProviderName }).ToListAsync(ct);
+                    var accessories = await _db.accessories.AsNoTracking()
+                        .Select(x => new { x.AccessoriesID, x.Name }).ToListAsync(ct);
 
-            var accessories = await _db.accessories
-                .AsNoTracking()
-                .Select(x => new { x.AccessoriesID, x.Name })
-                .ToListAsync(ct);
-
-            ViewBag.ProviderList = new SelectList(providers, "ProviderID", "ProviderName");
-            ViewBag.AccessoriesList = new SelectList(accessories, "AccessoriesID", "Name");
-            ViewData["DbgCounts"] = $"Providers={providers.Count}, Accessories={accessories.Count}";
-
-            // Status: enum -> int cho View (DTO nhận int)
-            ViewBag.StatusList = new SelectList(new[]
-            {
+                    ViewBag.ProviderList = new SelectList(providers, "ProviderID", "ProviderName", selectedProviderId);
+                    ViewBag.AccessoriesList = new SelectList(accessories, "AccessoriesID", "Name", selectedAccessoriesId);
+                    ViewBag.StatusList = new SelectList(new[]
+                    {
                 new { Value = (int)ProductStatus.Inactive, Text = nameof(ProductStatus.Inactive) },
                 new { Value = (int)ProductStatus.Active,   Text = nameof(ProductStatus.Active) }
-            }, "Value", "Text");
+             }, "Value", "Text", selectedStatus);
         }
+
 
         // GET /Admin/Product/Create
         [HttpGet]
@@ -115,37 +112,30 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductDTOInput input)
+        public async Task<IActionResult> Create(ProductDTOInput input, CancellationToken ct)
         {
             if (!ModelState.IsValid)
+            {
+                await LoadLookupsAsync(ct, input.ProviderID, input.AccessoriesID, input.Status);
                 return View(input);
-
-            string finalSku;
-
-            // Nếu SKU để trống → tự sinh
-            if (string.IsNullOrWhiteSpace(input.SKU))
-            {
-                var lastId = await _db.Products
-                    .OrderByDescending(p => p.ProductID)
-                    .Select(p => p.ProductID)
-                    .FirstOrDefaultAsync();
-
-                finalSku = $"SKU_{10000 + lastId + 1}";
-            }
-            else
-            {
-                // Nếu có nhập → kiểm tra trùng
-                bool exists = await _db.Products.AnyAsync(p => p.SKU == input.SKU);
-                if (exists)
-                {
-                    ModelState.AddModelError("SKU", "⚠️ Mã SKU này đã tồn tại, vui lòng nhập mã khác.");
-                    return View(input);
-                }
-
-                finalSku = input.SKU; // ok, dùng luôn
             }
 
-            // Dùng factory của entity Product
+            //Fix reload lại trang mất hết dropdown
+            if (!ModelState.IsValid)
+            {
+                await LoadLookupsAsync(ct, input.ProviderID, input.AccessoriesID, input.Status);
+                return View(input);
+            }
+
+            var finalSku = await EnsureFinalSkuAsync(input.SKU, ct);
+
+            if (finalSku == null)
+            {
+                ModelState.AddModelError("SKU", "Mã SKU này đã tồn tại, vui lòng nhập mã khác.");
+                await LoadLookupsAsync(ct, input.ProviderID, input.AccessoriesID, input.Status);
+                return View(input);
+            }
+
             var product = Product.Create(
                 accessoriesId: input.AccessoriesID,
                 providerId: input.ProviderID,
@@ -155,10 +145,52 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             );
 
             _db.Products.Add(product);
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync(ct);
+            }
+            catch
+            {
+                // nếu lỗi lưu, cũng cần nạp lại dropdown trước khi trả về view
+                await LoadLookupsAsync(ct, input.ProviderID, input.AccessoriesID, input.Status);
+                ModelState.AddModelError(string.Empty, "Có lỗi khi lưu dữ liệu.");
+                return View(input);
+            }
 
             TempData["Success"] = $"✅ Đã tạo sản phẩm mới ({finalSku}) thành công!";
             return RedirectToAction("Index", "Product", new { area = "Admin" });
+        }
+
+
+        // Trả về SKU cuối cùng.
+        // - Nếu người dùng để trống -> tự sinh.
+        // - Nếu người dùng nhập mà bị trùng -> trả về null.
+        private async Task<string?> EnsureFinalSkuAsync(string? inputSku, CancellationToken ct)
+        {
+            string finalSku;
+
+            // 1) Nếu SKU trống -> tự sinh
+            if (string.IsNullOrWhiteSpace(inputSku))
+            {
+                var lastId = await _db.Products
+                                      .AsNoTracking()
+                                      .MaxAsync(p => (int?)p.ProductID, ct) ?? 0;
+                finalSku = $"SKU_{10000 + lastId + 1}";
+            }
+            else
+            {
+                // 2) Có nhập -> chuẩn hóa
+                finalSku = inputSku.Trim();
+
+                // 3) Kiểm tra trùng
+                var exists = await _db.Products
+                                      .AsNoTracking()
+                                      .AnyAsync(p => p.SKU == finalSku, ct);
+                if (exists)
+                    return null; // báo trùng
+            }
+
+            return finalSku; // hợp lệ
         }
 
 
@@ -184,8 +216,8 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                     v.Quantity
                 })
                 .ToListAsync(ct);
-            ViewBag.Variants = variants;                 // [THÊM]
-            ViewBag.VariantsCount = variants.Count;      // [THÊM]
+            ViewBag.Variants = variants;                 
+            ViewBag.VariantsCount = variants.Count;
 
             // Truyền product sang View (nếu cần show)
             ViewBag.Product = product;
@@ -264,12 +296,12 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                 .Include(p => p.Provider)
                 .Include(p => p.Accessories)
                 .Include(p => p.ProductVariants)
+                .Include(p => p.ProductOverviews)                // <<-- THÊM DÒNG NÀY
                 .FirstOrDefaultAsync(p => p.ProductID == id && !p.IsDeleted, ct);
 
             if (product is null)
                 return NotFound();
 
-            // Chuẩn hóa sang ViewModel để hiển thị
             var vm = new ProductDetailsVM
             {
                 ProductID = product.ProductID,
@@ -279,6 +311,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                 Status = product.Status,
                 ProviderName = product.Provider?.ProviderName ?? "(N/A)",
                 AccessoriesName = product.Accessories?.Name ?? "(N/A)",
+
                 Variants = product.ProductVariants
                     .OrderByDescending(v => v.Id)
                     .Select(v => new ProductVariantDetailVM
@@ -290,11 +323,27 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                         Quantity = v.Quantity,
                         Status = v.Status
                     })
+                    .ToList(),
+
+                // <<-- THÊM MAP OVERVIEWS VÀO VM
+                ProductOverviews = product.ProductOverviews
+                    .OrderBy(o => o.DisplayOrder)
+                    .Select(o => new ProductOverViewOutput(
+                        o.ProductOverviewId,
+                        o.ProductId,
+                        o.BlockType,
+                        o.TextContent,
+                        o.ImageUrl,
+                        o.Caption,
+                        o.DisplayOrder,
+                        o.CreateDate
+                    ))
                     .ToList()
             };
 
             return View(vm);
         }
+
         //=================== Edit Product  ========================//
         // GET: /Admin/Product/Edit/5
         [HttpGet]

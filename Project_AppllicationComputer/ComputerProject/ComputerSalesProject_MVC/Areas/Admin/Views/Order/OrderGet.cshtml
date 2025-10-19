@@ -2,127 +2,326 @@
 <script src="https://cdn.tailwindcss.com"></script>
 @{
     ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
     Layout = null;
 
     // Chọn màu nhấn theo trạng thái đơn hàng để dùng cho viền/trang trí
     var accentFrom = "from-amber-400";   // default ChoXacNhan
     var accentTo = "to-amber-600";
     var borderAccent = "border-amber-400";
+    var statusColor = "amber";
+    var statusIcon = "fas fa-clock";
+    var statusText = "Chờ xác nhận";
+    
     switch (Model.OrderStatus)
     {
         case ComputerSales.Domain.Entity.E_Order.OrderStatus.DangDongGoi:
-            accentFrom = "from-sky-400"; accentTo = "to-sky-600"; borderAccent = "border-sky-400"; break;
+            accentFrom = "from-sky-400"; accentTo = "to-sky-600"; borderAccent = "border-sky-400"; 
+            statusColor = "sky"; statusIcon = "fas fa-box"; statusText = "Đang đóng gói"; break;
         case ComputerSales.Domain.Entity.E_Order.OrderStatus.DangGiao:
-            accentFrom = "from-blue-500"; accentTo = "to-blue-700"; borderAccent = "border-blue-500"; break;
+            accentFrom = "from-blue-500"; accentTo = "to-blue-700"; borderAccent = "border-blue-500"; 
+            statusColor = "blue"; statusIcon = "fas fa-truck"; statusText = "Đang giao"; break;
         case ComputerSales.Domain.Entity.E_Order.OrderStatus.DaGiaoThanhCong:
-            accentFrom = "from-emerald-500"; accentTo = "to-emerald-700"; borderAccent = "border-emerald-500"; break;
+            accentFrom = "from-emerald-500"; accentTo = "to-emerald-700"; borderAccent = "border-emerald-500"; 
+            statusColor = "emerald"; statusIcon = "fas fa-check-circle"; statusText = "Đã giao thành công"; break;
         case ComputerSales.Domain.Entity.E_Order.OrderStatus.DaHuy:
-            accentFrom = "from-rose-500"; accentTo = "to-rose-700"; borderAccent = "border-rose-500"; break;
+            accentFrom = "from-rose-500"; accentTo = "to-rose-700"; borderAccent = "border-rose-500"; 
+            statusColor = "rose"; statusIcon = "fas fa-times-circle"; statusText = "Đã hủy"; break;
     }
 }
 
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-12 px-4 flex items-start justify-center relative">
-    <div class="pointer-events-none absolute inset-0 [background:radial-gradient(500px_200px_at_20%_0%,rgba(99,102,241,0.08),transparent_60%),radial-gradient(600px_240px_at_100%_10%,rgba(20,184,166,0.08),transparent_60%)]"></div>
-
-    <div class="relative w-full max-w-5xl bg-white/90 backdrop-blur rounded-2xl shadow-xl ring-1 ring-gray-200">
-        <div class="p-6 border-b border-gray-100 flex items-center justify-between">
-            <h1 class="text-xl font-semibold text-gray-900">Đơn hàng #@Model.OrderID</h1>
-            <a href="@Url.Action("OrderAdminHome")" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">Trở lại</a>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header Section -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-8">
+            <!-- Header with gradient background -->
+            <div class="bg-gradient-to-r @accentFrom @accentTo px-8 py-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i class="@statusIcon text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">Đơn hàng #@Model.OrderID</h1>
+                            <p class="text-white/80 text-sm">Chi tiết đơn hàng và thông tin khách hàng</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 rounded-lg px-4 py-2">
+                            <div class="text-white text-sm">Tổng tiền</div>
+                            <div class="text-white text-xl font-bold">@Model.GrandTotal.ToString("N0") VNĐ</div>
+                        </div>
+                        <a href="@Url.Action("OrderAdminHome")" 
+                           class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            <i class="fas fa-arrow-left"></i>Trở lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Status Bar -->
+            <div class="px-8 py-4 bg-gray-50 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-@statusColor-100 text-@statusColor-800 border border-@statusColor-200">
+                            <i class="@statusIcon mr-2"></i>@statusText
+                        </span>
+                        <span class="text-sm text-gray-600">
+                            Đặt hàng lúc: @Model.OrderTime.ToString("dd/MM/yyyy HH:mm")
+                        </span>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        Mã đơn: <span class="font-mono font-medium">#@Model.OrderID</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="h-1 bg-gradient-to-r @accentFrom via-transparent @accentTo opacity-30"></div>
 
-        <div class="p-6 space-y-6">
+        <!-- Alert Messages -->
             @if (TempData["SuccessMessage"] != null)
             {
-                <div class="rounded-md bg-emerald-50 p-3 text-emerald-800 text-sm">@TempData["SuccessMessage"]</div>
+            <div class="bg-white rounded-xl shadow-lg border border-emerald-200 overflow-hidden mb-6">
+                <div class="bg-emerald-50 px-6 py-4 border-b border-emerald-200">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-emerald-600"></i>
+                        <span class="font-medium text-emerald-800">Thành công</span>
+                    </div>
+                </div>
+                <div class="px-6 py-4 text-emerald-700">@TempData["SuccessMessage"]</div>
+            </div>
             }
             @if (TempData["ErrorMessage"] != null)
             {
-                <div class="rounded-md bg-rose-50 p-3 text-rose-800 text-sm">@TempData["ErrorMessage"]</div>
-            }
+            <div class="bg-white rounded-xl shadow-lg border border-rose-200 overflow-hidden mb-6">
+                <div class="bg-rose-50 px-6 py-4 border-b border-rose-200">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-exclamation-circle text-rose-600"></i>
+                        <span class="font-medium text-rose-800">Lỗi</span>
+                    </div>
+                </div>
+                <div class="px-6 py-4 text-rose-700">@TempData["ErrorMessage"]</div>
+            </div>
+        }
 
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div class="rounded-xl border border-gray-100 border-l-4 @borderAccent bg-white">
-                    <div class="px-5 py-3 border-b border-gray-100 text-sm font-semibold text-gray-800">Thông tin đơn hàng</div>
-                    <div class="p-5 text-sm text-gray-800">
-                        <dl class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <dt class="text-gray-500">Mã đơn hàng</dt>
-                                <dd class="font-medium text-gray-900">#@Model.OrderID</dd>
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Order Information -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Order Details Card -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-receipt text-indigo-600"></i>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <dt class="text-gray-500">Ngày đặt</dt>
-                                <dd class="font-medium text-gray-900">@Model.OrderTime.ToString("dd/MM/yyyy HH:mm")</dd>
+                            <h2 class="text-lg font-semibold text-gray-900">Thông tin đơn hàng</h2>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                                    <span class="text-sm font-medium text-gray-500">Mã đơn hàng</span>
+                                    <span class="text-sm font-semibold text-gray-900 font-mono">#@Model.OrderID</span>
+                                </div>
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                                    <span class="text-sm font-medium text-gray-500">Ngày đặt</span>
+                                    <span class="text-sm font-semibold text-gray-900">@Model.OrderTime.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                                    <span class="text-sm font-medium text-gray-500">Giờ đặt</span>
+                                    <span class="text-sm font-semibold text-gray-900">@Model.OrderTime.ToString("HH:mm")</span>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <dt class="text-gray-500">Trạng thái</dt>
-                                <dd>
-                                    @switch (Model.OrderStatus)
-                                    {
-                                        case ComputerSales.Domain.Entity.E_Order.OrderStatus.ChoXacNhan:
-                                            <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">Chờ xác nhận</span>
-                                            break;
-                                        case ComputerSales.Domain.Entity.E_Order.OrderStatus.DangDongGoi:
-                                            <span class="inline-flex items-center rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-medium text-sky-800">Đang đóng gói</span>
-                                            break;
-                                        case ComputerSales.Domain.Entity.E_Order.OrderStatus.DangGiao:
-                                            <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">Đang giao</span>
-                                            break;
-                                        case ComputerSales.Domain.Entity.E_Order.OrderStatus.DaGiaoThanhCong:
-                                            <span class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">Đã giao thành công</span>
-                                            break;
-                                        case ComputerSales.Domain.Entity.E_Order.OrderStatus.DaHuy:
-                                            <span class="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-medium text-rose-800">Đã hủy</span>
-                                            break;
-                                    }
-                                </dd>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                                    <span class="text-sm font-medium text-gray-500">Trạng thái</span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-@statusColor-100 text-@statusColor-800 border border-@statusColor-200">
+                                        <i class="@statusIcon mr-1.5"></i>@statusText
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                                    <span class="text-sm font-medium text-gray-500">Tổng tiền</span>
+                                    <span class="text-lg font-bold text-emerald-600">@Model.GrandTotal.ToString("N0") VNĐ</span>
+                                </div>
+                                <div class="flex items-center justify-between py-2">
+                                    <span class="text-sm font-medium text-gray-500">Phương thức thanh toán</span>
+                                    <span class="text-sm font-semibold text-gray-900">@(Model.PaymentID?.ToString() ?? "Chưa chọn")</span>
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <dt class="text-gray-500">Tổng tiền</dt>
-                                <dd class="text-base font-bold text-emerald-600">@Model.GrandTotal.ToString("N0") VNĐ</dd>
+                        </div>
+                        
+                        @if (!string.IsNullOrEmpty(Model.OrderNote))
+                        {
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <h3 class="text-sm font-medium text-gray-900 mb-2">Ghi chú đơn hàng</h3>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <p class="text-sm text-gray-700">@Model.OrderNote</p>
                             </div>
-                            <div class="flex items-start justify-between">
-                                <dt class="text-gray-500">Ghi chú</dt>
-                                <dd class="max-w-[70%] text-gray-700">@(Model.OrderNote ?? "Không có")</dd>
                             </div>
-                        </dl>
+                        }
                     </div>
                 </div>
 
-                <div class="rounded-xl border border-gray-100 bg-white">
-                    <div class="px-5 py-3 border-b border-gray-100 text-sm font-semibold text-gray-800">Thông tin khách hàng</div>
-                    <div class="p-5 text-sm text-gray-800">
-                        <dl class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <dt class="text-gray-500">ID Khách hàng</dt>
-                                <dd class="font-medium text-gray-900">@Model.IDCustomer</dd>
+                <!-- Customer Information Card -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
                             </div>
-                            <div class="flex items-center justify-between">
-                                <dt class="text-gray-500">Phương thức thanh toán</dt>
-                                <dd class="font-medium text-gray-900">@(Model.PaymentID?.ToString() ?? "Chưa chọn")</dd>
+                            <h2 class="text-lg font-semibold text-gray-900">Thông tin khách hàng</h2>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-gray-600 text-xl"></i>
                             </div>
-                        </dl>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900">Khách hàng #@Model.IDCustomer</h3>
+                                <p class="text-sm text-gray-500">ID: @Model.IDCustomer</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="pt-4 flex items-center justify-end gap-2">
-                <a href="@Url.Action("OrderAdminHome")" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">Quay lại</a>
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Quick Actions Card -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-bolt text-purple-600"></i>
+                            </div>
+                            <h2 class="text-lg font-semibold text-gray-900">Hành động nhanh</h2>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <a href="@Url.Action("OrderAdminHome")" 
+                           class="w-full inline-flex items-center justify-center px-4 py-3 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách
+                        </a>
+                        
                 @if (Model.OrderStatus != ComputerSales.Domain.Entity.E_Order.OrderStatus.DangGiao && 
                      Model.OrderStatus != ComputerSales.Domain.Entity.E_Order.OrderStatus.DaGiaoThanhCong &&
                      Model.OrderStatus != ComputerSales.Domain.Entity.E_Order.OrderStatus.DaHuy)
                 {
                     <button type="button" onclick="cancelOrderDetail(@Model.OrderID)"
-                            class="inline-flex items-center rounded-md bg-rose-600 px-3 py-1.5 text-sm font-medium text-white shadow hover:bg-rose-700">Hủy đơn</button>
+                                    class="w-full inline-flex items-center justify-center px-4 py-3 rounded-lg text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 transition-colors">
+                                <i class="fas fa-times mr-2"></i>Hủy đơn hàng
+                            </button>
                 }
                 else if (Model.OrderStatus == ComputerSales.Domain.Entity.E_Order.OrderStatus.DaHuy)
                 {
-                    <span class="text-sm text-gray-500">Đơn hàng đã được hủy</span>
+                            <div class="w-full px-4 py-3 rounded-lg text-sm text-center text-gray-500 bg-gray-50">
+                                <i class="fas fa-ban mr-2"></i>Đơn hàng đã được hủy
+                            </div>
                 }
                 else
                 {
-                    <span class="text-sm text-gray-500">Không thể hủy đơn hàng đang giao hoặc đã giao</span>
-                }
+                            <div class="w-full px-4 py-3 rounded-lg text-sm text-center text-gray-500 bg-gray-50">
+                                <i class="fas fa-info-circle mr-2"></i>Không thể hủy đơn hàng
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Order Timeline Card -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-history text-green-600"></i>
+                            </div>
+                            <h2 class="text-lg font-semibold text-gray-900">Lịch sử đơn hàng</h2>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-emerald-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Đơn hàng được tạo</p>
+                                    <p class="text-xs text-gray-500">@Model.OrderTime.ToString("dd/MM/yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                            
+                            @if (Model.OrderStatus != ComputerSales.Domain.Entity.E_Order.OrderStatus.ChoXacNhan)
+                            {
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Đơn hàng được xác nhận</p>
+                                        <p class="text-xs text-gray-500">Đã xác nhận</p>
+                                    </div>
+                                </div>
+                            }
+                            
+                            @if (Model.OrderStatus == ComputerSales.Domain.Entity.E_Order.OrderStatus.DangDongGoi || 
+                                 Model.OrderStatus == ComputerSales.Domain.Entity.E_Order.OrderStatus.DangGiao ||
+                                 Model.OrderStatus == ComputerSales.Domain.Entity.E_Order.OrderStatus.DaGiaoThanhCong)
+                            {
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-sky-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-sky-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Đang đóng gói</p>
+                                        <p class="text-xs text-gray-500">Đã đóng gói</p>
+                                    </div>
+                                </div>
+                            }
+                            
+                            @if (Model.OrderStatus == ComputerSales.Domain.Entity.E_Order.OrderStatus.DangGiao ||
+                                 Model.OrderStatus == ComputerSales.Domain.Entity.E_Order.OrderStatus.DaGiaoThanhCong)
+                            {
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Đang giao hàng</p>
+                                        <p class="text-xs text-gray-500">Đang vận chuyển</p>
+                                    </div>
+                                </div>
+                            }
+                            
+                            @if (Model.OrderStatus == ComputerSales.Domain.Entity.E_Order.OrderStatus.DaGiaoThanhCong)
+                            {
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-emerald-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Giao hàng thành công</p>
+                                        <p class="text-xs text-gray-500">Hoàn thành</p>
+                                    </div>
+                                </div>
+                            }
+                            
+                            @if (Model.OrderStatus == ComputerSales.Domain.Entity.E_Order.OrderStatus.DaHuy)
+                            {
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-rose-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-times text-rose-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Đơn hàng bị hủy</p>
+                                        <p class="text-xs text-gray-500">Đã hủy</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

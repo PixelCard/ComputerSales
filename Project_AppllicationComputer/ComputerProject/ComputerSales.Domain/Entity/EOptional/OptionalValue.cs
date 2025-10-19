@@ -2,8 +2,6 @@
 
 namespace ComputerSales.Domain.Entity.EOptional
 {
-    //Các Optional Value bất kỳ ví dụ - 'RTX 5070', 'RTX 5070 Ti', 'SOLID', 'SOLID OC', ...
-    //sẽ nào trong mục Optional Type nào đó
     public class OptionalValue
     {
         public int Id { get; set; }

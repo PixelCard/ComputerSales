@@ -1,62 +1,55 @@
 ﻿@{
-    Layout = null;
+    ViewData["Title"] = "Quên mật khẩu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Forgot Password</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .orange-gradient {
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-        }
-        .orange-gradient:hover {
-            background: linear-gradient(135deg, #e55a2b, #e0841a);
-        }
-        .mobile-frame {
-            max-width: 375px;
-            margin: 0 auto;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3);
-        }
-        .status-bar {
-            background: #000;
-            color: white;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .verification-input {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #e5e7eb;
-            border-radius: 50%;
-            text-align: center;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0 8px;
-            transition: all 0.3s ease;
-        }
-        .verification-input:focus {
-            outline: none;
-            border-color: #ff6b35;
-            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-        }
-        .verification-input.filled {
-            border-color: #ff6b35;
-            background-color: #fff5f0;
-        }
-    </style>
-</head>
+<style>
+    .orange-gradient {
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+    }
+    .orange-gradient:hover {
+        background: linear-gradient(135deg, #e55a2b, #e0841a);
+    }
+    .mobile-frame {
+        max-width: 375px;
+        margin: 0 auto;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 0 30px rgba(0,0,0,0.3);
+    }
+    .status-bar {
+        background: #000;
+        color: white;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .verification-input {
+        width: 50px;
+        height: 50px;
+        border: 2px solid #e5e7eb;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 8px;
+        transition: all 0.3s ease;
+    }
+    .verification-input:focus {
+        outline: none;
+        border-color: #ff6b35;
+        box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+    }
+    .verification-input.filled {
+        border-color: #ff6b35;
+        background-color: #fff5f0;
+    }
+</style>
 
-<body class="min-h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 flex items-center justify-center p-4">
+<div class="min-h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 flex items-center justify-center p-4">
     <!-- Mobile Frame -->
     <div class="mobile-frame bg-white">
         
@@ -208,15 +201,25 @@
 
                 <div class="mb-6">
                     <label class="block text-gray-700 text-sm font-medium mb-2">Enter New Password</label>
-                    <input type="password" id="newPassword" placeholder="Enter new password" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    <div class="relative">
+                        <input type="password" id="newPassword" placeholder="Enter new password" 
+                               class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        <button type="button" onclick="toggleNewPassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <i class="fas fa-eye text-lg" id="newPasswordToggleIcon"></i>
+                        </button>
+                    </div>
                     <p class="text-xs text-gray-500 mt-1">At least 8 digits</p>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
-                    <input type="password" id="confirmPassword" placeholder="Confirm password" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                    <div class="relative">
+                        <input type="password" id="confirmPassword" placeholder="Confirm password" 
+                               class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        <button type="button" onclick="toggleConfirmPassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <i class="fas fa-eye text-lg" id="confirmPasswordToggleIcon"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <button id="resetPasswordBtn" type="button" class="w-full orange-gradient text-white py-3 rounded-lg font-medium transition-all duration-300">
@@ -226,8 +229,41 @@
 
         </div>
     </div>
+</div>
 
+@section Scripts {
     <script>
+            // ===== Password Toggle Functions =====
+            function toggleNewPassword() {
+                const passwordInput = document.getElementById('newPassword');
+                const toggleIcon = document.getElementById('newPasswordToggleIcon');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            }
+
+            function toggleConfirmPassword() {
+                const passwordInput = document.getElementById('confirmPassword');
+                const toggleIcon = document.getElementById('confirmPasswordToggleIcon');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            }
+
             // ===== helpers =====
             const q = s => document.querySelector(s);
             const qa = s => Array.from(document.querySelectorAll(s));
@@ -414,6 +450,5 @@
 
             // Start
             showStep(1);
-        </script>
-</body>
-</html>
+    </script>
+}
