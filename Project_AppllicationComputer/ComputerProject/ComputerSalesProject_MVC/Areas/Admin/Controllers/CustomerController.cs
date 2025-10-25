@@ -1,14 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // AsNoTracking(), ToListAsync()
-using ComputerSales.Infrastructure.Persistence; // AppDbContext
-using ComputerSales.Application.UseCase.Customer_UC;
+﻿using ComputerSales.Application.UseCase.Customer_UC;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO.getCustomerByID;
+using ComputerSales.Infrastructure.Persistence; // AppDbContext
 using ComputerSalesProject_MVC.Areas.Admin.Models.CustomerVM;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // AsNoTracking(), ToListAsync()
+using System.ComponentModel.DataAnnotations;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]    
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class CustomersController : Controller

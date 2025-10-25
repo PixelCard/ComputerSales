@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ComputerSales.Application.UseCase.Provider_UC;
+﻿using ComputerSales.Application.UseCase.Provider_UC;
 using ComputerSales.Application.UseCaseDTO.Provider_DTO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class ProviderController : Controller

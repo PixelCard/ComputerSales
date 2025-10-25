@@ -1,19 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // AsNoTracking, ToListAsync
-using ComputerSales.Infrastructure.Persistence; // AppDbContext
-
-using ComputerSales.Application.UseCase.Account_UC;
+﻿using ComputerSales.Application.UseCase.Account_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO;
+using ComputerSales.Application.UseCaseDTO.Account_DTO.DeleteAccount;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.GetAccountByID;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.UpdateAccount;
-using ComputerSales.Application.UseCaseDTO.Account_DTO.DeleteAccount;
-using ComputerSalesProject_MVC.Areas.Admin.Models.AccountVM;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using ComputerSales.Application.UseCaseDTO.Customer_DTO;
+using ComputerSales.Infrastructure.Persistence; // AppDbContext
+using ComputerSalesProject_MVC.Areas.Admin.Models.AccountVM;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore; // AsNoTracking, ToListAsync
+using System.ComponentModel.DataAnnotations;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class AccountsController : Controller

@@ -1,5 +1,4 @@
-﻿
-namespace ComputerSalesProject_MVC.Models
+﻿namespace ComputerSalesProject_MVC.Models.Product_ViewModel
 {
     // Models/ProductListItemVM.cs
     public sealed class ProductListItemVM

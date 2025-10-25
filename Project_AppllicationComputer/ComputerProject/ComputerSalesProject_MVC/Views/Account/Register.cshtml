@@ -1,8 +1,9 @@
 @model ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO.RegisterRequestDTO
 @{
     ViewData["Title"] = "Đăng ký tài khoản";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
 }
+<script src="https://cdn.tailwindcss.com"></script>
 
 <style>
     .gradient-bg {
@@ -47,19 +48,6 @@
         <!-- Subtle grid pattern -->
         <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 50px 50px;"></div>
     </div>
-
-    <!-- Header with logo -->
-    <div class="absolute top-0 left-0 right-0 z-20 p-6">
-        <div class="flex items-center justify-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-90 transition">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg">
-                    <span class="text-white font-bold text-xl">C</span>
-                </div>
-                <span class="text-white font-bold text-2xl tracking-tight">Computer Sales</span>
-            </a>
-        </div>
-    </div>
-
     <div class="relative z-10 flex flex-col items-center justify-center min-h-screen w-full px-4 py-8">
         @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { id = "registerForm" }))
         {
@@ -216,7 +204,6 @@
         }
     </div>
 </div>
-
 @section Scripts {
     <script>
         function togglePassword() {

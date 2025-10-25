@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using ComputerSales.Application.UseCaseDTO.OptionalType_DTO;
+﻿using ComputerSales.Application.UseCaseDTO.OptionalType_DTO;
 using ComputerSales.Application.UseCaseDTO.OptionalValue_DTO;
 using ComputerSales.Domain.Entity.EOptional;
 using ComputerSales.Domain.Entity.EProduct;
@@ -7,13 +6,13 @@ using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Areas.Admin.Models.ProductVariantVM;
 using ComputerSalesProject_MVC.Areas.Admin.Models.VariantOptionValue;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
+
+
+[Authorize(Roles = "admin")]
 [Area("Admin")]
 [Route("Admin/[controller]/[action]")]
 public class VariantOptionController : Controller

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using ComputerSales.Domain.Entity.EProduct; // ProductStatus
-using ComputerSales.Domain.Entity.EVariant; // PriceStatus nếu cần
+using ComputerSales.Domain.Entity.EVariant;
+using ComputerSalesProject_MVC.Models.ProductVariant;
 
-namespace ComputerSalesProject_MVC.Models
+namespace ComputerSalesProject_MVC.Models.Product_ViewModel
 {
     public sealed class ProductDetailViewModel
     {

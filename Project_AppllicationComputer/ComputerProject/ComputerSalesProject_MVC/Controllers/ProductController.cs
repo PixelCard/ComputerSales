@@ -2,9 +2,12 @@
 using ComputerSales.Application.UseCase.ProductVariant_UC;
 using ComputerSales.Application.UseCaseDTO.Product_DTO;
 using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
+using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Models;
+using ComputerSalesProject_MVC.Models.Product_ViewModel;
+using ComputerSalesProject_MVC.Models.ProductVariant;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,6 +55,7 @@ namespace ComputerSalesProject_MVC.Controllers
                         v.SKU,
                         v.Quantity,
                         v.Status,
+                        v.VariantName,
 
                         // chỉ lấy các hàng giá còn hiệu lực & Active
                         Prices = v.VariantPrices
@@ -178,7 +182,8 @@ namespace ComputerSalesProject_MVC.Controllers
                     SKU = v.SKU,
                     Quantity = v.Quantity,
                     Price = price,
-                    OldPrice = old
+                    OldPrice = old,
+                    VariantName = v.VariantName
                 };
             }).ToList();
 
@@ -196,12 +201,7 @@ namespace ComputerSalesProject_MVC.Controllers
             return View("Details", vm);
         }
 
-        /// <summary>
-        /// Quy tắc giá:
-        /// - Hết hạn/Inactive: discount = 0 → dùng Price gốc
-        /// - 0..100: % khuyến mãi (final = Price * (1 - %/100), old = Price)
-        /// - >100: DiscountPrice là giá đã giảm (final = DiscountPrice, old = Price nếu Price > final)
-        /// </summary>
+
         private static (decimal price, decimal? oldPrice, string currency)
             ResolveDisplayPrice(VariantPrice? row, DateTime now)
         {
@@ -238,5 +238,90 @@ namespace ComputerSalesProject_MVC.Controllers
             if (p.ValidTo.HasValue && p.ValidTo.Value < nowUtc) return true;
             return false;
         }
+
+
+        //hàm render ra Variant Images cho từng ProductVariant theo variantId
+        [HttpGet("/product/variant-images/{variantId:int}")]
+        [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Client, NoStore = false)]
+        public async Task<IActionResult> GetVariantImages([FromRoute] int variantId, CancellationToken ct)
+        {
+            var images = await _context
+                .Set<VariantImage>()        
+                .AsNoTracking()
+                .Where(x => x.VariantId == variantId)
+                .OrderBy(x => x.SortOrder).ThenBy(x => x.Id)
+                .Select(x => new VariantImageVM
+                {
+                    Id = x.Id,
+                    Url = x.Url,
+                    SortOrder = x.SortOrder,
+                    DescriptionImg = x.DescriptionImg
+                })
+                .ToListAsync(ct);
+
+            if (images.Count == 0)
+            {
+                images.Add(new VariantImageVM
+                {
+                    Url = "/images/placeholder.svg",
+                    SortOrder = 0,
+                    DescriptionImg = "No image"
+                });
+            }
+
+            return Ok(images);
+        }
+        public IActionResult BestSellingVariants(int count = 8)
+        {
+            var bestSellingVariants = _context.OrderDetails
+                .Where(od => od.ProductVariantID != 0)
+                .GroupBy(od => od.ProductVariantID)
+                .Select(g => new
+                {
+                    VariantID = g.Key,
+                    TotalSold = g.Sum(x => x.Quantity)
+                })
+                .OrderByDescending(x => x.TotalSold)
+                .Take(count)
+                .Join(
+                    _context.productVariants
+                        .Include(v => v.VariantPrices.Where(p => p.Status == PriceStatus.Active))
+                        .Include(v => v.VariantImages.OrderBy(i => i.SortOrder))
+                        .Include(v => v.Product), // để lấy thông tin Product cha
+                    best => best.VariantID,
+                    variant => variant.Id,
+                    (best, variant) => new
+                    {
+                        Variant = variant,
+                        TotalSold = best.TotalSold
+                    })
+                .Where(x => x.Variant.Status == VariantStatus.Active && !x.Variant.Product.IsDeleted)
+                .Select(x => new
+                {
+                    x.Variant.Id,
+                    x.Variant.SKU,
+                    x.Variant.VariantName,
+                    ProductName = x.Variant.Product.ShortDescription,
+                    Prices = x.Variant.VariantPrices.Select(p => new
+                    {
+                        p.Price,
+                        p.DiscountPrice,
+                        p.Currency
+                    }),
+                    Images = x.Variant.VariantImages.Select(i => new
+                    {
+                        i.Url,
+                        i.DescriptionImg,
+                        i.SortOrder
+                    }),
+                    TotalSold = x.TotalSold
+                })
+                .ToList();
+
+            return PartialView("_BestSellingVariants", bestSellingVariants);
+        }
+
+
+
     }
 }

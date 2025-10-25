@@ -67,7 +67,7 @@ namespace ComputerSales.Application.UseCase.Cart_UC.Commands.AddCart
                     .OrderByDescending(p => p.ValidFrom ?? DateTime.MinValue)
                     .FirstOrDefault();
 
-                var unitPrice = Math.Max(0, priceRow.Price);
+                var unitPrice = priceRow?.Price ?? 0;
 
                 // ---- Ảnh đại diện ----
                 var imageUrl = v.VariantImages?

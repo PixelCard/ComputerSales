@@ -1,13 +1,15 @@
 ﻿using ComputerSales.Application.UseCase.Order_UC;
-using ComputerSales.Domain.Entity.E_Order;
-using Microsoft.AspNetCore.Mvc;
-using ComputerSales.Application.UseCaseDTO.Order_DTO.GetOrderByID;
 using ComputerSales.Application.UseCaseDTO.Order_DTO;
 using ComputerSales.Application.UseCaseDTO.Order_DTO.CancelOrder;
+using ComputerSales.Application.UseCaseDTO.Order_DTO.GetOrderByID;
 using ComputerSales.Application.UseCaseDTO.Order_DTO.GetOrdersList;
+using ComputerSales.Domain.Entity.E_Order;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class OrderController : Controller

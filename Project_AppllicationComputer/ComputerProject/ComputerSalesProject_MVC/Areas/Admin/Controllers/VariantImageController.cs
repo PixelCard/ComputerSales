@@ -4,11 +4,13 @@ using ComputerSales.Application.UseCaseDTO.VariantImage;
 using ComputerSales.Application.UseCaseDTO.VariantImage.DeleteVariantImage;
 using ComputerSales.Application.UseCaseDTO.VariantImageDTO;
 using ComputerSales.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class VariantImageController : Controller
