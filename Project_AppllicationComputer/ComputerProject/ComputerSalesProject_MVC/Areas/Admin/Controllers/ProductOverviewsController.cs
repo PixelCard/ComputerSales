@@ -6,6 +6,7 @@ using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.UpdateDTO;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Areas.Admin.Models.Product_Overview;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
