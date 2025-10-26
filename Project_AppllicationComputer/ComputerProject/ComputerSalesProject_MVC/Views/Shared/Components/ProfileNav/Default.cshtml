@@ -1,0 +1,106 @@
+﻿@using System.Security.Claims
+@{
+    var action = (ViewContext.RouteData.Values["action"]?.ToString() ?? "");
+    string Active(string a) => string.Equals(action, a, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+
+    var email = User.FindFirst(ClaimTypes.Email)?.Value ?? (User.Identity?.Name ?? "Account");
+    var badgeText = string.IsNullOrWhiteSpace(email) ? "A" : email.Trim()[0].ToString().ToUpper();
+
+    // Nhóm "Tài khoản"
+    bool inAccountGroup = action.Equals("AccountInfo", StringComparison.OrdinalIgnoreCase)
+                          || action.Equals("ChangePassword", StringComparison.OrdinalIgnoreCase);
+    var accBtnClass = inAccountGroup
+        ? "bg-orange-500 text-white hover:bg-orange-600"
+        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200";
+
+    // Nhóm "Khách hàng"
+    bool inCustomerGroup = action.Equals("CustomerInfo", StringComparison.OrdinalIgnoreCase)
+                           || action.Equals("EditMyProfile", StringComparison.OrdinalIgnoreCase);
+    var custBtnClass = inCustomerGroup
+        ? "bg-orange-500 text-white hover:bg-orange-600"
+        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200";
+
+    var avatarUrl = ViewBag.AvatarUrl as string;
+}
+
+<div class="rounded-xl shadow-lg">
+    <div class="flex items-center gap-2 p-3">
+        <div class="w-9 h-9 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
+
+            @if (!string.IsNullOrWhiteSpace(avatarUrl))
+            {
+                <img src="@Url.Content(avatarUrl)" alt="avatar"
+                     class="w-9 h-9 rounded-lg object-cover border border-slate-200" />
+            }
+            else
+            {
+                <div class="w-9 h-9 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">@badgeText</div>
+            }
+
+        </div>
+        <div class="font-semibold">@email</div>
+    </div>
+    <div class="h-px bg-slate-200 mx-4 mb-2"></div>
+    <div class="text-xs tracking-widest text-slate-500 font-bold px-4 py-2">SETTINGS</div>
+
+    <!-- Nhóm: Tài khoản -->
+    <button id="accToggle" type="button" class="w-full flex items-center justify-between px-4 py-3 font-semibold @accBtnClass">
+        <span>Tài khoản</span>
+        <span id="accChev" class="transition-transform">⌄</span>
+    </button>
+    <div id="accGroup" class="@(inAccountGroup ? "block" : "hidden")">
+        <a class="block px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 @(Active("AccountInfo")=="active"?"bg-slate-100":"")" href="/Profile/AccountInfo">Chi tiết tài khoản</a>
+        <a class="block px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 @(Active("ChangePassword")=="active"?"bg-slate-100":"")" href="/ChangePassword/ChangePassswordHome">Đổi mật khẩu</a>
+    </div>
+
+    <!-- Nhóm: Khách hàng -->
+    <button id="custToggle" type="button" class="w-full flex items-center justify-between px-4 py-3 font-semibold @custBtnClass">
+        <span>Khách hàng</span>
+        <span id="custChev" class="transition-transform">⌄</span>
+    </button>
+    <div id="custGroup" class="@(inCustomerGroup ? "block" : "hidden")">
+        <a class="block px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 @(Active("CustomerInfo")=="active"?"bg-slate-100":"")" href="/Profile/CustomerInfo">Thông tin khách hàng</a>
+        <a class="block px-6 py-3 font-medium text-slate-600 hover:bg-slate-50 @(Active("EditMyProfile")=="active"?"bg-slate-100":"")" href="/ChangeCustomerInfo/EditByUser">Thay đổi thông tin khách hàng</a>
+    </div>
+
+    <!-- Đơn hàng -->
+    <a class="block px-4 py-3 font-semibold hover:bg-slate-50 @(Active("OrdersInfo")=="active"?"bg-orange-500 text-white":"text-slate-600")" href="/Profile/OrdersInfo">Đơn hàng của tôi</a>
+
+    <form method="post" action="/Account/Logout" class="m-0">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="block w-full text-left px-4 py-3 font-semibold text-slate-600 hover:bg-slate-50">Đăng xuất</button>
+    </form>
+</div>
+
+<script>
+    (function () {
+        function attachToggle(btnId, grpId, chevId) {
+            const btn = document.getElementById(btnId);
+            const grp = document.getElementById(grpId);
+            const chev = document.getElementById(chevId);
+            if (!btn || !grp) return;
+
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const hidden = grp.classList.contains('hidden');
+                if (hidden) {
+                    grp.classList.remove('hidden');
+                    grp.classList.add('block');
+                    if (chev) chev.style.transform = 'rotate(180deg)';
+                } else {
+                    grp.classList.add('hidden');
+                    grp.classList.remove('block');
+                    if (chev) chev.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            // init state theo class sẵn
+            if (grp.classList.contains('block') && chev) {
+                chev.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        attachToggle('accToggle', 'accGroup', 'accChev');
+        attachToggle('custToggle', 'custGroup', 'custChev');
+    })();
+</script>

@@ -4,6 +4,9 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
     var productSKU = ViewBag.ProductSKU as string;
+
+    var key = (string?)ViewBag.TinyMCEApiKey;
+    var tinyKey = string.IsNullOrWhiteSpace(key) ? "no-api-key" : key;
 }
 
 <div class="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -77,8 +80,11 @@
     </div>
 </div>
 
+<!-- TinyMCE key: @tinyKey -->
+
 @section Scripts {
-    <script src="https://cdn.tiny.cloud/1/@ViewBag.TinyMCEApiKey/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/@tinyKey/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
     <script>
         tinymce.init({
           selector: '#editor',

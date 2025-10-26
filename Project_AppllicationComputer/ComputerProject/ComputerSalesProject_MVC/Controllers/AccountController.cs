@@ -35,10 +35,13 @@ namespace ComputerSalesProject_MVC.Controllers
         //sử dụng hàm này kiểm tra Accountblock
         private readonly CheckAccountBlock_UC _checkActive;
 
+        
         // Múi giờ Việt Nam (Windows)
-        private static TimeZoneInfo VnTz =>           // <--- THÊM PROPERTY NÀY
+        private static TimeZoneInfo VnTz =>           
             TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
 
+
+        //---------------------------------------Constructor--------------------------------------------------
         public AccountController(IJwtTokenGenerator jwt, 
             IAccountRepository accountService, 
             IRoleRepository roleService, 
@@ -64,8 +67,6 @@ namespace ComputerSalesProject_MVC.Controllers
             //tạo phương thức kiểm tra check block
             _checkActive = checkActive;
         }
-
-        //---------------------------------------Constructor--------------------------------------------------
 
 
         //---------------------------------------Get--------------------------------------------------

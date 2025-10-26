@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Chỉnh sửa Product Overview";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var key = (string?)ViewBag.TinyMCEApiKey;
+    var tinyKey = string.IsNullOrWhiteSpace(key) ? "no-api-key" : key;
 }
 
 <div class="max-w-4xl mx-auto py-8">
@@ -84,7 +86,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.tiny.cloud/1/@ViewBag.TinyMCEApiKey/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.tiny.cloud/1/@(ViewBag.TinyMCEApiKey ?? "no-api-key")/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
           selector: '#TextContent',
