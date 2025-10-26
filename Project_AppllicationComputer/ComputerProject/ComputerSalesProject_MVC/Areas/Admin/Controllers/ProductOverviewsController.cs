@@ -1,17 +1,18 @@
-﻿    using ComputerSales.Application.UseCase.ProductOvetView_UC;
-    using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
-    using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.DeleteDTO;
-    using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.GetByIdDTO;
-    using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.UpdateDTO;
-    using ComputerSales.Domain.Entity.EProduct;
-    using ComputerSales.Infrastructure.Persistence;
-    using ComputerSalesProject_MVC.Areas.Admin.Models.Product_Overview;
-    using Microsoft.AspNetCore.Mvc;
+using ComputerSales.Application.UseCase.ProductOvetView_UC;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.DeleteDTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.GetByIdDTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.UpdateDTO;
+using ComputerSales.Domain.Entity.EProduct;
+using ComputerSales.Infrastructure.Persistence;
+using ComputerSalesProject_MVC.Areas.Admin.Models.Product_Overview;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class ProductOverviewsController : Controller

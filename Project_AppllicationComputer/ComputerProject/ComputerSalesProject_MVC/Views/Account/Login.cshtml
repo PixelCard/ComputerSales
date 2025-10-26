@@ -1,4 +1,6 @@
 @model LoginViewModel
+@await Html.PartialAsync("_AccountBlockInfo", ViewBag.ActiveBlock as ComputerSales.Domain.Entity.EAccount.AccountBlock)
+
 @{
     Layout = null;
 }
@@ -55,12 +57,7 @@
     <!-- Header with logo -->
     <div class="absolute top-0 left-0 right-0 z-20 p-6">
         <div class="flex items-center justify-center">
-            <a href="/" class="flex items-center gap-3 hover:opacity-90 transition">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg">
-                    <span class="text-white font-bold text-xl">C</span>
-                </div>
-                <span class="text-white font-bold text-2xl tracking-tight">Computer Sales</span>
-            </a>
+     
         </div>
     </div>
 

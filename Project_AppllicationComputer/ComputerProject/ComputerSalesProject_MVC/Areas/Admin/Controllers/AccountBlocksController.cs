@@ -4,11 +4,14 @@ using ComputerSales.Application.UseCaseDTO.AccountBlock_DTO.DeleteAccountBlock;
 using ComputerSales.Application.UseCaseDTO.AccountBlock_DTO.GetAccountBlock;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Areas.Admin.Models.AccountBlocks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class AccountBlocksController : Controller
@@ -38,11 +41,11 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             _checkActive = checkActive;
         }
 
-        // Múi giờ Việt Nam (Windows)
+        // Hàm lấy múi giờ việt nam sau đó lưu thay vì SQL sử dụng múi giờ bên mỹ
         private static TimeZoneInfo VnTz =>
             TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
 
-        // ==================== INDEX ====================
+  
         [HttpGet]
         public async Task<IActionResult> IndexAccountBlocks(CancellationToken ct)
         {
@@ -56,7 +59,6 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             return View(items); // @model IEnumerable<AccountBlockOutputDTO>
         }
 
-        // ==================== DETAILS ====================
         [HttpGet("{id:int}")]
         public async Task<IActionResult> AccountBlocksDetails(int id, CancellationToken ct)
         {
@@ -77,7 +79,7 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
             return View(dto); // @model AccountBlockOutputDTO
         }
 
-        // ==================== CREATE ====================
+   
         [HttpGet]
         public IActionResult CreateAccountBlocks()
         {
