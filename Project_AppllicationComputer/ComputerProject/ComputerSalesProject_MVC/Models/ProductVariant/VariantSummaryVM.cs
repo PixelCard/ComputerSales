@@ -1,4 +1,4 @@
-﻿namespace ComputerSalesProject_MVC.Models
+﻿namespace ComputerSalesProject_MVC.Models.ProductVariant
 {
     public sealed class VariantSummaryVM
     {
@@ -7,5 +7,6 @@
         public int Quantity { get; set; }
         public decimal Price { get; set; }           // giá hiện hành (đã resolve)
         public decimal? OldPrice { get; set; }
+        public string VariantName { get; set; }
     }
 }

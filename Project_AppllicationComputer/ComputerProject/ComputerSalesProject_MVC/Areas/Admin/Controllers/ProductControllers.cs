@@ -10,6 +10,7 @@ using ComputerSales.Infrastructure.Persistence; // AppDbContext
 using ComputerSalesProject_MVC.Areas.Admin.Models;
 using ComputerSalesProject_MVC.Areas.Admin.Models.NewFolder;
 using ComputerSalesProject_MVC.Areas.Admin.Models.ProductVM;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class ProductController : Controller

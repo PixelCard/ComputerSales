@@ -36,8 +36,6 @@ namespace ComputerSalesProject_MVC.Controllers
                 return RedirectToAction("Login", "Account");
 
             var account = await _getAccount.HandleAsync(new getAccountByID(userId), ct);
-            if (account == null)
-                return RedirectToAction("Login", "Account");
 
             var vm = new AccountInfoViewModel
             {
@@ -45,7 +43,6 @@ namespace ComputerSalesProject_MVC.Controllers
                 Email = account.Email,
                 MaskedPassword = "********"
             };
-
             return View(vm);
         }
 
@@ -68,6 +65,8 @@ namespace ComputerSalesProject_MVC.Controllers
                 Address = c?.address ?? string.Empty,
                 BirthDate = c?.Date
             };
+
+
 
             return View(vm);
         }

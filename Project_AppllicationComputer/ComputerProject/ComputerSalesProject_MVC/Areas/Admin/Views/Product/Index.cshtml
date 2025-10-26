@@ -80,25 +80,33 @@
         <!-- Table Section -->
         <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-600">
-                <h2 class="text-xl font-bold text-white flex items-center">
-                    <i class="fas fa-table mr-3"></i>
-                    Danh sách sản phẩm
-                </h2>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-table mr-3"></i>
+                        Danh sách sản phẩm
+                    </h2>
+                    <div class="text-white text-sm">
+                        <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                            @(Model.Items?.Count() ?? 0) sản phẩm
+                        </span>
+                    </div>
+                </div>
             </div>
             
-            <div class="overflow-x-auto">
-                <table class="w-full table-fixed">
+            <!-- Desktop Table -->
+            <div class="hidden lg:block overflow-x-auto">
+                <table class="w-full min-w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">ID</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">SKU</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">Slug</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">Mô tả ngắn</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Provider</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Accessories</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Trạng thái</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Số biến thể</th>
-                            <th class="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Thao tác</th>
+                            <th class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">ID</th>
+                            <th class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">SKU</th>
+                            <th class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Slug</th>
+                            <th class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">Mô tả ngắn</th>
+                            <th class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Provider</th>
+                            <th class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Accessories</th>
+                            <th class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Trạng thái</th>
+                            <th class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Số biến thể</th>
+                            <th class="px-4 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -107,41 +115,61 @@
                             foreach (var item in Model.Items)
                             {
                                 <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300 group">
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 py-4">
                                         <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                             <span class="text-white font-bold text-sm">@item.ProductID</span>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">@item.SKU</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@item.Slug</td>
-                                    <td class="px-6 py-4 text-sm text-gray-500 truncate" title="@item.ShortDescription">@item.ShortDescription</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.ProviderName</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.AccessoriesName</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 py-4">
+                                        <div class="max-w-[120px]">
+                                            <span class="text-sm text-gray-900 font-medium block truncate" title="@item.SKU">@item.SKU</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="max-w-[150px]">
+                                            <span class="text-sm text-gray-500 block truncate" title="@item.Slug">@item.Slug</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="max-w-[200px]">
+                                            <span class="text-sm text-gray-500 block truncate" title="@item.ShortDescription">@item.ShortDescription</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="max-w-[120px]">
+                                            <span class="text-sm text-gray-900 block truncate" title="@item.ProviderName">@item.ProviderName</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        <div class="max-w-[120px]">
+                                            <span class="text-sm text-gray-900 block truncate" title="@item.AccessoriesName">@item.AccessoriesName</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-4">
                                         @if (item.Status == ComputerSales.Domain.Entity.EProduct.ProductStatus.Active)
                                         {
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 whitespace-nowrap">
                                                 <i class="fas fa-check-circle mr-1"></i>Active
                                             </span>
                                         }
                                         else
                                         {
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 whitespace-nowrap">
                                                 <i class="fas fa-times-circle mr-1"></i>Inactive
                                             </span>
                                         }
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">@item.VariantsCount</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <td class="px-4 py-4">
+                                        <span class="text-sm text-gray-900 font-medium">@item.VariantsCount</span>
+                                    </td>
+                                    <td class="px-4 py-4 text-center">
                                         <div class="flex items-center justify-center">
-
-                                            @* btn xem chi tiết sản phẩm *@
                                             <a asp-area="Admin"
                                                asp-controller="Product"
                                                asp-action="ProductDetails"
                                                asp-route-id="@item.ProductID"
-                                               class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-teal-600 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg">
-                                                <i class="fas fa-info-circle mr-2"></i>Chi tiết
+                                               class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-green-500 to-teal-600 text-white text-xs font-medium rounded-lg hover:from-green-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg whitespace-nowrap">
+                                                <i class="fas fa-info-circle mr-1"></i>Chi tiết
                                             </a>
                                         </div>
                                     </td>
@@ -164,6 +192,83 @@
                         }
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile Cards -->
+            <div class="lg:hidden">
+                @if (Model.Items != null && Model.Items.Any())
+                {
+                    <div class="space-y-4 p-4">
+                        @foreach (var item in Model.Items)
+                        {
+                            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
+                                            <span class="text-white font-bold text-sm">@item.ProductID</span>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-900 text-sm">@item.SKU</h3>
+                                            <p class="text-xs text-gray-500">@item.Slug</p>
+                                        </div>
+                                    </div>
+                                    @if (item.Status == ComputerSales.Domain.Entity.EProduct.ProductStatus.Active)
+                                    {
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-circle mr-1"></i>Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            <i class="fas fa-times-circle mr-1"></i>Inactive
+                                        </span>
+                                    }
+                                </div>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div>
+                                        <span class="text-xs text-gray-500">Mô tả:</span>
+                                        <p class="text-sm text-gray-700 line-clamp-2">@item.ShortDescription</p>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div>
+                                            <span class="text-gray-500">Provider:</span>
+                                            <p class="font-medium text-gray-900 truncate">@item.ProviderName</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-500">Accessories:</span>
+                                            <p class="font-medium text-gray-900 truncate">@item.AccessoriesName</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs text-gray-500">Biến thể: <span class="font-medium text-gray-900">@item.VariantsCount</span></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-end">
+                                    <a asp-area="Admin"
+                                       asp-controller="Product"
+                                       asp-action="ProductDetails"
+                                       asp-route-id="@item.ProductID"
+                                       class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-green-500 to-teal-600 text-white text-xs font-medium rounded-lg hover:from-green-600 hover:to-teal-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg">
+                                        <i class="fas fa-info-circle mr-1"></i>Chi tiết
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="p-8 text-center">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-box-open text-gray-400 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Không có sản phẩm nào</h3>
+                        <p class="text-gray-500">Hãy thêm sản phẩm đầu tiên để bắt đầu</p>
+                    </div>
+                }
             </div>
         </div>
 
@@ -231,9 +336,58 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Enhanced tooltip functionality
+    const truncatedElements = document.querySelectorAll('[title]');
+    truncatedElements.forEach(element => {
+        element.addEventListener('mouseenter', function() {
+            if (this.scrollWidth > this.clientWidth) {
+                this.setAttribute('data-tooltip', this.getAttribute('title'));
+                this.style.position = 'relative';
+            }
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            this.removeAttribute('data-tooltip');
+        });
+    });
+
+    // Auto-resize table on window resize
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            // Force table to recalculate layout
+            const tables = document.querySelectorAll('table');
+            tables.forEach(table => {
+                table.style.width = 'auto';
+                setTimeout(() => {
+                    table.style.width = '100%';
+                }, 10);
+            });
+        }, 250);
+    });
+
+    // Add smooth scrolling for pagination
+    const paginationLinks = document.querySelectorAll('nav a');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const href = this.getAttribute('href');
+            
+            // Add loading state
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...';
+            this.style.pointerEvents = 'none';
+            
+            // Navigate after short delay for UX
+            setTimeout(() => {
+                window.location.href = href;
+            }, 300);
+        });
+    });
 });
 
-// Add ripple effect CSS
+// Add enhanced CSS
 const style = document.createElement('style');
 style.textContent = `
     .ripple {
@@ -250,6 +404,65 @@ style.textContent = `
             transform: scale(4);
             opacity: 0;
         }
+    }
+    
+    /* Enhanced tooltip styles */
+    [data-tooltip]::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 1000;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        max-width: 300px;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+    
+    [data-tooltip]::before {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    [data-tooltip]:hover::after,
+    [data-tooltip]:hover::before {
+        opacity: 1;
+    }
+    
+    /* Line clamp utility */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    /* Smooth transitions for responsive elements */
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    
+    /* Better focus states */
+    input:focus, select:focus, button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 `;
 document.head.appendChild(style);

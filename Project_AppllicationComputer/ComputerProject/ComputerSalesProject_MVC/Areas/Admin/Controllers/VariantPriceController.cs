@@ -1,15 +1,17 @@
-﻿using System.Text;
-using ComputerSales.Application.UseCase.VariantPrice_UC;
+﻿using ComputerSales.Application.UseCase.VariantPrice_UC;
 using ComputerSales.Application.UseCaseDTO.VariantPrice_DTO.VariantPriceInput_Output;
 using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Areas.Admin.Models.NewFolder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]")]
     public class VariantPriceController : Controller

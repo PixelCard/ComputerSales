@@ -1,9 +1,11 @@
 ﻿using ComputerSales.Application.UseCase.Category_UC;
 using ComputerSales.Application.UseCaseDTO.Category_DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class CategoryController : Controller

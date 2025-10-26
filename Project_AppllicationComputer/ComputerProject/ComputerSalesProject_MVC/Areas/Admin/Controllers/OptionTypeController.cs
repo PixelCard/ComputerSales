@@ -4,12 +4,14 @@ using ComputerSales.Application.UseCaseDTO.OptionalValue_DTO.DeleteOptionalValue
 using ComputerSales.Application.UseCaseDTO.OptionalValue_DTO.GetByIdOptionalValue_DTO;
 using ComputerSales.Application.UseCaseDTO.OptionalValue_DTO.UpdateOptionalValue_DTO;
 using ComputerSales.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class OptionValueController : Controller

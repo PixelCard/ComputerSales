@@ -6,12 +6,14 @@ using ComputerSales.Application.UseCaseDTO.ProductVariant_DTO.UpdateDTO;
 using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Areas.Admin.Models.NewFolder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class ProductVariantController : Controller

@@ -1,16 +1,18 @@
-﻿    using ComputerSales.Application.UseCase.ProductOvetView_UC;
-    using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
-    using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.DeleteDTO;
-    using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.GetByIdDTO;
-    using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.UpdateDTO;
-    using ComputerSales.Domain.Entity.EProduct;
-    using ComputerSales.Infrastructure.Persistence;
-    using ComputerSalesProject_MVC.Areas.Admin.Models.Product_Overview;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
+using ComputerSales.Application.UseCase.ProductOvetView_UC;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.DeleteDTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.GetByIdDTO;
+using ComputerSales.Application.UseCaseDTO.ProductOverView_DTO.UpdateDTO;
+using ComputerSales.Domain.Entity.EProduct;
+using ComputerSales.Infrastructure.Persistence;
+using ComputerSalesProject_MVC.Areas.Admin.Models.Product_Overview;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Area("Admin")]
     [Route("Admin/[controller]/[action]")]
     public class ProductOverviewsController : Controller
@@ -54,6 +56,12 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
                 .ToString("yyyy-MM-dd HH:mm:ss");
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            ViewBag.TinyMCEApiKey = _configuration["TinyMCE:ApiKey"];
+            base.OnActionExecuting(context);
+        }
+
         [HttpGet]
         public IActionResult ProductOverViewsCreate(long productId)
         {
@@ -65,7 +73,9 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProductOverViewsCreate(ProductOverviewCreateVM vm,CancellationToken ct)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid){
+                return View(vm);
+            }
 
             if(string.IsNullOrEmpty(vm.TextContent))
             {
@@ -179,7 +189,9 @@ namespace ComputerSalesProject_MVC.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProductOverviewEditVM vm, CancellationToken ct)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid){
+                return View(vm);
+            }
 
             if (string.IsNullOrEmpty(vm.TextContent))
             {

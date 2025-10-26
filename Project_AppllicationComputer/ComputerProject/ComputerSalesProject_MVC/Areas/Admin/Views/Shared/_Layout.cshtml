@@ -9,8 +9,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-    <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
-    
     <style>
         .sidebar-transition {
             transition: transform 0.3s ease-in-out;
@@ -146,6 +144,18 @@
                                 </div>
                                 <span class="font-medium">Orders</span>
                             </a>
+
+                    </li>
+
+                    <!-- Thống kê doanh thu -->
+                    <li>
+                        <a asp-area="Admin" asp-controller="Statistics" asp-action="StatictistHome"
+                           class="nav-item flex items-center px-4 py-3 rounded-lg transition-all duration-200" data-page="orders">
+                            <div class="icon-container w-8 h-8 flex items-center justify-center mr-3">
+                                <i class="fas fa-receipt text-lg"></i>
+                            </div>
+                            <span class="font-medium">Thống kê</span>
+                        </a>
 
                     </li>
 

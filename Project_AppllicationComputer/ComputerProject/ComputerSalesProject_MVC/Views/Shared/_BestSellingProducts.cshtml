@@ -1,0 +1,29 @@
+﻿@* @model IEnumerable<ComputerSales.Domain.Entity.EProduct.Product>
+
+<div class="best-selling-section my-5">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">🔥 Sản phẩm bán chạy nhất</h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        @foreach (var item in Model)
+        {
+            <div class="border rounded-xl p-3 shadow-sm hover:shadow-md bg-white transition-all">
+                <img src="@(item.ProductVariants.FirstOrDefault()?.VariantImages ?? "/images/no-image.png")"
+                     alt="@item.ShortDescription"
+                     class="w-full h-40 object-cover rounded-lg mb-3" />
+
+                <h3 class="font-semibold text-gray-700 text-center">@item.ShortDescription</h3>
+
+                <p class="text-sm text-gray-500 text-center mt-1">
+                    Mã sản phẩm: <span class="font-medium">@item.SKU</span>
+                </p>
+
+                <a asp-controller="Products"
+                   asp-action="Details"
+                   asp-route-slug="@item.Slug"
+                   class="block text-center bg-blue-600 text-white py-2 mt-3 rounded-lg hover:bg-blue-700 transition">
+                    Xem chi tiết
+                </a>
+            </div>
+        }
+    </div>
+</div> *@

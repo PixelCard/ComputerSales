@@ -9,9 +9,12 @@ using ComputerSales.Application.UseCase.AccountBlock_UC;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.EmailVerify_DTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.RegisterDTO;
 using ComputerSales.Application.UseCaseDTO.Account_DTO.ResendVerifyEmaiDTO;
+using ComputerSales.Application.UseCaseDTO.AccountBlock_DTO;
+using ComputerSales.Domain.Entity.EAccount;
 using ComputerSalesProject_MVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks.Dataflow;
 namespace ComputerSalesProject_MVC.Controllers
 {
     [Route("[controller]")]
@@ -32,10 +35,13 @@ namespace ComputerSalesProject_MVC.Controllers
         //sử dụng hàm này kiểm tra Accountblock
         private readonly CheckAccountBlock_UC _checkActive;
 
+        
         // Múi giờ Việt Nam (Windows)
-        private static TimeZoneInfo VnTz =>           // <--- THÊM PROPERTY NÀY
+        private static TimeZoneInfo VnTz =>           
             TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
 
+
+        //---------------------------------------Constructor--------------------------------------------------
         public AccountController(IJwtTokenGenerator jwt, 
             IAccountRepository accountService, 
             IRoleRepository roleService, 
@@ -61,8 +67,6 @@ namespace ComputerSalesProject_MVC.Controllers
             //tạo phương thức kiểm tra check block
             _checkActive = checkActive;
         }
-
-        //---------------------------------------Constructor--------------------------------------------------
 
 
         //---------------------------------------Get--------------------------------------------------
@@ -94,16 +98,15 @@ namespace ComputerSalesProject_MVC.Controllers
                     return View(vm);
                 }
 
+                //hàm kiểm tra xem account có bị block hay không --> trả về view và chặn đăng nhập 
+                var activeBlock = await CheckAccountBlockStatusAsync(acc.IDAccount, ct);
+                if (activeBlock != null)
+                {
+                    ViewBag.ActiveBlock = activeBlock;
+                    return View(vm);
+                }
 
-            // Hàm kiểm tra tài khoản có bị block trước khi cho đăng nhập 
-            var blockError = await CheckAccountBlockStatusAsync(acc.IDAccount, ct);
-            if (blockError != null)
-            {
-                ModelState.AddModelError("", blockError);
-                return View(vm);
-            }
-
-            if (acc.Role == null) acc.Role = await _roleService.GetRole(acc.IDRole, ct);
+                if (acc.Role == null) acc.Role = await _roleService.GetRole(acc.IDRole, ct);
 
 
                 // Kiểm tra xem tài khoản đã xác thực email chưa
@@ -358,34 +361,10 @@ namespace ComputerSalesProject_MVC.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        private async Task<string?> CheckAccountBlockStatusAsync(int accountId, CancellationToken ct)
+        private async Task<AccountBlockOutputDTO?> CheckAccountBlockStatusAsync(int accountId, CancellationToken ct)
         {
 
-            // Lấy thông tin block hiện tại của tài khoản
-            var activeBlock = await _checkActive.HandleAsync(accountId, ct);
-
-           //kiểm tra tài khoản có bị block 
-            if (activeBlock != null)
-            {
-                // 3. Xử lý thông báo (giống hệt code trước)
-                string blockUntilDisplay = "vĩnh viễn";
-                if (activeBlock.BlockToUtc.HasValue)
-                {
-                    var toVn = TimeZoneInfo.ConvertTimeFromUtc(
-                        DateTime.SpecifyKind(activeBlock.BlockToUtc.Value, DateTimeKind.Utc), VnTz);
-                    blockUntilDisplay = $"tới {toVn:yyyy-MM-dd HH:mm:ss} (Giờ VN)";
-                }
-
-                string reason = string.IsNullOrWhiteSpace(activeBlock.ReasonBlock)
-                    ? "Không có lý do cụ thể."
-                    : activeBlock.ReasonBlock;
-
-                // 4. Trả về thông báo lỗi
-                return $"Tài khoản đang bị khóa {blockUntilDisplay}. Lý do: {reason}";
-            }
-
-            // 5. Không bị block
-            return null;
+          return await _checkActive.HandleAsync(accountId, ct);
         }
     }
 }

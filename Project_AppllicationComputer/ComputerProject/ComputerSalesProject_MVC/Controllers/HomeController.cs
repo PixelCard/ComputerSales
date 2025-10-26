@@ -1,6 +1,8 @@
+using ComputerSales.Domain.Entity.EProduct;
 using ComputerSales.Domain.Entity.EVariant;
 using ComputerSales.Infrastructure.Persistence;
 using ComputerSalesProject_MVC.Models;
+using ComputerSalesProject_MVC.Models.Product_ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -106,11 +108,45 @@ namespace ComputerSalesProject_MVC.Controllers
                     FreeShip = true
                 })
                 .ToListAsync();
+            // 🧠 Lấy 8 biến thể bán chạy nhất
+            var bestSellingVariants = await _context.OrderDetails
+                .Where(od => od.ProductVariantID != 0)
+                .GroupBy(od => od.ProductVariantID)
+                .Select(g => new
+                {
+                    VariantID = g.Key,
+                    TotalSold = g.Sum(x => x.Quantity)
+                })
+                .OrderByDescending(x => x.TotalSold)
+                .Take(8)
+                .Join(
+                    _context.productVariants
+                        .Include(v => v.Product)
+                        .Include(v => v.VariantPrices.Where(p => p.Status == PriceStatus.Active))
+                        .Include(v => v.VariantImages.OrderBy(i => i.SortOrder)),
+                    best => best.VariantID,
+                    variant => variant.Id,
+                    (best, variant) => new { variant, best.TotalSold }
+                )
+                .Where(x => x.variant.Status == VariantStatus.Active && !x.variant.Product.IsDeleted)
+                .Select(x => new ProductCardVM
+                {
+                    ProductId = (int)x.variant.ProductId,
+                    SKU = x.variant.SKU,
+                    Name = x.variant.VariantName,
+                    ShortDescription = x.variant.Product.ShortDescription,
+                    Price = x.variant.VariantPrices.Select(p => p.DiscountPrice > 0 ? p.DiscountPrice : p.Price).FirstOrDefault(),
+                    DiscountPrice = x.variant.VariantPrices.Select(p => p.DiscountPrice).FirstOrDefault(),
+                    Images = x.variant.VariantImages.OrderBy(i => i.SortOrder).Select(i => i.Url).ToList()
+                })
+                .ToListAsync();
+
 
             var vm = new HomeIndexVM
             {
                 Featured = featured,
-                NewArrivals = newArrivals
+                NewArrivals = newArrivals,
+                BestSellingVariants = bestSellingVariants
             };
 
             return View(vm);
